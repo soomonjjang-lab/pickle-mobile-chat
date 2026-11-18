@@ -454,7 +454,7 @@ COPY = {
     "ja": {
         "html_lang": "ja",
         "og_locale": "ja_JP",
-        "title": "旅行デールハブ — 航空券・eSIM・空港送迎・観光パス・荷物預かりの10サイト",
+        "title": "旅行ディールハブ — 航空券・eSIM・空港送迎・観光パス・荷物預かりの10サイト",
         "desc": "旅の準備で実際に開く10のサービスを1ページに。Aviasalesの航空券検索、Airalo・YesimのeSIM、Kiwitaxi・GetTransferの空港送迎、Klook・KKday・Tiqets・Go Cityのツアーとパス、Radical Storageの荷物預かり。価格の代わりに、支払う前に確認することを書いています。",
         "skip": "一覧へ進む",
         "disc": "このページのリンクはアフィリエイトリンクです。リンク経由で予約が成立すると提携先から報酬を受け取ることがありますが、お支払い金額は変わりません。",
@@ -522,6 +522,7 @@ CSS = """
            font-weight:650;max-width:30ch;text-wrap:balance;color:#fff;overflow-wrap:break-word}
   html[lang="ko"] body{word-break:keep-all}
   html[lang="ko"] .hero h1{max-width:26ch}
+  html[lang="ja"] .hero h1,html[lang="ja"] .sec-head h2,html[lang="ja"] .card h3{word-break:auto-phrase}
   .lede{margin:0;max-width:60ch;font-size:clamp(14.5px,3.3vw,16.5px);line-height:1.7;color:#d3e6e9}
   .hero-meta{display:flex;flex-wrap:wrap;gap:6px 0;margin:18px 0 0;padding:0;list-style:none;
              font-size:11.5px;letter-spacing:.06em;color:#9ec6cc;text-transform:uppercase}
