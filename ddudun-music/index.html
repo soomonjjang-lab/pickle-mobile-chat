@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>DDUDUN MUSIC — two albums of English-language pop, R&amp;B and Christmas songs</title>
+<meta name="description" content="DDUDUN (뚜둔뮤직): 18 English-language songs in two albums — late-night pop and R&B on 'By the Time I Knew', eight Christmas songs on the 'Christmas Special'. Lyrics and direction by the artist; vocals and instruments generated with Suno.">
+<meta name="robots" content="index,follow">
+<meta name="theme-color" content="#11151a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2311151a'/%3E%3Cpath d='M24 44V20h8a9 9 0 0 1 0 18h-8' fill='none' stroke='%23dac190' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3Cpath d='M40 26v18' fill='none' stroke='%23dac190' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+
+<meta property="og:type" content="music.musician">
+<meta property="og:site_name" content="DDUDUN MUSIC">
+<meta property="og:locale" content="en_US">
+<meta property="og:title" content="DDUDUN MUSIC — 18 songs, two albums">
+<meta property="og:description" content="Late-night pop and R&amp;B, plus eight Christmas songs. English lyrics, full lyric player, free to listen.">
+<meta property="og:url" content="https://soomonjjang-lab.github.io/pickle-mobile-chat/ddudun-music/">
+<link rel="canonical" href="https://soomonjjang-lab.github.io/pickle-mobile-chat/ddudun-music/">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DDUDUN MUSIC — two albums of English songs">
+<meta name="twitter:description" content="Late-night pop and R&amp;B, plus eight Christmas songs. Free to listen, lyrics on screen.">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "DDUDUN MUSIC",
+  "alternateName": "뚜둔뮤직",
+  "genre": ["Pop", "R&B", "Christmas"],
+  "url": "https://soomonjjang-lab.github.io/pickle-mobile-chat/ddudun-music/",
+  "sameAs": [
+    "https://www.youtube.com/@ddudunmusic",
+    "https://www.tiktok.com/@ddudun_music",
+    "https://music.ddudun.kr/"
+  ],
+  "album": [
+    {
+      "@type": "MusicAlbum",
+      "name": "By the Time I Knew",
+      "numTracks": 10,
+      "albumProductionType": "https://schema.org/StudioAlbum",
+      "byArtist": { "@type": "MusicGroup", "name": "DDUDUN MUSIC" }
+    },
+    {
+      "@type": "MusicAlbum",
+      "name": "Christmas Special",
+      "numTracks": 8,
+      "albumProductionType": "https://schema.org/StudioAlbum",
+      "byArtist": { "@type": "MusicGroup", "name": "DDUDUN MUSIC" }
+    }
+  ]
+}
+</script>
+
+<style>
+  :root{
+    --bg:#11151a; --panel:#171c23; --ink:#f4f0e9; --muted:#9ba4af;
+    --gold:#dac190; --line:#ffffff14;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.65 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+  main{width:min(100%,860px);margin:0 auto;padding:28px 18px 56px}
+  a{color:var(--gold)}
+  header{border-bottom:1px solid var(--line);padding-bottom:22px;margin-bottom:28px}
+  .brand{font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--gold);margin:0 0 10px}
+  h1{font-size:clamp(26px,6vw,40px);line-height:1.15;letter-spacing:-.02em;margin:0 0 12px;font-weight:600}
+  .lede{color:#d8d2c8;margin:0 0 18px;max-width:60ch}
+  .cta{display:flex;flex-wrap:wrap;gap:10px;margin:0;padding:0;list-style:none}
+  .cta a{display:inline-block;padding:10px 16px;border:1px solid #cdb78a66;border-radius:999px;
+         text-decoration:none;font-size:14px;color:#efe2c6}
+  .cta a:hover{background:#dac19014}
+  section{margin:34px 0 0}
+  h2{font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);
+     margin:0 0 6px;font-weight:600}
+  .album-note{color:var(--muted);font-size:14px;margin:0 0 14px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  ol.tracks{list-style:none;margin:0;padding:0}
+  ol.tracks li{display:flex;align-items:baseline;gap:12px;padding:11px 16px;border-top:1px solid #ffffff0a}
+  ol.tracks li:first-child{border-top:0}
+  .num{color:#6f7883;font-variant-numeric:tabular-nums;font-size:13px;width:1.6em;flex:none}
+  .title{flex:1 1 auto;min-width:0}
+  .title a{color:var(--ink);text-decoration:none;border-bottom:1px solid #dac19033}
+  .title a:hover{color:#fff1d1;border-bottom-color:#dac190}
+  .ko{display:block;color:var(--muted);font-size:12px;margin-top:2px;border:0}
+  .dur{color:var(--muted);font-size:13px;font-variant-numeric:tabular-nums;flex:none}
+  .grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin-top:14px}
+  .box{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 18px}
+  .box h3{margin:0 0 6px;font-size:15px;color:#efe2c6}
+  .box p{margin:0;color:var(--muted);font-size:14px}
+  .note{font-size:13px;color:var(--muted);margin-top:26px;padding-top:18px;border-top:1px solid var(--line)}
+  footer{margin-top:34px;font-size:12px;color:#7c858f}
+</style>
+</head>
+<body>
+<main>
+
+  <header>
+    <p class="brand">DDUDUN MUSIC · 뚜둔뮤직</p>
+    <h1>Songs written by a person, sung with an AI voice.</h1>
+    <p class="lede">
+      Eighteen English-language songs in two albums. <strong>By the Time I Knew</strong> is late-night
+      pop and R&amp;B about the things said too late and the seasons that go around anyway.
+      <strong>Christmas Special</strong> is eight carols — warm, bright, a duet, a rap, one with a
+      distorted guitar. Every song plays free, with the full English lyric on screen.
+    </p>
+    <ul class="cta">
+      <li><a href="https://www.youtube.com/@ddudunmusic">Watch on YouTube</a></li>
+      <li><a href="https://music.ddudun.kr/">Full lyric player</a></li>
+      <li><a href="https://www.tiktok.com/@ddudun_music">TikTok</a></li>
+    </ul>
+  </header>
+
+  <section>
+    <h2>Album 1 · By the Time I Knew</h2>
+    <p class="album-note">10 songs · 2026 · “Ten stories left at the end of a season.”</p>
+    <div class="card">
+      <ol class="tracks">
+        <li><span class="num">01</span><span class="title"><a href="https://www.youtube.com/watch?v=mR-O9gwNBU8">What I Meant to Say</a></span><span class="dur">3:54</span></li>
+        <li><span class="num">02</span><span class="title"><a href="https://www.youtube.com/watch?v=RuXyIoU-ehg">By the Time I Knew</a></span><span class="dur">3:28</span></li>
+        <li><span class="num">03</span><span class="title"><a href="https://www.youtube.com/watch?v=_JfVu-Rr6I8">A Full Round of Seasons</a><span class="ko">계절이 한 바퀴</span></span><span class="dur">3:09</span></li>
+        <li><span class="num">04</span><span class="title"><a href="https://www.youtube.com/watch?v=px-IPn6wjdQ">Next Light</a><span class="ko">다음 신호</span></span><span class="dur">3:07</span></li>
+        <li><span class="num">05</span><span class="title"><a href="https://www.youtube.com/watch?v=rwmYRP58svc">I Miss That Kid</a><span class="ko">그 아이가 보고 싶어</span></span><span class="dur">4:58</span></li>
+        <li><span class="num">06</span><span class="title"><a href="https://www.youtube.com/watch?v=JqNSc3rmHFM">Let’s Call It a Day</a><span class="ko">오늘은 여기까지</span></span><span class="dur">3:34</span></li>
+        <li><span class="num">07</span><span class="title"><a href="https://www.youtube.com/watch?v=QaKqPgWt_5k">One More Day</a><span class="ko">하루 더</span></span><span class="dur">3:28</span></li>
+        <li><span class="num">08</span><span class="title"><a href="https://www.youtube.com/watch?v=CKBCAyNZgR4">This Time Last Year</a><span class="ko">작년 이맘때</span></span><span class="dur">3:40</span></li>
+        <li><span class="num">09</span><span class="title"><a href="https://www.youtube.com/watch?v=jbC2Xa1KAAc">Always Right There</a><span class="ko">늘 그 자리</span></span><span class="dur">5:39</span></li>
+        <li><span class="num">10</span><span class="title"><a href="https://www.youtube.com/watch?v=za26wyf4a9g">My Own Way</a></span><span class="dur">2:56</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Album 2 · Christmas Special</h2>
+    <p class="album-note">8 songs · 2026 · Carols for the lights on your street.</p>
+    <div class="card">
+      <ol class="tracks">
+        <li><span class="num">01</span><span class="title"><a href="https://www.youtube.com/watch?v=nMTRZQLmr8I">My Own Pace</a><span class="ko">내 마음대로</span></span><span class="dur">3:58</span></li>
+        <li><span class="num">02</span><span class="title"><a href="https://www.youtube.com/watch?v=UzaobQZ0A9A">Christmas on Our Street</a></span><span class="dur">3:14</span></li>
+        <li><span class="num">03</span><span class="title"><a href="https://www.youtube.com/watch?v=j21nNRgv9zo">Meet Me Under the Lights</a></span><span class="dur">3:50</span></li>
+        <li><span class="num">04</span><span class="title"><a href="https://www.youtube.com/watch?v=SD5VWT-1Uo0">Wide Awake</a></span><span class="dur">3:15</span></li>
+        <li><span class="num">05</span><span class="title"><a href="https://www.youtube.com/watch?v=lDenoin6iGo">Wish, Wish, Christmas</a></span><span class="dur">3:35</span></li>
+        <li><span class="num">06</span><span class="title"><a href="https://www.youtube.com/watch?v=dDSgYusmHMQ">Tonight’s Secret</a><span class="ko">오늘 밤의 비밀</span></span><span class="dur">3:09</span></li>
+        <li><span class="num">07</span><span class="title"><a href="https://www.youtube.com/watch?v=s_cEiAPq-OM">Christmas On My Mind</a></span><span class="dur">3:29</span></li>
+        <li><span class="num">08</span><span class="title"><a href="https://www.youtube.com/watch?v=9a6ZPBERUPc">Christmas in My Heart</a></span><span class="dur">3:35</span></li>
+      </ol>
+    </div>
+  </section>
+
+  <section>
+    <h2>Where to start</h2>
+    <div class="grid">
+      <div class="box">
+        <h3>If it’s December</h3>
+        <p>「Christmas on Our Street」 for an easy, bright carol; 「Meet Me Under the Lights」 if you want the duet;
+           「Christmas in My Heart」 when you want the loud, guitar-first one.</p>
+      </div>
+      <div class="box">
+        <h3>If it’s 2 a.m.</h3>
+        <p>「What I Meant to Say」 and 「By the Time I Knew」 — the pair the album is built around.
+           「Always Right There」 if you have five minutes and something to sit with.</p>
+      </div>
+      <div class="box">
+        <h3>If you want the words</h3>
+        <p>The <a href="https://music.ddudun.kr/">lyric player</a> shows every line in English with a Korean
+           translation beside it, and jumps to that moment in the song when you tap a line.</p>
+      </div>
+    </div>
+  </section>
+
+  <p class="note">
+    <strong>How these songs are made.</strong> The lyrics, the direction — the mood, the voice, the arrangement,
+    the story of each song — are written and decided by the artist. Vocals and instruments are generated with
+    Suno and then produced into the tracks here; the images in the videos are AI-generated as well, and each
+    video carries YouTube’s “altered or synthetic content” label. Nothing here is a cover or a sample of
+    another artist’s recording.
+  </p>
+
+  <footer>
+    DDUDUN MUSIC (뚜둔뮤직) · <a href="https://www.youtube.com/@ddudunmusic">YouTube</a> ·
+    <a href="https://www.tiktok.com/@ddudun_music">TikTok</a> ·
+    <a href="https://music.ddudun.kr/">music.ddudun.kr</a>
+  </footer>
+
+</main>
+</body>
+</html>
