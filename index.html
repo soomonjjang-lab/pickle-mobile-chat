@@ -241,6 +241,7 @@
     {tag:'[PC]',     name:'나',     cls:'me', av:'나'}
   ];
 
+  var DEMO=/(\?|&)demo=1/.test(location.search);
   var token=localStorage.getItem(K_TOKEN)||'';
   var msgs=new Map();
   var lastSync=null, fullCounter=0, polling=false, timer=null;
@@ -317,6 +318,7 @@
   /* ---------- loading ---------- */
   function poll(full){
     if(!token || polling) return;
+    if(DEMO) return;
     polling=true;
     var useSince = (!full && lastSync) ? ('&since='+encodeURIComponent(lastSync)) : '';
     var all=[], page=1;
@@ -331,6 +333,11 @@
     next().then(function(items){
       var fresh = items.filter(function(c){ return !msgs.has(c.id); });
       var changed=false;
+      if(full){
+        var seen={};
+        items.forEach(function(c){ seen[c.id]=1; });
+        msgs.forEach(function(v,k){ if(!seen[k]){ msgs.delete(k); changed=true; } });
+      }
       items.forEach(function(c){
         var prev=msgs.get(c.id);
         if(!prev || prev.updated_at!==c.updated_at || prev.body!==c.body){ msgs.set(c.id,c); changed=true; }
@@ -404,6 +411,7 @@
   }
 
   var IMG_RE=/(captures\/[^\s)\]"'<>]+\.(?:png|jpe?g|gif|webp))/i;
+  var REMOTE_IMG_RE=/!\[\]\((https:\/\/[^)\s]+\.(?:png|jpe?g|gif|webp)[^)\s]*)\)/i;
 
   function buildBubble(text){
     var wrap=document.createElement('div');
@@ -412,13 +420,21 @@
     var hidden=lines.length-shown.length;
     var html='';
     var imgs=[];
+    var remote=[];
     shown.forEach(function(line){
+      var rm=line.match(REMOTE_IMG_RE);
+      if(rm){ remote.push(rm[1]); line=line.replace(rm[0],'').trim(); }
       var m=line.match(IMG_RE);
       if(m){ imgs.push(m[1]); line=line.replace(m[1],'').replace(/\!\[\]\([^)]*\)/g,'').trim(); }
       if(line) html+= inlineMd(line)+'<br>';
     });
     html=html.replace(/(<br>)+$/,'');
     wrap.innerHTML=html;
+    remote.forEach(function(u){
+      var ri=document.createElement('img');
+      ri.src=u; ri.loading='lazy'; ri.style.maxHeight='320px'; ri.style.objectFit='contain';
+      wrap.appendChild(ri);
+    });
     imgs.forEach(function(path){
       var img=document.createElement('img');
       img.alt='첨부 이미지'; img.loading='lazy'; img.style.maxHeight='320px'; img.style.objectFit='contain';
@@ -727,6 +743,28 @@
     if(!document.hidden && token) poll(false);
   });
 
+  function demoSeed(){
+    var base=Date.now()-3600e3;
+    var rows=[
+      ['[똘마니]','오늘 밤 작업 상황 공유드릴게요!','p'],
+      ['[똥구리]','네 성현 님, 저는 해외 채널 쪽 확인해서 여기 남기겠습니다.','d'],
+      ['[나나]','교차 감시 :04/:09 계속 돌고 있습니다 :)','n'],
+      ['[PC]','응 앱처럼 하자구','me'],
+      ['[똘마니]','**모바일 소통창 준비 완료**\n1. 폰 크롬으로 주소 열기\n2. 상단 ⚙ → 토큰 붙여넣기\n3. 크롬 메뉴 ⋮ → 홈 화면에 추가\n\n이렇게 하면 앱처럼 전체 화면으로 열립니다. https://soomonjjang-lab.github.io/pickle-mobile-chat/','p'],
+      ['[PC]','오케이 바로 해볼게','me']
+    ];
+    rows.forEach(function(r,i){
+      msgs.set('demo'+i,{id:'demo'+i,body:r[0]+' '+r[1],created_at:new Date(base+i*240000).toISOString(),user:{login:'demo'}});
+    });
+    var bar=document.createElement('div');
+    bar.style.cssText='background:#FFF8D6;color:#7a6a00;font-size:12px;font-weight:700;text-align:center;padding:6px';
+    bar.textContent='미리보기 모드예요 (실제 연결 아님)';
+    document.getElementById('app').insertBefore(bar,document.getElementById('list'));
+    document.getElementById('tokenSheet').classList.remove('show');
+    setStatus('on','미리보기');
+    render();
+  }
+
   window.addEventListener('beforeinstallprompt',function(e){
     e.preventDefault(); installEvt=e;
     $('installBtn').textContent='앱 설치하기';
@@ -754,7 +792,9 @@
 
   /* ---------- boot ---------- */
   updateTokenState();
-  if(token){
+  if(DEMO){
+    demoSeed();
+  } else if(token){
     setStatus('','연결 중…');
     poll(true);
     schedule();
