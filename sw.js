@@ -1,5 +1,5 @@
 /* 똘마니 소통창 - service worker (앱 셸 캐시) */
-const CACHE = 'pickle-chat-v5';
+const CACHE = 'pickle-chat-v6';
 const SHELL = [
   './',
   './index.html',
