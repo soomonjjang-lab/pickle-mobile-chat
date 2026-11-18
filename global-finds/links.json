@@ -1,0 +1,78 @@
+{
+  "_readme": "links.json — the only file you need to edit before publishing. Put each product's affiliate URL in `url`, a photo URL in `image`, and (optionally) a short label in `badge`. Leave a field as \"\" and the page falls back: no badge, placeholder art, inactive button. Copy lives in index.html.",
+  "updated": "2026-11-19",
+  "products": [
+    {
+      "id": "gan-charger",
+      "name": "65W GaN 3-Port USB-C Charger",
+      "market": "AliExpress",
+      "url": "https://s.click.aliexpress.com/e/_c4rD8cvv",
+      "image": "",
+      "imageAlt": "65W GaN wall charger with a built-in USB-C cable on a desk",
+      "badge": ""
+    },
+    {
+      "id": "jet-blower",
+      "name": "X8 150,000RPM Cordless Jet Blower",
+      "market": "AliExpress",
+      "url": "https://s.click.aliexpress.com/e/_c4OUY5EX",
+      "image": "",
+      "imageAlt": "Cordless jet blower with a narrow nozzle held beside a car air vent",
+      "badge": ""
+    },
+    {
+      "id": "mini-blender",
+      "name": "Dual-Cup Portable USB Mini Blender",
+      "market": "AliExpress",
+      "url": "https://s.click.aliexpress.com/e/_c4pooYoX",
+      "image": "",
+      "imageAlt": "Portable USB blender cup filled with fruit on a kitchen counter",
+      "badge": ""
+    },
+    {
+      "id": "led-wall-clock",
+      "name": "Large LED Digital Wall Clock",
+      "market": "AliExpress",
+      "url": "https://s.click.aliexpress.com/e/_c3oObkrl",
+      "image": "",
+      "imageAlt": "Large LED digital wall clock showing the time, date and indoor temperature",
+      "badge": ""
+    },
+    {
+      "id": "bag-sealer",
+      "name": "Mini Bag Heat Sealer",
+      "market": "AliExpress",
+      "url": "https://s.click.aliexpress.com/e/_c2vro9ar",
+      "image": "",
+      "imageAlt": "Mini bag heat sealer pressing the open edge of a coffee bag",
+      "badge": ""
+    },
+    {
+      "id": "windshield-spray",
+      "name": "Car Windshield Water-Repellent Spray",
+      "market": "AliExpress",
+      "url": "https://s.click.aliexpress.com/e/_c37ljMrl",
+      "image": "",
+      "imageAlt": "Spray bottle of windshield water repellent beside a car window",
+      "badge": ""
+    },
+    {
+      "id": "temu-deals",
+      "name": "Temu Global Deals",
+      "market": "Temu",
+      "url": "https://temu.to/k/gccufhkdp0n",
+      "image": "",
+      "imageAlt": "Temu store page of general merchandise",
+      "badge": ""
+    },
+    {
+      "id": "shein-deals",
+      "name": "SHEIN Global Deals",
+      "market": "SHEIN",
+      "url": "https://bitl.bz/OLAwBE",
+      "image": "",
+      "imageAlt": "SHEIN store page of clothing and accessories",
+      "badge": ""
+    }
+  ]
+}
