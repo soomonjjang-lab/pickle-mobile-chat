@@ -175,7 +175,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v13</small></h1>
+    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v14</small></h1>
     <div id="status"><i id="dot"></i><span id="statusText">연결 대기</span></div>
     <div class="hbtns">
       <button class="ibtn" id="refreshBtn" aria-label="새로고침"><span>⟳</span></button>
@@ -529,6 +529,14 @@
       list.innerHTML='<div class="empty">아직 메시지가 없어요.<br>아래에 첫 메시지를 보내 보세요.</div>';
       return;
     }
+    var seenAt={};
+    arr.forEach(function(c){
+      var b=String(c.body||'');
+      if(b.indexOf('[똘마니]')===0) seenAt.ttol=c.created_at;
+      else if(b.indexOf('[똥구리]')===0) seenAt.ttong=c.created_at;
+      else if(b.indexOf('[나나]')===0 || b.indexOf('[개구기]')===0) seenAt.nana=c.created_at;
+      else if(b.indexOf('[GPT]')===0) seenAt.gpt=c.created_at;
+    });
     var lastDay='';
     arr.forEach(function(c){
       var body=String(c.body||'');
@@ -545,7 +553,7 @@
         dd.innerHTML='<span>'+fmtDate(c.created_at)+'</span>';
         list.appendChild(dd);
       }
-      list.appendChild(rowFor(c,sp));
+      list.appendChild(rowFor(c,sp,false,seenAt));
     });
     pending.forEach(function(p){
       list.appendChild(rowFor({id:'p'+p.id,created_at:p.created_at,body:p.body,user:{login:'me'}},SPEAKERS[3],true));
@@ -554,7 +562,8 @@
     if(nearBottom || atBottom){ scrollBottom(); } else { jump.classList.add('show'); jump.textContent='↓ 맨 아래로'; }
   }
 
-  function rowFor(c,sp,isPending){
+  function rowFor(c,sp,isPending,seenAt){
+    var rawBody=String(c.body||'');
     var body=String(c.body||'');
     if(sp) body=body.slice(sp.tag.length).trim();
     var cls=sp?sp.cls:'x';
@@ -607,6 +616,25 @@
       t.appendChild(del);
     }
     stack.appendChild(t);
+    if(!isPending && seenAt){
+      var watchers=[
+        {k:'ttol', tag:'[똘마니]', lbl:'똘'},
+        {k:'ttong', tag:'[똥구리]', lbl:'똥'},
+        {k:'nana', tag:'[나나]', lbl:'나'},
+        {k:'gpt', tag:'[GPT]', lbl:'G'}
+      ];
+      var sdiv=document.createElement('div');
+      sdiv.style.cssText='font-size:9.5px;line-height:1.2;margin:1px 4px 0;display:flex;gap:5px;flex-wrap:wrap;';
+      watchers.forEach(function(w){
+        if(rawBody.indexOf(w.tag)===0 || (w.k==='nana' && rawBody.indexOf('[개구기]')===0)) return;
+        var spn=document.createElement('span');
+        var ok=seenAt[w.k] && seenAt[w.k]>=c.created_at;
+        spn.textContent=w.lbl+(ok?'✓':'');
+        spn.style.cssText=ok?'color:#1a73e8;font-weight:700;':'color:#b0b5bb;';
+        sdiv.appendChild(spn);
+      });
+      if(sdiv.childNodes.length) stack.appendChild(sdiv);
+    }
 
     row.appendChild(a); row.appendChild(stack);
     return row;
