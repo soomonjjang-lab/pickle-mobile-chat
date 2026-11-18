@@ -201,6 +201,9 @@
       <button class="btn" id="pasteBtn">붙여넣기</button>
       <button class="btn primary" id="saveTokenBtn">저장하고 시작</button>
     </div>
+    <p class="note" id="clearSaved" style="display:none;text-align:center">
+      <a href="#" id="clearSavedBtn" style="color:#80868b">저장된 토큰 지우기</a>
+    </p>
     <p class="note">· PC 앱도 같은 토큰을 씁니다(PC의 <code>.pickle_chat_token</code>).<br>· 토큰이 없으면 GitHub → Settings → Developer settings에서 만들 수 있어요.<br>· 나중에 ⚙ 설정에서 언제든 지울 수 있습니다.</p>
   </div>
 </div>
@@ -667,9 +670,24 @@
   /* ---------- token ---------- */
   function openToken(msg){
     if(msg){ var p=document.querySelector('#tokenSheet p.sub'); p.textContent=msg; }
+    $('clearSaved').style.display = token ? 'block' : 'none';
     $('tokenSheet').classList.add('show');
     setTimeout(function(){ $('tokenInput').focus(); },150);
   }
+
+  function wipeToken(){
+    localStorage.removeItem(K_TOKEN);
+    token=''; msgs.clear(); imgCache.clear(); pending.clear(); lastSync=null; lastRenderedCount=0;
+    render(); updateTokenState(); setStatus('','토큰 없음');
+  }
+  document.getElementById('clearSavedBtn').addEventListener('click',function(e){
+    e.preventDefault();
+    wipeToken();
+    toast('저장된 토큰을 지웠어요');
+    $('clearSaved').style.display='none';
+    var p=document.querySelector('#tokenSheet p.sub');
+    p.textContent='PC 소통창에 쓰시던 그 GitHub 토큰을 그대로 붙여넣어 주세요. 토큰은 이 브라우저(폰)에만 저장되고, GitHub 주소로만 쓰입니다.';
+  });
   function closeToken(){ $('tokenSheet').classList.remove('show'); }
 
   $('pasteBtn').addEventListener('click',function(){
@@ -708,8 +726,7 @@
   });
   $('clearTokenBtn').addEventListener('click',function(){
     if(!confirm('폰에 저장된 토큰을 지울까요? 다시 넣기 전까지 연결이 끊깁니다.')) return;
-    localStorage.removeItem(K_TOKEN);
-    token=''; msgs.clear(); imgCache.clear(); pending.clear(); lastSync=null;
+    wipeToken();
     $('settingsSheet').classList.remove('show');
     render(); updateTokenState();
     setStatus('','토큰 없음');
