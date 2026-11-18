@@ -147,6 +147,10 @@
     transition:opacity .2s;z-index:80;max-width:88vw;text-align:center;
   }
   #toast.show{opacity:1}
+  .quote{border-left:3px solid #9aa0a6;padding:4px 8px;margin-bottom:6px;font-size:12.5px;color:#5f6368;background:rgba(0,0,0,.04);border-radius:4px}
+  .row.me .quote{border-left-color:#8a6d00;color:#4a3b00;background:rgba(0,0,0,.06)}
+  .actbtn{width:100%;text-align:left;padding:13px 14px;border:0;border-radius:10px;background:#f1f3f4;color:#111;font-size:15px;font-weight:600;margin-bottom:8px;cursor:pointer}
+  .actbtn.danger{background:#fce8e6;color:#c5221f}
   @media (prefers-color-scheme: dark){
     :root{--bg:#15171A;--bubble:#24272B;--line:#2E3237;--ink:#F1F3F4;--meta:#9AA0A6}
     body{background:var(--bg);color:var(--ink)}
@@ -182,6 +186,11 @@
   </main>
 
   <button id="jump">↓ 새 메시지</button>
+
+  <div id="replyBar" style="display:none;align-items:center;gap:8px;padding:7px 12px;background:#eef3fd;border-top:1px solid #d2e3fc;font-size:12.5px;color:#1a73e8;">
+    <span id="replyText" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;"></span>
+    <button type="button" id="replyClear" style="border:0;background:#d2e3fc;color:#1967d2;border-radius:50%;width:22px;height:22px;font-size:12px;cursor:pointer;">✕</button>
+  </div>
 
   <div id="stageBar" style="display:none;align-items:center;gap:10px;padding:8px 12px;background:#f8f9fa;border-top:1px solid #e0e0e0;">
     <img id="stageImg" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #dadce0;">
@@ -231,6 +240,27 @@
       <button class="btn dark" id="closeSettings">닫기</button>
     </div>
     <p class="note" id="installHelp">크롬에서 메뉴(⋮) → <b>앱 설치</b> 또는 <b>홈 화면에 추가</b>를 누르면 앱처럼 전체 화면으로 열립니다.</p>
+  </div>
+</div>
+
+<div class="sheet" id="msgSheet">
+  <div class="panel">
+    <h2 id="msgSheetTitle" style="font-size:15px;margin-bottom:4px;">메시지</h2>
+    <p class="sub" id="msgSheetPreview" style="margin-bottom:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></p>
+    <div id="msgSheetBtns">
+      <button type="button" class="actbtn" id="actReply">↩️ 답장하기</button>
+      <button type="button" class="actbtn" id="actCopyAll">📋 전체 복사</button>
+      <button type="button" class="actbtn" id="actSelectCopy">✂️ 일부만 선택 복사</button>
+      <button type="button" class="actbtn danger" id="actDelete">🗑 삭제하기</button>
+      <button type="button" class="btn" id="actClose" style="width:100%;margin-top:4px;">닫기</button>
+    </div>
+    <div id="msgSelectBox" style="display:none;">
+      <textarea id="msgSelectText" readonly rows="6" style="width:100%;padding:10px;border:1px solid #dadce0;border-radius:10px;font-size:14px;line-height:1.5;box-sizing:border-box;"></textarea>
+      <div class="row2" style="margin-top:10px;">
+        <button type="button" class="btn" id="msgSelectBack">뒤로</button>
+        <button type="button" class="btn primary" id="msgSelectAllBtn">전체 선택·복사</button>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -546,6 +576,7 @@
     var b=document.createElement('div');
     b.className='bubble'+(isPending?' pending':'');
     b.appendChild(buildBubble(body));
+    attachLongPress(b, c, name, body, isPending);
     stack.appendChild(b);
 
     var t=document.createElement('div');
@@ -599,6 +630,106 @@
   }
   text.addEventListener('input',autosize);
 
+  var replyTarget=null;
+  var replyBar=$('replyBar'), replyText=$('replyText'), replyClear=$('replyClear');
+  function setReply(name, rawBody){
+    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|GPT|똥구리|나나|개구기|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
+    if(clean.length>50) clean=clean.slice(0,50)+'…';
+    if(!clean) clean='(사진)';
+    replyTarget={name:name, snippet:clean};
+    replyText.textContent='↩️ '+name+'에게 답장: '+clean;
+    replyBar.style.display='flex';
+    text.focus();
+  }
+  function clearReply(){
+    replyTarget=null;
+    replyBar.style.display='none';
+    replyText.textContent='';
+  }
+  replyClear.addEventListener('click',clearReply);
+
+  var msgSheet=$('msgSheet'), msgSheetTitle=$('msgSheetTitle'), msgSheetPreview=$('msgSheetPreview');
+  var msgSheetBtns=$('msgSheetBtns'), msgSelectBox=$('msgSelectBox'), msgSelectText=$('msgSelectText');
+  var activeMsg=null;
+  function openMsgSheet(c, name, body, isPending){
+    var clean=String(body||'').replace(/^(?:\[(?:똘마니|GPT|똥구리|나나|개구기|PC)\]\s*)/,'').trim();
+    activeMsg={c:c, name:name, body:clean, isPending:isPending};
+    msgSheetTitle.textContent=name;
+    msgSheetPreview.textContent=clean.replace(/\s+/g,' ').slice(0,80);
+    msgSheetBtns.style.display='block';
+    msgSelectBox.style.display='none';
+    $('actDelete').style.display=(!isPending && !DEMO && token)?'block':'none';
+    msgSheet.classList.add('show');
+  }
+  function closeMsgSheet(){ msgSheet.classList.remove('show'); activeMsg=null; }
+  msgSheet.addEventListener('click',function(e){ if(e.target===msgSheet) closeMsgSheet(); });
+  $('actClose').addEventListener('click',closeMsgSheet);
+  $('actReply').addEventListener('click',function(){
+    if(!activeMsg) return;
+    var n=activeMsg.name, b=activeMsg.body;
+    closeMsgSheet();
+    setReply(n, b);
+  });
+  $('actCopyAll').addEventListener('click',function(){
+    if(!activeMsg) return;
+    var txt=activeMsg.body;
+    closeMsgSheet();
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(function(){ toast('복사했어요'); }).catch(function(){ toast('복사에 실패했어요'); });
+    } else { toast('이 브라우저는 자동 복사를 막고 있어요'); }
+  });
+  $('actSelectCopy').addEventListener('click',function(){
+    if(!activeMsg) return;
+    msgSheetBtns.style.display='none';
+    msgSelectBox.style.display='block';
+    msgSelectText.value=activeMsg.body;
+    msgSelectText.focus();
+  });
+  $('msgSelectBack').addEventListener('click',function(){
+    msgSelectBox.style.display='none';
+    msgSheetBtns.style.display='block';
+  });
+  $('msgSelectAllBtn').addEventListener('click',function(){
+    msgSelectText.select();
+    try{ document.execCommand('copy'); toast('전체 복사했어요'); }catch(_){}
+  });
+  $('actDelete').addEventListener('click',function(){
+    if(!activeMsg || activeMsg.isPending) return;
+    var cid=activeMsg.c.id;
+    if(!confirm('이 글을 삭제할까요?')) return;
+    closeMsgSheet();
+    api('/issues/comments/'+cid,{method:'DELETE'}).then(function(){
+      msgs.delete(cid); render(); toast('삭제했어요');
+    }).catch(function(e){
+      if(e && e.code===401) openToken('토큰을 다시 넣어 주세요.');
+      else toast('삭제 실패했어요.');
+    });
+  });
+
+  function attachLongPress(el, c, name, body, isPending){
+    var timer=null, sx=0, sy=0;
+    el.addEventListener('touchstart',function(e){
+      if(e.touches.length!==1) return;
+      sx=e.touches[0].clientX; sy=e.touches[0].clientY;
+      timer=setTimeout(function(){
+        timer=null;
+        if(navigator.vibrate) try{ navigator.vibrate(20); }catch(_){}
+        openMsgSheet(c, name, body, isPending);
+      },450);
+    },{passive:true});
+    el.addEventListener('touchmove',function(e){
+      if(!timer) return;
+      var dx=Math.abs(e.touches[0].clientX-sx), dy=Math.abs(e.touches[0].clientY-sy);
+      if(dx>10 || dy>10){ clearTimeout(timer); timer=null; }
+    },{passive:true});
+    el.addEventListener('touchend',function(){ if(timer){ clearTimeout(timer); timer=null; } });
+    el.addEventListener('touchcancel',function(){ if(timer){ clearTimeout(timer); timer=null; } });
+    el.addEventListener('contextmenu',function(e){
+      e.preventDefault();
+      openMsgSheet(c, name, body, isPending);
+    });
+  }
+
   var stagedFile=null, stagedUrl=null;
   var stageBar=$('stageBar'), stageImg=$('stageImg'), stageName=$('stageName'), stageClear=$('stageClear');
   function stageImage(file){
@@ -621,15 +752,18 @@
   function send(){
     if(!token) return;
     var v=text.value.trim();
+    var prefix=replyTarget?('> **'+replyTarget.name+'**: '+replyTarget.snippet+'\n\n'):'';
     if(stagedFile){
       var f=stagedFile;
       clearStaged();
+      clearReply();
       text.value=''; autosize();
-      uploadImage(f, v);
+      uploadImage(f, prefix+v);
       return;
     }
     if(!v) return;
-    var p={id:Date.now(),body:'[PC] '+v,created_at:new Date().toISOString()};
+    clearReply();
+    var p={id:Date.now(),body:'[PC] '+prefix+v,created_at:new Date().toISOString()};
     pending.set(p.id,p);
     text.value=''; autosize(); atBottom=true; render(); scrollBottom();
     api('/issues/'+ISSUE+'/comments',{method:'POST',body:{body:p.body}}).then(function(c){
