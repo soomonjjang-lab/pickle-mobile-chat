@@ -185,6 +185,7 @@
 
   <footer>
     <button class="fbtn" id="attachBtn" aria-label="사진 첨부">📎</button>
+    <button class="fbtn" id="clipBtn" aria-label="클립보드 붙여넣기">📋</button>
     <textarea id="text" rows="1" placeholder="메시지를 입력하세요" enterkeyhint="send"></textarea>
     <button class="fbtn" id="send" aria-label="전송">➤</button>
     <input type="file" id="file" accept="image/*" hidden>
@@ -592,7 +593,7 @@
   text.addEventListener('keydown',function(e){
     if(e.key==='Enter' && !e.shiftKey && !e.isComposing){ e.preventDefault(); send(); }
   });
-  text.addEventListener('paste',function(e){
+  function handlePasteEvent(e){
     var items=(e.clipboardData&&e.clipboardData.items)||[];
     for(var i=0;i<items.length;i++){
       if((items[i].type && items[i].type.indexOf('image/')===0) || items[i].kind==='file'){
@@ -604,6 +605,57 @@
           return;
         }
       }
+    }
+  }
+  text.addEventListener('paste',handlePasteEvent);
+  document.addEventListener('paste',handlePasteEvent);
+
+  var clipBtn=$('clipBtn');
+  clipBtn.addEventListener('click',function(){
+    if(!token){ openToken('먼저 토큰을 연결해 주세요.'); return; }
+    if(navigator.clipboard && navigator.clipboard.read){
+      navigator.clipboard.read().then(function(items){
+        for(var i=0;i<items.length;i++){
+          var types=items[i].types||[];
+          for(var j=0;j<types.length;j++){
+            if(types[j].indexOf('image/')===0){
+              var t=types[j];
+              return items[i].getType(t).then(function(blob){
+                var ext=t.split('/')[1]||'png';
+                uploadImage(new File([blob],'clip.'+ext,{type:t}));
+              });
+            }
+          }
+        }
+        if(navigator.clipboard.readText){
+          return navigator.clipboard.readText().then(function(s){
+            if(s){
+              var start=text.selectionStart||text.value.length, end=text.selectionEnd||text.value.length;
+              text.value=text.value.slice(0,start)+s+text.value.slice(end);
+              text.selectionStart=text.selectionEnd=start+s.length;
+              autosize(); text.focus();
+            } else {
+              toast('클립보드가 비어 있어요');
+            }
+          });
+        }
+      }).catch(function(){
+        if(navigator.clipboard && navigator.clipboard.readText){
+          navigator.clipboard.readText().then(function(s){
+            if(s){ text.value+=s; autosize(); text.focus(); }
+            else toast('클립보드 권한을 허용해 주세요');
+          }).catch(function(){ toast('입력칸을 길게 눌러 붙여넣거나 📎로 올려주세요'); });
+        } else {
+          toast('이 브라우저는 클립보드 읽기를 막고 있어요. 📎로 올려주세요');
+        }
+      });
+    } else if(navigator.clipboard && navigator.clipboard.readText){
+      navigator.clipboard.readText().then(function(s){
+        if(s){ text.value+=s; autosize(); text.focus(); }
+        else toast('클립보드가 비어 있어요');
+      }).catch(function(){ toast('입력칸을 길게 눌러 붙여넣어 주세요'); });
+    } else {
+      toast('입력칸을 길게 눌러 붙여넣어 주세요');
     }
   });
 
