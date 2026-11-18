@@ -1,5 +1,8 @@
-/* 똘마니 소통창 - service worker (앱 셸 캐시) */
-const CACHE = 'pickle-chat-v6';
+/* 똘마니 소통창 - service worker
+   - 문서(HTML)는 네트워크 우선(업데이트가 바로 반영), 오프라인이면 캐시
+   - 아이콘/manifest는 캐시 우선
+   - GitHub API(다른 origin)는 건드리지 않음 */
+const CACHE = 'pickle-chat-v7';
 const SHELL = [
   './',
   './index.html',
@@ -18,29 +21,47 @@ self.addEventListener('install', (e) => {
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k)))
-    ).then(() => self.clients.claim())
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
   );
 });
+
+function isDoc(req, url) {
+  if (req.mode === 'navigate') return true;
+  const p = url.pathname;
+  return p.endsWith('/') || p.endsWith('.html');
+}
 
 self.addEventListener('fetch', (e) => {
   const req = e.request;
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
-  // GitHub API는 항상 네트워크로 (토큰/최신 메시지)
   if (url.origin !== self.location.origin) return;
+
+  if (isDoc(req, url)) {
+    e.respondWith(
+      fetch(req)
+        .then((res) => {
+          const copy = res.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return res;
+        })
+        .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))
+    );
+    return;
+  }
 
   e.respondWith(
     caches.match(req).then((hit) => {
-      const net = fetch(req).then((res) => {
+      if (hit) return hit;
+      return fetch(req).then((res) => {
         if (res && res.ok) {
           const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy));
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
         }
         return res;
-      }).catch(() => hit || caches.match('./index.html'));
-      return hit || net;
+      });
     })
   );
 });
