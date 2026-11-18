@@ -2,7 +2,7 @@
    - 문서(HTML)는 네트워크 우선(업데이트가 바로 반영), 오프라인이면 캐시
    - 아이콘/manifest는 캐시 우선
    - GitHub API(다른 origin)는 건드리지 않음 */
-const CACHE = 'pickle-chat-v8';
+const CACHE = 'pickle-chat-v9';
 const SHELL = [
   './',
   './index.html',
