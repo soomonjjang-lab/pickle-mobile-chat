@@ -649,12 +649,20 @@ def render_service(s, lang):
     )
 
 
+# relative hrefs between the three pages, keyed (active page, target page)
+LANG_HREF = {
+    ("ko", "ko"): "./", ("ko", "en"): "en/", ("ko", "ja"): "ja/",
+    ("en", "ko"): "../", ("en", "en"): "./", ("en", "ja"): "../ja/",
+    ("ja", "ko"): "../", ("ja", "en"): "../en/", ("ja", "ja"): "./",
+}
+
+
 def render_langs(active):
     out = []
-    for code, path, label, hreflang in LANGS:
+    for code, _path, label, hreflang in LANGS:
         cur = ' aria-current="page"' if code == active else ""
         out.append('      <li><a href="%s" hreflang="%s" lang="%s"%s>%s</a></li>'
-                   % (path, hreflang, hreflang, cur, e(label)))
+                   % (LANG_HREF[(active, code)], hreflang, hreflang, cur, e(label)))
     return "\n".join(out)
 
 
