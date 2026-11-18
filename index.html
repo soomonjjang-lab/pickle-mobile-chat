@@ -74,9 +74,11 @@
     background:var(--bubble);border-radius:14px;padding:9px 12px;font-size:14.5px;
     box-shadow:0 1px 1px rgba(0,0,0,.06);word-break:break-word;overflow-wrap:anywhere;white-space:normal;
     border:1px solid rgba(0,0,0,.03);
+    -webkit-touch-callout:none;-webkit-user-select:none;user-select:none;
   }
+  .bubble *{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
   .row.me .bubble{background:var(--me);border-color:rgba(0,0,0,.05)}
-  .bubble img{border-radius:10px;max-width:100%;height:auto;display:block;margin:6px 0 2px;background:#fff}
+  .bubble img{border-radius:10px;max-width:100%;height:auto;display:block;margin:6px 0 2px;background:#fff;-webkit-user-drag:none}
   .bubble a{color:#0B57D0;text-decoration:underline;text-underline-offset:2px}
   .row.me .bubble a{color:#0a3d91}
   .bubble code{background:rgba(0,0,0,.06);padding:1px 4px;border-radius:4px;font-size:13px}
