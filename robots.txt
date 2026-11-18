@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://soomonjjang-lab.github.io/pickle-mobile-chat/travel-deals/sitemap.xml
