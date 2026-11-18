@@ -12,6 +12,14 @@ PC 소통창(`pickle_chat.pyw`)과 같은 방·같은 형식(`[PC]` 말머리)�
 | `sw.js` | 앱 셸 캐시 서비스워커 |
 | `icons/` | 앱 아이콘 (192 / 512 / maskable / apple-touch) |
 
+## 정적 페이지
+
+| 경로 | 설명 |
+| --- | --- |
+| `/ddudun-music/` | 뚜둔뮤직 앨범·가사 허브 (영문) |
+| `/global-finds/` | 글로벌 쇼핑 픽 8종 |
+| `/travel-deals/` | 여행딜 허브 — 한국어(기본)·`en/`·`ja/` 3개 언어, 파트너 10곳. `python3 travel-deals/build.py` 로 다시 생성 |
+
 ## 보안
 
 - GitHub 토큰은 **코드·URL·저장소에 없습니다.** 처음 화면에서 한 번 입력하면 브라우저
