@@ -6,7 +6,7 @@ Builds the three static language pages of the Travel Deals Hub:
     travel-deals/en/index.html   (English)
     travel-deals/ja/index.html   (Japanese)
 
-One source of truth for the 10 partner links (Travelpayouts, sub_id=nanahub).
+One source of truth for the 13 partner links (Travelpayouts, sub_id=nanahub).
 Run:  python3 travel-deals/build.py
 """
 import os
@@ -27,6 +27,10 @@ URLS = {
     "kiwitaxi":  "https://tp.media/r?campaign_id=1&marker=808164&p=647&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fkiwitaxi.com",
     "gettransfer": "https://tp.media/r?campaign_id=147&marker=808164&p=4439&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fgettransfer.com",
     "radicalstorage": "https://tp.media/r?campaign_id=209&marker=808164&p=5867&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fradicalstorage.com",
+    # 2026-11-19 newly activated Travelpayouts programs (short links, 302 verified)
+    "kiwi":      "https://kiwi.tpx.gr/XdqVyHlW?sub_id=nanahub",
+    "saily":     "https://saily.tpx.gr/Jgzg2FGA?sub_id=nanahub",
+    "gigsky":    "https://gigsky.tpx.gr/oBferp8i?sub_id=nanahub",
 }
 
 CATEGORIES = [
@@ -369,6 +373,105 @@ SERVICES = [
             "cta": "荷物預かりを探す",
         },
     },
+    {
+        "id": "kiwi", "cat": "flights", "name": "Kiwi.com",
+        "ko": {
+            "purpose": "여러 항공사의 표를 조합해 한 번에 예약하는 항공권 검색·판매 사이트입니다.",
+            "points": [
+                "서로 다른 항공사를 이어 붙인 '셀프 환승' 일정을 만들어, 직항이나 정식 연결편보다 싼 값을 찾습니다.",
+                "저가 항공사를 섞을 수 있어 유럽 안 단거리 여행에서 값이 크게 낮아지는 경우가 있습니다.",
+                "연결편 보호는 따로 사는 상품이라, 그냥 예약하면 환승이 어긋났을 때의 책임이 항공사가 아니라 본인에게 있습니다.",
+            ],
+            "check": "환승이 셀프 환승인지, 수하물을 다시 찾아 부쳐야 하는지 확인하세요. 환승 시간이 짧으면 위탁 수하물이 아예 안 팔리기도 하고, 앞 편이 지연되면 다음 편은 본인 부담입니다. 연결 보호(Connection Protection)는 예약할 때 함께 사야 합니다.",
+            "cta": "항공권 조합 검색",
+        },
+        "en": {
+            "purpose": "Searches and sells itineraries that stitch several airlines into one trip.",
+            "points": [
+                "Builds 'self-transfer' itineraries out of separate airlines, which often costs less than a direct flight or an official connection.",
+                "Mixing low-cost carriers in makes short-haul trips, especially within Europe, noticeably cheaper.",
+                "Connection protection is an add-on: without it, a missed connection is yours to solve, not the airline's.",
+            ],
+            "check": "Check whether the connection is a self-transfer and whether you have to collect and re-check your bags. On tight connections checked bags may not be offered at all, and if an earlier flight is late the next leg is your cost. Add connection protection at booking if you want cover.",
+            "cta": "Search combined flights",
+        },
+        "ja": {
+            "purpose": "複数の航空会社の航空券を組み合わせて一度に予約する検索・販売サイトです。",
+            "points": [
+                "別々の航空会社をつなぐ「セルフ乗り継ぎ」の旅程を組み、直行便や正規の乗り継ぎより安い運賃を探します。",
+                "LCCを混ぜられるため、欧州内の短距離では安くなる場合があります。",
+                "乗り継ぎ保護は別売りの商品で、付けずに予約すると乗り継ぎが崩れたときの責任は航空会社ではなく利用者にあります。",
+            ],
+            "check": "セルフ乗り継ぎかどうか、荷物を一度受け取って積み直す必要があるかを確認してください。乗り継ぎ時間が短いと受託手荷物自体が買えないことがあり、前の便が遅れると次の便は自己負担です。乗り継ぎ保護は予約時に一緒に購入する必要があります。",
+            "cta": "組み合わせ航空券を検索",
+        },
+    },
+    {
+        "id": "saily", "cat": "esim", "name": "Saily",
+        "ko": {
+            "purpose": "NordVPN을 만든 Nord Security의 여행용 eSIM으로, 앱에서 데이터 요금제를 사서 설치합니다.",
+            "points": [
+                "200개 넘는 국가·지역에 단일 국가·지역·글로벌 요금제가 있습니다.",
+                "앱에서 바로 설치하고, 현지에 도착해 요금제를 켠 때부터 기간이 시작됩니다.",
+                "통화가 필요하면 미국(+1) 번호를 월 추가 요금으로 붙일 수 있습니다.",
+            ],
+            "check": "기기가 eSIM을 지원하고 통신사 잠금이 풀려 있어야 합니다. 요금제마다 데이터 양과 기간이 다릅니다. 설치는 출발 전에 해 두어도 되지만, 켜기 전까지는 기간이 흐르지 않으니 현지 도착 후에 켜세요.",
+            "cta": "Saily 요금제 보기",
+        },
+        "en": {
+            "purpose": "A travel eSIM from Nord Security, the company behind NordVPN; you buy and install the plan in the app.",
+            "points": [
+                "Country, regional and global plans across 200+ destinations.",
+                "Install from the app, then switch the plan on after landing — the validity starts when you activate it.",
+                "If you need a number for calls, a US (+1) line is an optional monthly add-on.",
+            ],
+            "check": "Your phone must support eSIM and be carrier-unlocked. Data amount and validity differ per plan; installing early is fine, because the clock starts only when you turn it on at your destination.",
+            "cta": "See Saily plans",
+        },
+        "ja": {
+            "purpose": "NordVPNを作ったNord Securityの旅行用eSIM。アプリでデータプランを購入して設定します。",
+            "points": [
+                "200以上の国・地域で、単一国・地域・グローバルのプランがあります。",
+                "アプリからそのまま設定でき、現地でプランをオンにした時点から有効期間が始まります。",
+                "通話が必要なら米国(+1)番号を月額の追加オプションで付けられます。",
+            ],
+            "check": "端末がeSIMに対応し、SIMロックが解除されている必要があります。プランごとにデータ量と期間が異なります。設定は出発前に済ませても、目的地でオンにするまで期間は進みません。",
+            "cta": "Sailyのプランを見る",
+        },
+    },
+    {
+        "id": "gigsky", "cat": "esim", "name": "GigSky",
+        "ko": {
+            "purpose": "땅 위는 물론 배 위·비행기 안까지 잡는 여행용 eSIM입니다.",
+            "points": [
+                "국가·지역 플랜 외에 크루즈 선박, 항공기, 해상 근무용 플랜을 따로 팝니다.",
+                "크루즈 플랜은 배가 육지에서 약 22km 떨어져 선내 통신망에 붙을 때부터 작동합니다.",
+                "기내 플랜은 지원 항공사에서 고도 2만 피트 위로 올라가면 켜집니다.",
+            ],
+            "check": "크루즈·기내 플랜은 모든 배와 항공사에서 되지 않으니 지원 목록을 먼저 확인하세요. 배 안에서는 선내 와이파이를 꺼야 eSIM 데이터가 쓰입니다. 기기가 eSIM을 지원하고 잠금이 풀려 있어야 합니다.",
+            "cta": "GigSky 요금제 보기",
+        },
+        "en": {
+            "purpose": "A travel eSIM that also covers cruise ships and in-flight data, not only land networks.",
+            "points": [
+                "Alongside country and regional plans, it sells separate cruise, inflight and offshore plans.",
+                "A cruise plan starts once the ship is about 14 miles (22 km) offshore and connects to the maritime network.",
+                "An inflight plan switches on above 20,000 feet on participating airlines.",
+            ],
+            "check": "Cruise and inflight plans work only on supported ships and airlines, so check those lists first. At sea, turn the ship's Wi-Fi off or the eSIM data is not used. The phone must support eSIM and be carrier-unlocked.",
+            "cta": "See GigSky plans",
+        },
+        "ja": {
+            "purpose": "陸上だけでなく船内・機内でも使える旅行用eSIMです。",
+            "points": [
+                "国・地域プランに加えて、クルーズ船・機内・洋上向けのプランを別に販売しています。",
+                "クルーズプランは船が陸から約22km離れ、船内通信網につながった時点から作動します。",
+                "機内プランは対応航空会社で高度2万フィートを超えるとオンになります。",
+            ],
+            "check": "クルーズ・機内プランはすべての船と航空会社で使えるわけではないので、対応リストを先に確認してください。船内では船のWi-Fiを切らないとeSIMのデータは使われません。端末がeSIMに対応し、SIMロックが解除されている必要があります。",
+            "cta": "GigSkyのプランを見る",
+        },
+    },
 ]
 
 # ---------------------------------------------------------------- copy
@@ -376,15 +479,15 @@ COPY = {
     "ko": {
         "html_lang": "ko",
         "og_locale": "ko_KR",
-        "title": "여행딜 허브 — 항공권·eSIM·공항 픽업·투어 패스·짐 보관 10곳",
-        "desc": "여행 준비에 실제로 여는 서비스 10곳을 한 페이지에. Aviasales 항공권 검색, Airalo·Yesim eSIM, Kiwitaxi·GetTransfer 공항 픽업, Klook·KKday·Tiqets·Go City 투어·패스, Radical Storage 짐 보관. 가격 대신 결제 전에 확인할 것을 적었습니다.",
+        "title": "여행딜 허브 — 항공권·eSIM·공항 픽업·투어 패스·짐 보관 13곳",
+        "desc": "여행 준비에 실제로 여는 서비스 13곳을 한 페이지에. Aviasales·Kiwi.com 항공권 검색, Airalo·Yesim·Saily·GigSky eSIM, Kiwitaxi·GetTransfer 공항 픽업, Klook·KKday·Tiqets·Go City 투어·패스, Radical Storage 짐 보관. 가격 대신 결제 전에 확인할 것을 적었습니다.",
         "skip": "본문으로 건너뛰기",
         "disc": "이 페이지의 링크는 제휴 링크입니다. 링크를 통해 예약이 이루어지면 파트너사에서 수수료를 받을 수 있으며, 결제 금액은 달라지지 않습니다.",
         "kicker": "TRAVEL DEALS · 2026",
-        "h1": "항공권부터 eSIM, 공항 픽업까지 — 여행 준비에 쓰는 링크 10개",
+        "h1": "항공권부터 eSIM, 공항 픽업까지 — 여행 준비에 쓰는 링크 13개",
         "lede": "여행을 준비할 때 실제로 여는 사이트를 한 페이지에 모았습니다. 항공권 검색, eSIM, 공항 이동, 투어와 패스, 짐 보관. 각 서비스가 무엇에 맞는지, 결제 전에 무엇을 확인해야 하는지만 적었습니다. 가격은 적지 않습니다 — 검색하는 순간의 값이 정답이기 때문입니다.",
         "meta_updated": "2026년 11월 19일 갱신",
-        "meta_count": "파트너 10곳",
+        "meta_count": "파트너 13곳",
         "meta_cats": "5개 카테고리",
         "lang_label": "언어",
         "nav_label": "카테고리",
@@ -408,7 +511,7 @@ COPY = {
         "notes": [
             ("가격을 적지 않은 이유", "항공권과 투어 요금은 매일 바뀝니다. 페이지에 적어 둔 숫자는 다음 날 틀린 정보가 됩니다. 링크를 눌러 그 순간의 가격을 보세요."),
             ("링크가 여는 곳", "모든 링크는 해당 서비스의 사이트로 열립니다. 이 페이지는 예약을 대신하지 않고, 결제·취소·환불은 각 서비스에서 이루어집니다."),
-            ("어떻게 골랐나", "2026년 11월 기준, 여행 준비에서 실제로 쓰는 서비스 10곳을 카테고리별로 정리했습니다. 카드에 적은 것은 그 서비스가 하는 일과, 결제 전에 확인할 항목입니다."),
+            ("어떻게 골랐나", "2026년 11월 기준, 여행 준비에서 실제로 쓰는 서비스 13곳을 카테고리별로 정리했습니다. 카드에 적은 것은 그 서비스가 하는 일과, 결제 전에 확인할 항목입니다."),
         ],
         "footer": "© 2026 Travel Deals · 정적 페이지입니다. 이 페이지 자체에는 계정도 추적 스크립트도 없습니다. 서비스 이름과 설명은 2026년 11월 각 사 공개 페이지를 참고해 정리했고, 각 사의 조건과 요금은 바뀔 수 있습니다.",
     },
@@ -416,14 +519,14 @@ COPY = {
         "html_lang": "en",
         "og_locale": "en_US",
         "title": "Travel Deals Hub — flights, eSIM, airport transfers, city passes & luggage storage",
-        "desc": "Ten services worth opening before a trip, on one page: Aviasales flight search, Airalo and Yesim eSIMs, Kiwitaxi and GetTransfer airport pickups, Klook, KKday, Tiqets and Go City tours and passes, Radical Storage luggage storage.",
+        "desc": "Thirteen services worth opening before a trip, on one page: Aviasales and Kiwi.com flight search, Airalo, Yesim, Saily and GigSky eSIMs, Kiwitaxi and GetTransfer airport pickups, Klook, KKday, Tiqets and Go City tours and passes, Radical Storage luggage storage.",
         "skip": "Skip to the list",
         "disc": "Links on this page are affiliate links. If you book through one, we may earn a commission from the partner; the price you pay does not change.",
         "kicker": "TRAVEL DEALS · 2026",
-        "h1": "Flights, eSIM, airport pickups — ten links that do the work before a trip",
+        "h1": "Flights, eSIM, airport pickups — thirteen links that do the work before a trip",
         "lede": "The sites we actually open when planning a trip, in one page: flight search, travel eSIM data, airport transfers, tours and city passes, luggage storage. For each one, what it is for and what to check before you pay. No prices — the number that matters is the one you see when you search.",
         "meta_updated": "Updated 19 November 2026",
-        "meta_count": "10 partners",
+        "meta_count": "13 partners",
         "meta_cats": "5 categories",
         "lang_label": "Language",
         "nav_label": "Categories",
@@ -447,19 +550,19 @@ COPY = {
         "notes": [
             ("Why there are no prices", "Flight and tour prices move daily, and a number printed on a page is wrong by tomorrow. Press the link and see the price at that moment."),
             ("Where each link goes", "Every link opens the service's own site. This page does not book anything; payment, cancellation and refunds happen with the service."),
-            ("How the list was chosen", "Ten services actually used to plan a trip, sorted into five categories, as of November 2026. Each card says what the service does and what to check before paying."),
+            ("How the list was chosen", "Thirteen services actually used to plan a trip, sorted into five categories, as of November 2026. Each card says what the service does and what to check before paying."),
         ],
         "footer": "© 2026 Travel Deals · A static page. No accounts and no tracking scripts on this page itself. Service names and descriptions follow each company's public pages in November 2026; their terms and prices can change.",
     },
     "ja": {
         "html_lang": "ja",
         "og_locale": "ja_JP",
-        "title": "旅行ディールハブ — 航空券・eSIM・空港送迎・観光パス・荷物預かりの10サイト",
-        "desc": "旅の準備で実際に開く10のサービスを1ページに。Aviasalesの航空券検索、Airalo・YesimのeSIM、Kiwitaxi・GetTransferの空港送迎、Klook・KKday・Tiqets・Go Cityのツアーとパス、Radical Storageの荷物預かり。価格の代わりに、支払う前に確認することを書いています。",
+        "title": "旅行ディールハブ — 航空券・eSIM・空港送迎・観光パス・荷物預かりの13サイト",
+        "desc": "旅の準備で実際に開く13のサービスを1ページに。Aviasales・Kiwi.comの航空券検索、Airalo・Yesim・Saily・GigSkyのeSIM、Kiwitaxi・GetTransferの空港送迎、Klook・KKday・Tiqets・Go Cityのツアーとパス、Radical Storageの荷物預かり。価格の代わりに、支払う前に確認することを書いています。",
         "skip": "一覧へ進む",
         "disc": "このページのリンクはアフィリエイトリンクです。リンク経由で予約が成立すると提携先から報酬を受け取ることがありますが、お支払い金額は変わりません。",
         "kicker": "TRAVEL DEALS · 2026",
-        "h1": "航空券からeSIM、空港送迎まで — 旅の準備で開く10のリンク",
+        "h1": "航空券からeSIM、空港送迎まで — 旅の準備で開く13のリンク",
         "lede": "旅の準備で実際に開くサイトを1ページにまとめました。航空券検索、eSIM、空港送迎、ツアーとパス、荷物預かり。それぞれ何に向いているか、支払う前に何を確認するかだけを書いています。価格は載せていません — 検索したその瞬間の金額が正しいからです。",
         "meta_updated": "2026年11月19日更新",
         "meta_count": "提携先10社",
@@ -486,7 +589,7 @@ COPY = {
         "notes": [
             ("価格を載せない理由", "航空券やツアーの料金は毎日動きます。ページに書いた数字は翌日には間違いになります。リンクを開いて、その時点の金額を見てください。"),
             ("リンクの行き先", "すべてのリンクは各サービスのサイトへ直接開きます。このページは予約を行わず、支払い・キャンセル・返金は各サービスで行われます。"),
-            ("選び方", "2026年11月時点で、旅の準備に実際に使う10のサービスをカテゴリ別に整理しました。カードに書いたのは、そのサービスが何をするかと、支払う前に確認する項目です。"),
+            ("選び方", "2026年11月時点で、旅の準備に実際に使う13のサービスをカテゴリ別に整理しました。カードに書いたのは、そのサービスが何をするかと、支払う前に確認する項目です。"),
         ],
         "footer": "© 2026 Travel Deals · 静的ページです。このページ自体にアカウントも計測スクリプトもありません。サービス名と説明は2026年11月時点の各社公開ページに基づき、各社の条件と料金は変わりえます。",
     },
@@ -733,14 +836,14 @@ def render_jsonld(lang):
   "description": "%s",
   "mainEntity": {
     "@type": "ItemList",
-    "numberOfItems": 10,
+    "numberOfItems": %d,
     "itemListOrder": "https://schema.org/ItemListOrderAscending",
     "itemListElement": [
 %s
     ]
   }
 }""" % (json_escape(COPY[lang]["title"]), page_url(lang), COPY[lang]["html_lang"],
-         json_escape(COPY[lang]["desc"]), ",\n".join(items))
+         json_escape(COPY[lang]["desc"]), len(SERVICES), ",\n".join(items))
 
 
 def json_escape(s):
