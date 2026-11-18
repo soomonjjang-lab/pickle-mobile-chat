@@ -183,6 +183,12 @@
 
   <button id="jump">↓ 새 메시지</button>
 
+  <div id="stageBar" style="display:none;align-items:center;gap:10px;padding:8px 12px;background:#f8f9fa;border-top:1px solid #e0e0e0;">
+    <img id="stageImg" style="width:44px;height:44px;object-fit:cover;border-radius:8px;border:1px solid #dadce0;">
+    <span id="stageName" style="flex:1;font-size:12px;color:#3c4043;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">사진 준비됨 · 전송 버튼을 누르세요</span>
+    <button type="button" id="stageClear" style="border:0;background:#e0e0e0;color:#3c4043;border-radius:50%;width:24px;height:24px;font-size:13px;cursor:pointer;">✕</button>
+  </div>
+
   <footer>
     <button class="fbtn" id="attachBtn" aria-label="사진 첨부">📎</button>
     <button class="fbtn" id="clipBtn" aria-label="클립보드 붙여넣기">📋</button>
@@ -593,9 +599,36 @@
   }
   text.addEventListener('input',autosize);
 
+  var stagedFile=null, stagedUrl=null;
+  var stageBar=$('stageBar'), stageImg=$('stageImg'), stageName=$('stageName'), stageClear=$('stageClear');
+  function stageImage(file){
+    if(stagedUrl) URL.revokeObjectURL(stagedUrl);
+    stagedFile=file;
+    stagedUrl=URL.createObjectURL(file);
+    stageImg.src=stagedUrl;
+    stageName.textContent='사진 준비됨 · 전송(➤) 누르면 올라가요';
+    stageBar.style.display='flex';
+    text.focus();
+  }
+  function clearStaged(){
+    stagedFile=null;
+    if(stagedUrl){ URL.revokeObjectURL(stagedUrl); stagedUrl=null; }
+    stageBar.style.display='none';
+    stageImg.removeAttribute('src');
+  }
+  stageClear.addEventListener('click',clearStaged);
+
   function send(){
+    if(!token) return;
     var v=text.value.trim();
-    if(!v || !token) return;
+    if(stagedFile){
+      var f=stagedFile;
+      clearStaged();
+      text.value=''; autosize();
+      uploadImage(f, v);
+      return;
+    }
+    if(!v) return;
     var p={id:Date.now(),body:'[PC] '+v,created_at:new Date().toISOString()};
     pending.set(p.id,p);
     text.value=''; autosize(); atBottom=true; render(); scrollBottom();
@@ -624,7 +657,7 @@
         if(f){
           e.preventDefault();
           if(!token){ openToken('먼저 토큰을 연결해 주세요.'); return; }
-          uploadImage(f);
+          stageImage(f);
           return;
         }
       }
@@ -645,7 +678,7 @@
               var t=types[j];
               return items[i].getType(t).then(function(blob){
                 var ext=t.split('/')[1]||'png';
-                uploadImage(new File([blob],'clip.'+ext,{type:t}));
+                stageImage(new File([blob],'clip.'+ext,{type:t}));
               });
             }
           }
@@ -691,7 +724,7 @@
   fileInput.addEventListener('change',function(){
     var f=fileInput.files&&fileInput.files[0];
     fileInput.value='';
-    if(f) uploadImage(f);
+    if(f) stageImage(f);
   });
 
   function compress(file){
@@ -723,9 +756,10 @@
 
   function pad(n){ return (n<10?'0':'')+n; }
 
-  function uploadImage(file){
+  function uploadImage(file, caption){
     toast('사진 올리는 중…');
     attachBtn.disabled=true;
+    sendBtn.disabled=true;
     compress(file).then(function(res){
       return res.blob.arrayBuffer().then(function(buf){
         if(buf.byteLength>8*1024*1024) throw new Error('큰 파일');
@@ -743,7 +777,8 @@
         }).then(function(){ return path; });
       });
     }).then(function(path){
-      return api('/issues/'+ISSUE+'/comments',{method:'POST',body:{body:'[PC] 📎 사진 첨부: '+path}}).then(function(c){
+      var msg='[PC] 📎 사진 첨부: '+path+(caption?('\n'+caption):'');
+      return api('/issues/'+ISSUE+'/comments',{method:'POST',body:{body:msg}}).then(function(c){
         msgs.set(c.id,c); if(!lastSync||c.updated_at>lastSync) lastSync=c.updated_at;
         atBottom=true; render(); scrollBottom();
         toast('사진 보냈어요');
@@ -754,6 +789,7 @@
       else { toast('사진 전송 실패… 다시 시도해 주세요'); }
     }).then(function(){
       attachBtn.disabled=false;
+      sendBtn.disabled=false;
     });
   }
 
