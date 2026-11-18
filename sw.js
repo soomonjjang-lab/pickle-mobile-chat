@@ -2,10 +2,8 @@
    - 문서(HTML)는 네트워크 우선(업데이트가 바로 반영), 오프라인이면 캐시
    - 아이콘/manifest는 캐시 우선
    - GitHub API(다른 origin)는 건드리지 않음 */
-const CACHE = 'pickle-chat-v12';
+const CACHE = 'pickle-chat-v13';
 const SHELL = [
-  './',
-  './index.html',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -41,7 +39,7 @@ self.addEventListener('fetch', (e) => {
 
   if (isDoc(req, url)) {
     e.respondWith(
-      fetch(req)
+      fetch(req, { cache: 'no-store' })
         .then((res) => {
           const copy = res.clone();
           caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
