@@ -595,7 +595,7 @@
   text.addEventListener('paste',function(e){
     var items=(e.clipboardData&&e.clipboardData.items)||[];
     for(var i=0;i<items.length;i++){
-      if(items[i].type && items[i].type.indexOf('image/')===0){
+      if((items[i].type && items[i].type.indexOf('image/')===0) || items[i].kind==='file'){
         var f=items[i].getAsFile();
         if(f){
           e.preventDefault();
