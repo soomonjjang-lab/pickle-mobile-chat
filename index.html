@@ -309,6 +309,7 @@
         throw {code:403};
       }
       if(!r.ok) return r.text().then(function(t){ throw {code:r.status,msg:t}; });
+      if(r.status===204) return null;
       return r.json();
     });
   }
@@ -544,6 +545,28 @@
     var t=document.createElement('div');
     t.className='time';
     t.textContent=fmtTime(c.created_at)+(isPending?' · 전송 중':'');
+    if(!isPending && !DEMO && token){
+      var sep=document.createTextNode(' · ');
+      var del=document.createElement('button');
+      del.type='button';
+      del.textContent='삭제';
+      del.style.cssText='border:0;background:none;padding:0 2px;font-size:11px;color:#9aa0a6;cursor:pointer;text-decoration:underline;';
+      del.addEventListener('click',function(){
+        if(!confirm('이 글을 삭제할까요?')) return;
+        del.disabled=true; del.textContent='삭제 중…';
+        api('/issues/comments/'+c.id,{method:'DELETE'}).then(function(){
+          msgs.delete(c.id);
+          render();
+          toast('삭제했어요');
+        }).catch(function(e){
+          del.disabled=false; del.textContent='삭제';
+          if(e && e.code===401) openToken('토큰을 다시 넣어 주세요.');
+          else toast('삭제 실패했어요.');
+        });
+      });
+      t.appendChild(sep);
+      t.appendChild(del);
+    }
     stack.appendChild(t);
 
     row.appendChild(a); row.appendChild(stack);
