@@ -175,7 +175,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v15</small></h1>
+    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v16</small></h1>
     <div id="status"><i id="dot"></i><span id="statusText">연결 대기</span></div>
     <div class="hbtns">
       <button class="ibtn" id="refreshBtn" aria-label="새로고침"><span>⟳</span></button>
@@ -291,7 +291,7 @@
   var lastSync=null, fullCounter=0, polling=false, timer=null;
   var imgCache=new Map();
   var pending=new Map();
-  var atBottom=true, lastRenderedCount=0;
+  var atBottom=true, lastRenderedCount=0, renderLimit=50;
   var installEvt=null;
 
   var $=function(id){return document.getElementById(id)};
@@ -540,7 +540,19 @@
       else if(b.indexOf('[GPT]')===0) seenAt.gpt=c.created_at;
     });
     var lastDay='';
-    arr.forEach(function(c){
+    var visible = arr.length > renderLimit ? arr.slice(-renderLimit) : arr;
+    if(arr.length > renderLimit){
+      var ob=document.createElement('div');
+      ob.style.cssText='text-align:center;margin:6px 0 10px;';
+      var btn=document.createElement('button');
+      btn.type='button';
+      btn.textContent='▲ 이전 대화 50개 더 보기 ('+(arr.length-visible.length)+'개 남음)';
+      btn.style.cssText='border:0;background:#d6e0eb;color:#334155;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px;cursor:pointer;';
+      btn.onclick=function(){ renderLimit+=50; render(); };
+      ob.appendChild(btn);
+      list.appendChild(ob);
+    }
+    visible.forEach(function(c){
       var body=String(c.body||'');
       var sp=null;
       for(var i=0;i<SPEAKERS.length;i++){
