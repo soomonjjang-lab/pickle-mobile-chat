@@ -6,7 +6,7 @@ Builds the three static language pages of the Travel Deals Hub:
     travel-deals/en/index.html   (English)
     travel-deals/ja/index.html   (Japanese)
 
-One source of truth for the 13 partner links (Travelpayouts, sub_id=nanahub).
+One source of truth for the 18 partner links (Travelpayouts, sub_id=nanahub).
 Run:  python3 travel-deals/build.py
 """
 import os
@@ -31,12 +31,19 @@ URLS = {
     "kiwi":      "https://kiwi.tpx.gr/XdqVyHlW?sub_id=nanahub",
     "saily":     "https://saily.tpx.gr/Jgzg2FGA?sub_id=nanahub",
     "gigsky":    "https://gigsky.tpx.gr/oBferp8i?sub_id=nanahub",
+    # 2026-11-19 second batch (tp.media direct 302 URLs, campaign_id/p from 똥구리)
+    "welcomepickups": "https://tp.media/r?campaign_id=627&marker=808164&p=8919&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fwelcomepickups.com",
+    "wegotrip":  "https://tp.media/r?campaign_id=150&marker=808164&p=4487&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fwegotrip.com",
+    "qeeq":      "https://tp.media/r?campaign_id=172&marker=808164&p=4845&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fqeeq.com",
+    "autoeurope": "https://tp.media/r?campaign_id=143&marker=808164&p=4354&sub_id=nanahub&trs=603335&u=https%3A%2F%2Fautoeurope.eu",
+    "localrent": "https://tp.media/r?campaign_id=87&marker=808164&p=2043&sub_id=nanahub&trs=603335&u=https%3A%2F%2Flocalrent.com%2Fen",
 }
 
 CATEGORIES = [
     {"key": "flights", "glyph": "✈️"},
     {"key": "esim", "glyph": "📶"},
     {"key": "transfer", "glyph": "🚐"},
+    {"key": "carrental", "glyph": "🚗"},
     {"key": "tours", "glyph": "🎟️"},
     {"key": "luggage", "glyph": "🧳"},
 ]
@@ -209,6 +216,39 @@ SERVICES = [
         },
     },
     {
+        "id": "welcomepickups", "cat": "transfer", "name": "Welcome Pickups",
+        "ko": {
+            "purpose": "예약한 기사가 도착 게이트에서 이름 팻말을 들고 기다리는 공항 픽업 서비스입니다.",
+            "points": [
+                "예약할 때 정한 요금이 그대로 청구되고, 기사가 명패를 들고 나와 차까지 안내합니다.",
+                "374개 도시에서 영어가 되는 기사를 직접 심사해 배정하고, 항공편 지연은 편명으로 확인합니다.",
+                "공항 픽업 말고도 시내 이동, 기사와 함께 반나절 도는 관광 라이드도 같은 앱에서 예약합니다.",
+            ],
+            "check": "요금에 통행료·주차비가 포함인지, 무료 대기 시간이 몇 분인지, 취소 마감 시각을 확인하세요. 인원과 짐에 맞는 차종(세단·밴)을 고르고, 유아 카시트가 필요하면 예약할 때 요청해야 합니다.",
+            "cta": "공항 픽업 예약",
+        },
+        "en": {
+            "purpose": "An airport pickup where the driver you booked waits at arrivals with a name sign.",
+            "points": [
+                "The fare is fixed when you book; the driver meets you with a name board and walks you to the car.",
+                "Handpicked, English-speaking drivers in 374 destinations, and your flight number is tracked so a delay does not cost you the ride.",
+                "The same app books in-city rides and sightseeing rides with a driver for part of a day.",
+            ],
+            "check": "Check whether tolls and parking sit inside the fare, how long the free waiting time is, and the cancellation deadline. Pick the vehicle size for your group and bags, and ask for a child seat when booking if you need one.",
+            "cta": "Book airport pickup",
+        },
+        "ja": {
+            "purpose": "予約したドライバーが到着ゲートで名前のボードを持って待つ空港送迎です。",
+            "points": [
+                "予約時に決めた料金がそのまま請求され、ドライバーが名前のボードを持って車まで案内します。",
+                "374都市で英語対応のドライバーを直接選考して手配し、フライトの遅延は便名で確認しています。",
+                "市内の移動や、ドライバーと半日回る観光ライドも同じアプリで予約できます。",
+            ],
+            "check": "料金に通行料・駐車場代が含まれるか、無料の待ち時間が何分か、キャンセルの締め切りを確認してください。人数と荷物に合う車種(セダン・バン)を選び、チャイルドシートが必要なら予約時に依頼します。",
+            "cta": "空港送迎を予約",
+        },
+    },
+    {
         "id": "klook", "cat": "tours", "name": "Klook",
         "ko": {
             "purpose": "도시별 투어, 입장권, 교통 패스를 한 앱에서 예약합니다.",
@@ -338,6 +378,138 @@ SERVICES = [
             ],
             "check": "行きたい施設がその都市のパスに入っているか、予約が必要な施設かを先に確認してください。有効期間がいつから数えられるかもパスによって違います。",
             "cta": "シティパスを見る",
+        },
+    },
+    {
+        "id": "wegotrip", "cat": "tours", "name": "WeGoTrip",
+        "ko": {
+            "purpose": "명소 입장권에 오디오 가이드를 붙여, 정해진 시간 없이 자기 속도로 도는 투어입니다.",
+            "points": [
+                "가이드를 따라다니는 대신 앱이나 링크로 들으며 움직여서, 시작과 일시정지, 재개를 원하는 대로 합니다.",
+                "입장권이 포함된 상품과 오디오만 있는 상품이 섞여 있으니, 고른 상품의 포함 항목을 봐야 합니다.",
+                "투어를 미리 내려받으면 현지 데이터 없이도 들을 수 있습니다.",
+            ],
+            "check": "오디오 언어와 입장권 포함 여부, 유효기간(날짜 지정 여부)을 확인하세요. 이어폰과 보조배터리를 챙기고, 박물관별 개장시간과 휴관일은 예약 전에 한 번 더 봅니다.",
+            "cta": "오디오 투어 보기",
+        },
+        "en": {
+            "purpose": "An entry ticket with an audio guide attached, walked at your own pace instead of on a fixed schedule.",
+            "points": [
+                "No guide to keep up with: you listen in the app or from a link, starting, pausing and resuming as you like.",
+                "Some products include the admission ticket and some are the audio alone, so read what the specific tour includes.",
+                "Download the tour before you go and it plays without local data.",
+            ],
+            "check": "Check the audio language, whether admission is included, and the validity (a fixed date or not). Bring earphones and a power bank, and re-check each museum's opening hours and closing day before booking.",
+            "cta": "See audio tours",
+        },
+        "ja": {
+            "purpose": "入場券に音声ガイドが付き、決まった時間ではなく自分のペースで回るツアーです。",
+            "points": [
+                "ガイドに付いていく代わりにアプリやリンクで聞きながら動くので、開始・一時停止・再開を自由にします。",
+                "入場券込みの商品と音声だけの商品が混ざっているので、選んだ商品の含まれる内容を確認します。",
+                "事前にダウンロードしておけば、現地のデータ通信なしでも聞けます。",
+            ],
+            "check": "音声の言語、入場券の有無、有効期限(日付指定かどうか)を確認してください。イヤホンとモバイルバッテリーを用意し、施設の開館時間と休館日は予約前にもう一度見ます。",
+            "cta": "音声ツアーを見る",
+        },
+    },
+    {
+        "id": "qeeq", "cat": "carrental", "name": "QEEQ",
+        "ko": {
+            "purpose": "여러 렌터카 회사의 같은 기간 요금을 한 화면에서 비교해 예약하는 사이트입니다.",
+            "points": [
+                "공항 카운터와 시내 지점의 차를 함께 보여 주고, 보험 옵션까지 고른 뒤의 총액을 비교하게 합니다.",
+                "국제 브랜드와 현지 업체가 섞여 있어, 같은 차종이라도 보증금·연식·반납 조건이 다릅니다.",
+                "무료 취소 표시는 상품마다 다르니 결제 화면에 들어가기 전에 한 번 더 확인해야 합니다.",
+            ],
+            "check": "표시 요금이 보험(자기부담금 포함)까지인지, 주행거리 무제한인지, 연료 정책과 반납 시간을 확인하세요. 국제운전면허증과 보증금용 신용카드가 필요한지, 차가 건널 수 있는 국경도 미리 봅니다.",
+            "cta": "렌터카 요금 비교",
+        },
+        "en": {
+            "purpose": "A booking site that puts the same dates at many rental companies on one screen.",
+            "points": [
+                "Airport counters and city offices appear together, and the total after insurance options is what you compare.",
+                "International brands and local operators sit side by side, so the deposit, the car's age and the return terms differ for the same class.",
+                "A free-cancellation label varies by product, so read it again before the payment screen.",
+            ],
+            "check": "Check whether the shown rate includes insurance and the excess, whether mileage is unlimited, the fuel policy and the return time. Look up whether an international driving permit and a credit card for the deposit are needed, and which borders the car may cross.",
+            "cta": "Compare car rental rates",
+        },
+        "ja": {
+            "purpose": "同じ日程で複数のレンタカー会社の料金を1画面で比べて予約するサイトです。",
+            "points": [
+                "空港カウンターと市内営業所の車を一緒に表示し、保険オプションまで選んだ後の総額で比べます。",
+                "国際ブランドと現地業者が混在しているので、同じ車種でもデポジット・年式・返却条件が違います。",
+                "無料キャンセルの表示は商品ごとに違うため、支払い画面の前にもう一度確認します。",
+            ],
+            "check": "表示料金に保険(自己負担額を含む)が含まれるか、走行距離無制限か、燃料ポリシーと返却時間を確認してください。国際運転免許証とデポジット用クレジットカードの要否、越えられる国境も先に見ます。",
+            "cta": "レンタカー料金を比較",
+        },
+    },
+    {
+        "id": "autoeurope", "cat": "carrental", "name": "Auto Europe",
+        "ko": {
+            "purpose": "1954년부터 유럽 렌터카를 중개해 온 예약 대행사로, 국제 브랜드와 현지 업체를 같은 조건으로 비교합니다.",
+            "points": [
+                "Avis·Budget·Europcar·Hertz 같은 국제 브랜드와 지역 업체를 같은 조건으로 놓고 값을 비교합니다.",
+                "예약은 대행사에서 받고 차는 현지 지점에서 받는 구조라, 문제가 생겼을 때 연락할 곳이 둘로 나뉩니다.",
+                "렌터카 말고도 캠핑카, 기사 포함 차량도 같은 창구에서 예약합니다.",
+            ],
+            "check": "바우처에 적힌 인수 지점이 공항 카운터인지 셔틀로 이동하는 외곽 지점인지, 영업시간은 몇 시까지인지 확인하세요. 겨울용 타이어나 스노체인, 통행료·비네트, 추가 운전자 등록비가 요금에 들어 있는지도 결제 전에 봅니다.",
+            "cta": "Auto Europe 요금 보기",
+        },
+        "en": {
+            "purpose": "A booking agent for European car hire since 1954, comparing major brands with local suppliers on the same terms.",
+            "points": [
+                "Avis, Budget, Europcar and Hertz sit next to regional companies on the same terms, so the price is what separates them.",
+                "The booking is with the agent and the car is collected from the local office, so a problem has two places to call.",
+                "Motorhomes and cars with a driver are booked through the same desk.",
+            ],
+            "check": "Check whether the pick-up on the voucher is an airport counter or an off-site office reached by shuttle, and how late it is open. Check whether winter tyres or chains, tolls and vignettes, and an extra-driver fee are inside the rate before you pay.",
+            "cta": "See Auto Europe rates",
+        },
+        "ja": {
+            "purpose": "1954年からヨーロッパのレンタカーを仲介してきた予約代理店で、主要ブランドと現地業者を同じ条件で比べます。",
+            "points": [
+                "Avis・Budget・Europcar・Hertzなどの国際ブランドと地域業者を同じ条件で並べ、価格を比べます。",
+                "予約は代理店、車の受け取りは現地営業所なので、トラブル時の連絡先が二つに分かれます。",
+                "レンタカー以外にキャンピングカーやドライバー付き車両も同じ窓口で予約できます。",
+            ],
+            "check": "バウチャーに書かれた受け取り場所が空港カウンターか、シャトルで向かう郊外営業所か、営業時間は何時までかを確認してください。冬用タイヤ・チェーン、通行料・ビネット、追加ドライバー料金が料金に含まれるかも支払い前に見ます。",
+            "cta": "Auto Europeの料金を見る",
+        },
+    },
+    {
+        "id": "localrent", "cat": "carrental", "name": "Localrent",
+        "ko": {
+            "purpose": "현지 렌터카 업체의 차를 모아 중개하는 사이트로, 대형 브랜드가 적은 곳에서 선택지가 많습니다.",
+            "points": [
+                "국제 브랜드 대신 그 나라 업체의 차를 보여 줘서, 같은 기간에 더 싼 차가 자주 나옵니다.",
+                "현지 업체는 공항 카운터 대신 차를 숙소나 공항으로 가져다 주는 방식이 많습니다.",
+                "보증금이 낮은 대신 차량 연식과 보험 보장 범위가 업체마다 크게 다릅니다.",
+            ],
+            "check": "맡은 업체의 후기와 보증금 액수(현금인지 카드 블록인지), 자기부담금 한도, 주행거리 제한을 확인하세요. 인수 장소와 시간을 메시지로 확정하고, 차를 받을 때 상태를 사진과 영상으로 남겨 두면 반납 때 말이 줄어듭니다.",
+            "cta": "Localrent 차량 보기",
+        },
+        "en": {
+            "purpose": "A marketplace of local rental companies, with the most choice where the big brands are thin.",
+            "points": [
+                "Instead of an international brand you see the country's own operators, which often means a cheaper car for the same days.",
+                "Many local operators have no airport counter; they bring the car to your hotel or the airport instead.",
+                "The deposit is often low, but the car's age and what the insurance actually covers differ sharply between operators.",
+            ],
+            "check": "Read the reviews for that operator and check the deposit (cash or a card hold), the excess limit and any mileage cap. Confirm the pick-up place and time in a message, and photograph and film the car at handover so the return is not an argument.",
+            "cta": "See Localrent cars",
+        },
+        "ja": {
+            "purpose": "現地のレンタカー業者の車を集めて仲介するサイトで、大手ブランドが少ない場所ほど選択肢があります。",
+            "points": [
+                "国際ブランドの代わりにその国の業者の車が並ぶので、同じ日程でも安い車が出やすいです。",
+                "現地業者は空港カウンターではなく、ホテルや空港まで車を持ってくる方式が多くあります。",
+                "デポジットは低めな代わりに、車の年式と保険の補償範囲は業者ごとに大きく違います。",
+            ],
+            "check": "担当業者の口コミとデポジットの額(現金かカードの与信か)、自己負担の上限、走行距離の制限を確認してください。受け取り場所と時間はメッセージで確定し、受け取り時に車の状態を写真と動画で残すと返却時のトラブルが減ります。",
+            "cta": "Localrentの車を見る",
         },
     },
     {
@@ -479,23 +651,23 @@ COPY = {
     "ko": {
         "html_lang": "ko",
         "og_locale": "ko_KR",
-        "title": "여행딜 허브 — 항공권·eSIM·공항 픽업·투어 패스·짐 보관 13곳",
-        "desc": "여행 준비에 실제로 여는 서비스 13곳을 한 페이지에. Aviasales·Kiwi.com 항공권 검색, Airalo·Yesim·Saily·GigSky eSIM, Kiwitaxi·GetTransfer 공항 픽업, Klook·KKday·Tiqets·Go City 투어·패스, Radical Storage 짐 보관. 가격 대신 결제 전에 확인할 것을 적었습니다.",
+        "title": "여행딜 허브 — 항공권·eSIM·공항 픽업·렌터카·투어 패스·짐 보관 18곳",
+        "desc": "여행 준비에 실제로 여는 서비스 18곳을 한 페이지에. Aviasales·Kiwi.com 항공권 검색, Airalo·Yesim·Saily·GigSky eSIM, Kiwitaxi·GetTransfer·Welcome Pickups 공항 픽업, QEEQ·Auto Europe·Localrent 렌터카, Klook·KKday·Tiqets·Go City·WeGoTrip 투어·패스, Radical Storage 짐 보관. 가격 대신 결제 전에 확인할 것을 적었습니다.",
         "skip": "본문으로 건너뛰기",
         "disc": "이 페이지의 링크는 제휴 링크입니다. 링크를 통해 예약이 이루어지면 파트너사에서 수수료를 받을 수 있으며, 결제 금액은 달라지지 않습니다.",
         "kicker": "TRAVEL DEALS · 2026",
-        "h1": "항공권부터 eSIM, 공항 픽업까지 — 여행 준비에 쓰는 링크 13개",
+        "h1": "항공권부터 eSIM, 공항 픽업, 렌터카까지 — 여행 준비에 쓰는 링크 18개",
         "lede": "여행을 준비할 때 실제로 여는 사이트를 한 페이지에 모았습니다. 항공권 검색, eSIM, 공항 이동, 투어와 패스, 짐 보관. 각 서비스가 무엇에 맞는지, 결제 전에 무엇을 확인해야 하는지만 적었습니다. 가격은 적지 않습니다 — 검색하는 순간의 값이 정답이기 때문입니다.",
         "meta_updated": "2026년 11월 19일 갱신",
-        "meta_count": "파트너 13곳",
-        "meta_cats": "5개 카테고리",
+        "meta_count": "파트너 18곳",
+        "meta_cats": "6개 카테고리",
         "lang_label": "언어",
         "nav_label": "카테고리",
         "cats": {
             "flights": {"name": "항공권", "intro": "가장 먼저 정하는 건 날짜와 항공권입니다. 검색은 무료이고, 결제는 항공사나 판매처 사이트에서 이루어집니다."},
             "esim": {"name": "eSIM · 데이터", "intro": "도착해서 유심을 사러 줄 서는 대신, 출발 전에 설치해 두세요. 휴대폰이 eSIM을 지원하고 잠금이 풀려 있어야 합니다."},
             "transfer": {"name": "공항 픽업 · 이동", "intro": "밤에 도착하거나 짐이 많을 때, 미리 예약된 기사만큼 편한 이동은 없습니다."},
-            "tours": {"name": "투어 · 패스 · 입장권", "intro": "입장권, 투어, 시티패스를 한자리에서. 인기 명소는 당일 현장에 표가 없는 경우가 있어 미리 예약하는 편이 안전합니다."},
+            "carrental": {"name": "렌터카", "intro": "공항에서 차를 받아 직접 몰고 다니는 여행. 예약은 대개 무료로 취소되지만, 보증금은 픽업할 때 카드로 잡히는 경우가 많습니다."},            "tours": {"name": "투어 · 패스 · 입장권", "intro": "입장권, 투어, 시티패스를 한자리에서. 인기 명소는 당일 현장에 표가 없는 경우가 있어 미리 예약하는 편이 안전합니다."},
             "luggage": {"name": "짐 보관", "intro": "마지막 날, 체크아웃과 비행기 사이의 빈 시간을 짐 없이 보냅니다."},
         },
         "check_label": "확인",
@@ -505,36 +677,37 @@ COPY = {
             ("날짜와 항공권", "하루이틀만 날짜를 옮겨도 값이 크게 달라지는 경우가 많습니다. 한 달 보기로 주변 날짜를 먼저 비교해 보세요.", "#flights"),
             ("eSIM", "출발 하루이틀 전에 설치하고, 도착하면 로밍 대신 eSIM을 켭니다.", "#esim"),
             ("공항 픽업", "야간 도착이거나 숙소까지 길이 복잡하면 미리 예약합니다.", "#transfer"),
+            ("렌터카", "차를 빌릴 거라면 픽업·반납 시간을 먼저 정하고, 보증금이 잡힐 카드를 준비합니다.", "#carrental"),
             ("투어와 패스", "가고 싶은 곳이 세 곳 이상이면 시티패스와 개별 입장권을 견줘 보세요.", "#tours"),
             ("짐 보관", "마지막 날 비행기가 늦으면 마지막 코스 근처에서 보관소를 잡아 둡니다.", "#luggage"),
         ],
         "notes": [
             ("가격을 적지 않은 이유", "항공권과 투어 요금은 매일 바뀝니다. 페이지에 적어 둔 숫자는 다음 날 틀린 정보가 됩니다. 링크를 눌러 그 순간의 가격을 보세요."),
             ("링크가 여는 곳", "모든 링크는 해당 서비스의 사이트로 열립니다. 이 페이지는 예약을 대신하지 않고, 결제·취소·환불은 각 서비스에서 이루어집니다."),
-            ("어떻게 골랐나", "2026년 11월 기준, 여행 준비에서 실제로 쓰는 서비스 13곳을 카테고리별로 정리했습니다. 카드에 적은 것은 그 서비스가 하는 일과, 결제 전에 확인할 항목입니다."),
+            ("어떻게 골랐나", "2026년 11월 기준, 여행 준비에서 실제로 쓰는 서비스 18곳을 여섯 카테고리로 정리했습니다. 카드에 적은 것은 그 서비스가 하는 일과, 결제 전에 확인할 항목입니다."),
         ],
         "footer": "© 2026 Travel Deals · 정적 페이지입니다. 이 페이지 자체에는 계정도 추적 스크립트도 없습니다. 서비스 이름과 설명은 2026년 11월 각 사 공개 페이지를 참고해 정리했고, 각 사의 조건과 요금은 바뀔 수 있습니다.",
     },
     "en": {
         "html_lang": "en",
         "og_locale": "en_US",
-        "title": "Travel Deals Hub — flights, eSIM, airport transfers, city passes & luggage storage",
-        "desc": "Thirteen services worth opening before a trip, on one page: Aviasales and Kiwi.com flight search, Airalo, Yesim, Saily and GigSky eSIMs, Kiwitaxi and GetTransfer airport pickups, Klook, KKday, Tiqets and Go City tours and passes, Radical Storage luggage storage.",
+        "title": "Travel Deals Hub — flights, eSIM, airport transfers, car rental, city passes & luggage storage",
+        "desc": "Eighteen services worth opening before a trip, on one page: Aviasales and Kiwi.com flight search, Airalo, Yesim, Saily and GigSky eSIMs, Kiwitaxi, GetTransfer and Welcome Pickups airport pickups, QEEQ, Auto Europe and Localrent car hire, Klook, KKday, Tiqets, Go City and WeGoTrip tours and passes, Radical Storage luggage storage.",
         "skip": "Skip to the list",
         "disc": "Links on this page are affiliate links. If you book through one, we may earn a commission from the partner; the price you pay does not change.",
         "kicker": "TRAVEL DEALS · 2026",
-        "h1": "Flights, eSIM, airport pickups — thirteen links that do the work before a trip",
+        "h1": "Flights, eSIM, airport pickups, car rental — eighteen links that do the work before a trip",
         "lede": "The sites we actually open when planning a trip, in one page: flight search, travel eSIM data, airport transfers, tours and city passes, luggage storage. For each one, what it is for and what to check before you pay. No prices — the number that matters is the one you see when you search.",
         "meta_updated": "Updated 19 November 2026",
-        "meta_count": "13 partners",
-        "meta_cats": "5 categories",
+        "meta_count": "18 partners",
+        "meta_cats": "6 categories",
         "lang_label": "Language",
         "nav_label": "Categories",
         "cats": {
             "flights": {"name": "Flights", "intro": "Dates and flights come first. Searching is free; the payment happens on the airline's or the seller's own site."},
             "esim": {"name": "eSIM · Data", "intro": "Install before you fly, so you are not queueing for a SIM after landing. Your phone needs eSIM support and no carrier lock."},
             "transfer": {"name": "Airport transfer", "intro": "For a late arrival or too many bags, a driver already booked is the least tiring way in."},
-            "tours": {"name": "Tours · Passes · Tickets", "intro": "Tickets, tours and city passes in one place. Popular sights run out at the gate, so booking ahead is the safer plan."},
+            "carrental": {"name": "Car rental", "intro": "For the trips where you take the car at the airport and drive yourself. Bookings are usually free to cancel; the deposit is often held on a card at the counter."},            "tours": {"name": "Tours · Passes · Tickets", "intro": "Tickets, tours and city passes in one place. Popular sights run out at the gate, so booking ahead is the safer plan."},
             "luggage": {"name": "Luggage storage", "intro": "On the last day, the hours between checkout and the flight go better without the bags."},
         },
         "check_label": "Check",
@@ -544,36 +717,37 @@ COPY = {
             ("Dates and flights", "Moving a date by a day or two often changes the fare noticeably — compare the days either side first.", "#flights"),
             ("eSIM", "Install a day or two before you fly, and switch it on at landing instead of roaming.", "#esim"),
             ("Airport transfer", "Book ahead for a late arrival, or when the route to your stay is complicated.", "#transfer"),
+            ("Car rental", "If you are hiring a car, fix the pick-up and return times first, and bring the card the deposit will be held on.", "#carrental"),
             ("Tours and passes", "Three or more sights? Put a city pass against single tickets before you buy.", "#tours"),
             ("Luggage", "On a late flight, book storage near your last stop before the airport.", "#luggage"),
         ],
         "notes": [
             ("Why there are no prices", "Flight and tour prices move daily, and a number printed on a page is wrong by tomorrow. Press the link and see the price at that moment."),
             ("Where each link goes", "Every link opens the service's own site. This page does not book anything; payment, cancellation and refunds happen with the service."),
-            ("How the list was chosen", "Thirteen services actually used to plan a trip, sorted into five categories, as of November 2026. Each card says what the service does and what to check before paying."),
+            ("How the list was chosen", "Eighteen services actually used to plan a trip, sorted into six categories, as of November 2026. Each card says what the service does and what to check before paying."),
         ],
         "footer": "© 2026 Travel Deals · A static page. No accounts and no tracking scripts on this page itself. Service names and descriptions follow each company's public pages in November 2026; their terms and prices can change.",
     },
     "ja": {
         "html_lang": "ja",
         "og_locale": "ja_JP",
-        "title": "旅行ディールハブ — 航空券・eSIM・空港送迎・観光パス・荷物預かりの13サイト",
-        "desc": "旅の準備で実際に開く13のサービスを1ページに。Aviasales・Kiwi.comの航空券検索、Airalo・Yesim・Saily・GigSkyのeSIM、Kiwitaxi・GetTransferの空港送迎、Klook・KKday・Tiqets・Go Cityのツアーとパス、Radical Storageの荷物預かり。価格の代わりに、支払う前に確認することを書いています。",
+        "title": "旅行ディールハブ — 航空券・eSIM・空港送迎・レンタカー・観光パス・荷物預かりの18サイト",
+        "desc": "旅の準備で実際に開く18のサービスを1ページに。Aviasales・Kiwi.comの航空券検索、Airalo・Yesim・Saily・GigSkyのeSIM、Kiwitaxi・GetTransfer・Welcome Pickupsの空港送迎、QEEQ・Auto Europe・Localrentのレンタカー、Klook・KKday・Tiqets・Go City・WeGoTripのツアーとパス、Radical Storageの荷物預かり。価格の代わりに、支払う前に確認することを書いています。",
         "skip": "一覧へ進む",
         "disc": "このページのリンクはアフィリエイトリンクです。リンク経由で予約が成立すると提携先から報酬を受け取ることがありますが、お支払い金額は変わりません。",
         "kicker": "TRAVEL DEALS · 2026",
-        "h1": "航空券からeSIM、空港送迎まで — 旅の準備で開く13のリンク",
+        "h1": "航空券からeSIM、空港送迎、レンタカーまで — 旅の準備で開く18のリンク",
         "lede": "旅の準備で実際に開くサイトを1ページにまとめました。航空券検索、eSIM、空港送迎、ツアーとパス、荷物預かり。それぞれ何に向いているか、支払う前に何を確認するかだけを書いています。価格は載せていません — 検索したその瞬間の金額が正しいからです。",
         "meta_updated": "2026年11月19日更新",
-        "meta_count": "提携先10社",
-        "meta_cats": "5カテゴリ",
+        "meta_count": "提携先18社",
+        "meta_cats": "6カテゴリ",
         "lang_label": "言語",
         "nav_label": "カテゴリ",
         "cats": {
             "flights": {"name": "航空券", "intro": "最初に決めるのは日程と航空券です。検索は無料で、支払いは航空会社または販売店のサイトで行います。"},
             "esim": {"name": "eSIM・データ", "intro": "到着後にSIMを買う列に並ばずに済むよう、出発前に設定します。端末がeSIMに対応し、SIMロックが解除されている必要があります。"},
             "transfer": {"name": "空港送迎", "intro": "夜の到着や荷物が多い旅では、予約済みのドライバーが一番楽な移動手段です。"},
-            "tours": {"name": "ツアー・パス・入場券", "intro": "入場券、ツアー、シティパスをまとめて。人気の施設は当日券がないこともあるので、事前予約が安全です。"},
+            "carrental": {"name": "レンタカー", "intro": "空港で車を受け取って自分で運転する旅。予約は多くが無料キャンセル可能で、デポジットは受け取り時にカードで押さえられるのが普通です。"},            "tours": {"name": "ツアー・パス・入場券", "intro": "入場券、ツアー、シティパスをまとめて。人気の施設は当日券がないこともあるので、事前予約が安全です。"},
             "luggage": {"name": "荷物預かり", "intro": "最終日、チェックアウトからフライトまでの数時間を手ぶらで過ごします。"},
         },
         "check_label": "確認",
@@ -583,13 +757,14 @@ COPY = {
             ("日程と航空券", "1〜2日ずらすだけで運賃が大きく変わることもあります。前後の日を先に比べてみてください。", "#flights"),
             ("eSIM", "出発の1〜2日前に設定し、到着したらローミングの代わりにオンにします。", "#esim"),
             ("空港送迎", "夜の到着や、宿までの道のりが複雑なときは事前予約を。", "#transfer"),
+            ("レンタカー", "車を借りるなら、受け取り・返却の時間を先に決め、デポジットが押さえられるカードを用意します。", "#carrental"),
             ("ツアーとパス", "行きたい場所が3か所以上なら、シティパスと個別券を比べてから買います。", "#tours"),
             ("荷物預かり", "フライトが遅い日は、最後の立ち寄り先の近くで預け先を押さえます。", "#luggage"),
         ],
         "notes": [
             ("価格を載せない理由", "航空券やツアーの料金は毎日動きます。ページに書いた数字は翌日には間違いになります。リンクを開いて、その時点の金額を見てください。"),
             ("リンクの行き先", "すべてのリンクは各サービスのサイトへ直接開きます。このページは予約を行わず、支払い・キャンセル・返金は各サービスで行われます。"),
-            ("選び方", "2026年11月時点で、旅の準備に実際に使う13のサービスをカテゴリ別に整理しました。カードに書いたのは、そのサービスが何をするかと、支払う前に確認する項目です。"),
+            ("選び方", "2026年11月時点で、旅の準備に実際に使う18のサービスを6つのカテゴリに整理しました。カードに書いたのは、そのサービスが何をするかと、支払う前に確認する項目です。"),
         ],
         "footer": "© 2026 Travel Deals · 静的ページです。このページ自体にアカウントも計測スクリプトもありません。サービス名と説明は2026年11月時点の各社公開ページに基づき、各社の条件と料金は変わりえます。",
     },
