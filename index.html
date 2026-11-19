@@ -65,11 +65,11 @@
     flex:0 0 auto;width:30px;height:30px;border-radius:11px;display:flex;align-items:center;justify-content:center;
     font-size:11px;font-weight:800;color:#fff;background:var(--x);margin-top:2px;
   }
-  .av.p{background:var(--p)} .av.d{background:var(--d)} .av.n{background:var(--n)} .av.g{background:#6B21A8} .av.me{background:#1E7E34}
+  .av.p{background:var(--p)} .av.d{background:var(--d)} .av.n{background:var(--n)} .av.m{background:#0D9488} .av.g{background:#6B21A8} .av.me{background:#1E7E34}
   .stack{max-width:79%;display:flex;flex-direction:column;min-width:0}
   .row.me .stack{align-items:flex-end}
   .who{font-size:11.5px;font-weight:800;margin:0 0 3px 2px;color:var(--x)}
-  .who.p{color:var(--p)} .who.d{color:var(--d)} .who.n{color:var(--n)} .who.me{color:#1E7E34}
+  .who.p{color:var(--p)} .who.d{color:var(--d)} .who.n{color:var(--n)} .who.m{color:#0D9488} .who.me{color:#1E7E34}
   .bubble{
     background:var(--bubble);border-radius:14px;padding:9px 12px;font-size:14.5px;
     box-shadow:0 1px 1px rgba(0,0,0,.06);word-break:break-word;overflow-wrap:anywhere;white-space:normal;
@@ -175,7 +175,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v14</small></h1>
+    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v15</small></h1>
     <div id="status"><i id="dot"></i><span id="statusText">연결 대기</span></div>
     <div class="hbtns">
       <button class="ibtn" id="refreshBtn" aria-label="새로고침"><span>⟳</span></button>
@@ -281,6 +281,7 @@
     {tag:'[GPT]',    name:'GPT',    cls:'g', av:'G'},
     {tag:'[똥구리]', name:'똥구리', cls:'d', av:'똥'},
     {tag:'[나나]',   name:'나나',   cls:'n', av:'나'},
+    {tag:'[돈마니]', name:'돈마니', cls:'m', av:'돈'},
     {tag:'[PC]',     name:'나',     cls:'me', av:'나'}
   ];
 
@@ -535,6 +536,7 @@
       if(b.indexOf('[똘마니]')===0) seenAt.ttol=c.created_at;
       else if(b.indexOf('[똥구리]')===0) seenAt.ttong=c.created_at;
       else if(b.indexOf('[나나]')===0 || b.indexOf('[개구기]')===0) seenAt.nana=c.created_at;
+      else if(b.indexOf('[돈마니]')===0) seenAt.don=c.created_at;
       else if(b.indexOf('[GPT]')===0) seenAt.gpt=c.created_at;
     });
     var lastDay='';
@@ -621,6 +623,7 @@
         {k:'ttol', tag:'[똘마니]', lbl:'똘'},
         {k:'ttong', tag:'[똥구리]', lbl:'똥'},
         {k:'nana', tag:'[나나]', lbl:'나'},
+        {k:'don', tag:'[돈마니]', lbl:'돈'},
         {k:'gpt', tag:'[GPT]', lbl:'G'}
       ];
       var sdiv=document.createElement('div');
@@ -663,7 +666,7 @@
   var replyTarget=null;
   var replyBar=$('replyBar'), replyText=$('replyText'), replyClear=$('replyClear');
   function setReply(name, rawBody){
-    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|GPT|똥구리|나나|개구기|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
+    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|GPT|똥구리|나나|개구기|돈마니|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
     if(clean.length>50) clean=clean.slice(0,50)+'…';
     if(!clean) clean='(사진)';
     replyTarget={name:name, snippet:clean};
@@ -682,7 +685,7 @@
   var msgSheetBtns=$('msgSheetBtns'), msgSelectBox=$('msgSelectBox'), msgSelectText=$('msgSelectText');
   var activeMsg=null;
   function openMsgSheet(c, name, body, isPending){
-    var clean=String(body||'').replace(/^(?:\[(?:똘마니|GPT|똥구리|나나|개구기|PC)\]\s*)/,'').trim();
+    var clean=String(body||'').replace(/^(?:\[(?:똘마니|GPT|똥구리|나나|개구기|돈마니|PC)\]\s*)/,'').trim();
     activeMsg={c:c, name:name, body:clean, isPending:isPending};
     msgSheetTitle.textContent=name;
     msgSheetPreview.textContent=clean.replace(/\s+/g,' ').slice(0,80);
