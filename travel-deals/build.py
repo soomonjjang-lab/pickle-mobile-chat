@@ -651,8 +651,8 @@ COPY = {
     "ko": {
         "html_lang": "ko",
         "og_locale": "ko_KR",
-        "title": "여행딜 허브 — 항공권·eSIM·공항 픽업·렌터카·투어 패스·짐 보관 18곳",
-        "desc": "여행 준비에 실제로 여는 서비스 18곳을 한 페이지에. Aviasales·Kiwi.com 항공권 검색, Airalo·Yesim·Saily·GigSky eSIM, Kiwitaxi·GetTransfer·Welcome Pickups 공항 픽업, QEEQ·Auto Europe·Localrent 렌터카, Klook·KKday·Tiqets·Go City·WeGoTrip 투어·패스, Radical Storage 짐 보관. 가격 대신 결제 전에 확인할 것을 적었습니다.",
+        "title": "여행딜 허브 2026 — 항공권·eSIM·공항 픽업·렌터카·투어, 여행 준비 18곳 한 페이지",
+        "desc": "여행 준비에 실제로 여는 사이트 18곳을 한 페이지에. 항공권·eSIM·공항 픽업·렌터카·투어 패스·짐 보관까지, 각 서비스가 무엇에 맞는지와 결제 전에 확인할 항목만 2026년 11월 기준으로 정리했습니다. 가격은 적지 않습니다.",
         "skip": "본문으로 건너뛰기",
         "disc": "이 페이지의 링크는 제휴 링크입니다. 링크를 통해 예약이 이루어지면 파트너사에서 수수료를 받을 수 있으며, 결제 금액은 달라지지 않습니다.",
         "kicker": "TRAVEL DEALS · 2026",
@@ -691,8 +691,8 @@ COPY = {
     "en": {
         "html_lang": "en",
         "og_locale": "en_US",
-        "title": "Travel Deals Hub — flights, eSIM, airport transfers, car rental, city passes & luggage storage",
-        "desc": "Eighteen services worth opening before a trip, on one page: Aviasales and Kiwi.com flight search, Airalo, Yesim, Saily and GigSky eSIMs, Kiwitaxi, GetTransfer and Welcome Pickups airport pickups, QEEQ, Auto Europe and Localrent car hire, Klook, KKday, Tiqets, Go City and WeGoTrip tours and passes, Radical Storage luggage storage.",
+        "title": "Travel Deals Hub 2026 — flights, eSIM, airport transfers & car rental, 18 sites",
+        "desc": "The 18 booking sites worth opening before a trip — flight search, eSIM data, airport pickups, car rental, tours, city passes and luggage storage — with what to check before you pay. No prices: the one that matters is the one you see when you search. Updated November 2026.",
         "skip": "Skip to the list",
         "disc": "Links on this page are affiliate links. If you book through one, we may earn a commission from the partner; the price you pay does not change.",
         "kicker": "TRAVEL DEALS · 2026",
@@ -731,8 +731,8 @@ COPY = {
     "ja": {
         "html_lang": "ja",
         "og_locale": "ja_JP",
-        "title": "旅行ディールハブ — 航空券・eSIM・空港送迎・レンタカー・観光パス・荷物預かりの18サイト",
-        "desc": "旅の準備で実際に開く18のサービスを1ページに。Aviasales・Kiwi.comの航空券検索、Airalo・Yesim・Saily・GigSkyのeSIM、Kiwitaxi・GetTransfer・Welcome Pickupsの空港送迎、QEEQ・Auto Europe・Localrentのレンタカー、Klook・KKday・Tiqets・Go City・WeGoTripのツアーとパス、Radical Storageの荷物預かり。価格の代わりに、支払う前に確認することを書いています。",
+        "title": "旅行ディールハブ2026 — 航空券・eSIM・空港送迎・レンタカー・観光パス18サイト",
+        "desc": "旅の準備で実際に開く18サイトを1ページに。航空券検索・eSIM・空港送迎・レンタカー・ツアーとパス・荷物預かりについて、何に向いているかと支払う前に確認する項目だけを2026年11月時点でまとめました。価格は載せていません。",
         "skip": "一覧へ進む",
         "disc": "このページのリンクはアフィリエイトリンクです。リンク経由で予約が成立すると提携先から報酬を受け取ることがありますが、お支払い金額は変わりません。",
         "kicker": "TRAVEL DEALS · 2026",
