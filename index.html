@@ -175,7 +175,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v18</small></h1>
+    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v19</small></h1>
     <div id="status"><i id="dot"></i><span id="statusText">연결 대기</span></div>
     <div class="hbtns">
       <button class="ibtn" id="refreshBtn" aria-label="새로고침"><span>⟳</span></button>
@@ -285,9 +285,10 @@
     {tag:'[똘마니3]', name:'똘마니3', cls:'n', av:'3'},
     {tag:'[나나]',    name:'똘마니3', cls:'n', av:'3'},
     {tag:'[개구기]',  name:'똘마니3', cls:'n', av:'3'},
-    {tag:'[똘마니4]', name:'똘마니4', cls:'db', av:'4'},
-    {tag:'[돈다바리]',name:'똘마니4', cls:'db', av:'4'},
-    {tag:'[돈마니]',  name:'돈마니',  cls:'m', av:'돈'},
+    {tag:'[똘마니4]', name:'똘마니4', cls:'m', av:'4'},
+    {tag:'[돈마니]',  name:'똘마니4', cls:'m', av:'4'},
+    {tag:'[똘마니5]', name:'똘마니5', cls:'db', av:'5'},
+    {tag:'[돈다바리]',name:'똘마니5', cls:'db', av:'5'},
     {tag:'[PC]',      name:'나',      cls:'me', av:'나'}
   ];
 
@@ -542,8 +543,8 @@
       if(b.indexOf('[똘마니]')===0 || b.indexOf('[똘마니1]')===0) seenAt.ttol=c.created_at;
       else if(b.indexOf('[똥구리]')===0 || b.indexOf('[똘마니2]')===0) seenAt.ttong=c.created_at;
       else if(b.indexOf('[나나]')===0 || b.indexOf('[개구기]')===0 || b.indexOf('[똘마니3]')===0) seenAt.nana=c.created_at;
-      else if(b.indexOf('[돈마니]')===0) seenAt.don=c.created_at;
-      else if(b.indexOf('[돈다바리]')===0 || b.indexOf('[똘마니4]')===0) seenAt.daba=c.created_at;
+      else if(b.indexOf('[돈마니]')===0 || b.indexOf('[똘마니4]')===0) seenAt.don=c.created_at;
+      else if(b.indexOf('[돈다바리]')===0 || b.indexOf('[똘마니5]')===0) seenAt.daba=c.created_at;
       else if(b.indexOf('[GPT]')===0) seenAt.gpt=c.created_at;
     });
     var lastDay='';
@@ -642,8 +643,8 @@
         {k:'ttol', tag:'[똘마니1]', lbl:'1'},
         {k:'ttong', tag:'[똘마니2]', lbl:'2'},
         {k:'nana', tag:'[똘마니3]', lbl:'3'},
-        {k:'daba', tag:'[똘마니4]', lbl:'4'},
-        {k:'don', tag:'[돈마니]', lbl:'돈'},
+        {k:'don', tag:'[똘마니4]', lbl:'4'},
+        {k:'daba', tag:'[똘마니5]', lbl:'5'},
         {k:'gpt', tag:'[GPT]', lbl:'G'}
       ];
       var sdiv=document.createElement('div');
@@ -686,7 +687,7 @@
   var replyTarget=null;
   var replyBar=$('replyBar'), replyText=$('replyText'), replyClear=$('replyClear');
   function setReply(name, rawBody){
-    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|똘마니[1-4]|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
+    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|똘마니[1-5]|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
     if(clean.length>50) clean=clean.slice(0,50)+'…';
     if(!clean) clean='(사진)';
     replyTarget={name:name, snippet:clean};
@@ -705,7 +706,7 @@
   var msgSheetBtns=$('msgSheetBtns'), msgSelectBox=$('msgSelectBox'), msgSelectText=$('msgSelectText');
   var activeMsg=null;
   function openMsgSheet(c, name, body, isPending){
-    var clean=String(body||'').replace(/^(?:\[(?:똘마니|똘마니[1-4]|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').trim();
+    var clean=String(body||'').replace(/^(?:\[(?:똘마니|똘마니[1-5]|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').trim();
     activeMsg={c:c, name:name, body:clean, isPending:isPending};
     msgSheetTitle.textContent=name;
     msgSheetPreview.textContent=clean.replace(/\s+/g,' ').slice(0,80);
