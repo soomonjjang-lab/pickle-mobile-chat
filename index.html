@@ -175,7 +175,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v19</small></h1>
+    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v20</small></h1>
     <div id="status"><i id="dot"></i><span id="statusText">연결 대기</span></div>
     <div class="hbtns">
       <button class="ibtn" id="refreshBtn" aria-label="새로고침"><span>⟳</span></button>
@@ -279,6 +279,7 @@
   var SPEAKERS=[
     {tag:'[똘마니1]', name:'똘마니1', cls:'p', av:'1'},
     {tag:'[똘마니]',  name:'똘마니1', cls:'p', av:'1'},
+    {tag:'[탑똘마니]',name:'탑똘마니', cls:'g', av:'탑'},
     {tag:'[GPT]',     name:'GPT',     cls:'g', av:'G'},
     {tag:'[똘마니2]', name:'똘마니2', cls:'d', av:'2'},
     {tag:'[똥구리]',  name:'똘마니2', cls:'d', av:'2'},
@@ -687,7 +688,7 @@
   var replyTarget=null;
   var replyBar=$('replyBar'), replyText=$('replyText'), replyClear=$('replyClear');
   function setReply(name, rawBody){
-    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|똘마니[1-5]|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
+    var clean=String(rawBody||'').replace(/^(?:\[(?:똘마니|똘마니[1-5]|탑똘마니|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').replace(/^>\s.*\n?/gm,'').trim().replace(/\s+/g,' ');
     if(clean.length>50) clean=clean.slice(0,50)+'…';
     if(!clean) clean='(사진)';
     replyTarget={name:name, snippet:clean};
@@ -706,7 +707,7 @@
   var msgSheetBtns=$('msgSheetBtns'), msgSelectBox=$('msgSelectBox'), msgSelectText=$('msgSelectText');
   var activeMsg=null;
   function openMsgSheet(c, name, body, isPending){
-    var clean=String(body||'').replace(/^(?:\[(?:똘마니|똘마니[1-5]|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').trim();
+    var clean=String(body||'').replace(/^(?:\[(?:똘마니|똘마니[1-5]|탑똘마니|GPT|똥구리|나나|개구기|돈마니|돈다바리|PC)\]\s*)/,'').trim();
     activeMsg={c:c, name:name, body:clean, isPending:isPending};
     msgSheetTitle.textContent=name;
     msgSheetPreview.textContent=clean.replace(/\s+/g,' ').slice(0,80);
