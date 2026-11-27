@@ -678,7 +678,7 @@
       <div class="radar-wrap"><svg id="radar" viewBox="0 0 400 330" role="img" aria-label="질문 10개 카테고리별 노출 레이더 차트"></svg></div>
       <div class="legend" id="radar-legend"></div>
       <div class="minis" id="chart-minis"></div>
-      <p class="fine">지수는 2026-11-27 실측 결과를 0~100으로 환산한 값입니다(공식 100 · 제3자 50 · 미노출 0). 레메디한방병원은 q2에서만 이름이 확인되어 다른 질문은 0이 아니라 ‘미측정’으로 비워 둡니다.</p>
+      <p class="fine">지수는 2026-11-27 실측 결과를 0~100으로 환산한 값입니다(공식 100 · 제3자 50 · 미노출 0). 경쟁 압력은 실측 메모의 정성 판정(선점 100 · 중간 60 · 일부 30)이고, 레메디가 실제로 선점한 지점을 점으로 찍었습니다.</p>
     </div>
 
     <aside class="card feed">
@@ -1683,7 +1683,7 @@
       out.push('<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '">' + esc(labels[i]) + "</text>");
       if(q.comp && q.comp.level === "high" && /레메디/.test(q.comp.note || "")){
         var d = point(i, 100);
-        out.push('<circle class="dot" cx="' + d[0].toFixed(1) + '" cy="' + d[1].toFixed(1) + '" r="4.5"><title>레메디한방병원 선점(q2)</title></circle>');
+        out.push('<circle class="dot" cx="' + d[0].toFixed(1) + '" cy="' + d[1].toFixed(1) + '" r="4.5"><title>레메디한방병원 선점(' + esc(q.id) + ')</title></circle>');
       }
     });
     out.push('<circle cx="' + cx + '" cy="' + cy + '" r="2.5" fill="rgba(148,163,184,.5)"></circle>');
@@ -1691,7 +1691,7 @@
     $("radar-legend").innerHTML =
       '<span><i class="lg-em"></i>본한방병원 노출 지수</span>' +
       '<span><i class="lg-am"></i>경쟁 압력(실측 메모)</span>' +
-      '<span><i class="lg-cy"></i>레메디 확인 지점(q2)</span>';
+      '<span><i class="lg-cy"></i>레메디 선점 지점(실측)</span>';
 
     var m = metrics();
     var avgWeb = state.questions.length ? Math.round(state.questions.reduce(function(a, q){ return a + webIndex(q); }, 0) / state.questions.length) : 0;
@@ -1850,7 +1850,7 @@
   }
 
   function rankBadge(w){
-    if(w.status === "absent") return '<span class="rankb r0">미노출</span>';
+    if(w.status === "absent") return "";
     if(w.status === "unmeasured") return '<span class="rankb r0">미측정</span>';
     if(w.rank === 1) return '<span class="rankb r1">1위</span>';
     if(w.rank === 2) return '<span class="rankb r2">2위</span>';
@@ -1881,7 +1881,7 @@
           '<button class="del" type="button" data-act="del-q" data-id="' + esc(q.id) + '">삭제</button>' +
         "</div>" +
         '<div class="qbody">' +
-          '<div class="webbox"><div class="wt">피클3 웹 실측 · ' + esc(w.date || MEASURED_DATE) + rankBadge(w) +
+          '<div class="webbox"><div class="wt">피클3 웹 실측 · ' + esc(w.date || MEASURED_DATE) + rankBadge(w) + (w.status === "absent" ? statusBadge(w.status) : "") +
             '<select class="sel" style="width:auto;margin-left:auto" data-web="' + esc(q.id) + '" aria-label="웹 실측 상태">' + statusOptions(w.status, WEB_KEYS) + "</select></div>" +
             '<p>' + esc(w.note || "기록 없음") + "</p>" +
             (links ? '<div class="srclinks">' + links + "</div>" : "") +
