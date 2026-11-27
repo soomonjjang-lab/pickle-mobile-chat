@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>본한방병원 GEO 컨트롤타워 V3.1</title>
-<meta name="description" content="본한방병원 AI 검색 노출 실측·6인 교차 검증·원고 검수·발행 추적을 한 화면에서 굴리는 GEO 컨트롤타워 V3.1 (단일 HTML · 팀 최근 작업 기록만 공개 파일에서 동기화)">
+<title>본한방병원 GEO 컨트롤타워 V3.2</title>
+<meta name="description" content="본한방병원 AI 검색 노출 실측·6인 교차 검증·원고 검수·발행 추적을 한 화면에서 굴리는 GEO 컨트롤타워 V3.2 (단일 HTML · 팀 최근 작업 기록·탑똘마니 웹 검색 실측만 공개 파일에서 동기화)">
 <style>
   :root{
     --bg:#05080f;
@@ -129,6 +129,23 @@
   .notice b{color:#fff}
   .notice p{font-size:13px;color:#c7d2e3}
   .notice .mini-line{display:block;margin-top:5px;font-size:11.5px;color:var(--muted)}
+  .lb-topmeasure{color:#bae6fd;font-size:11.5px;margin-top:8px;font-weight:600}
+
+  /* ============ 탑똘마니 웹 검색 실측 요약 ============ */
+  .topmeasure{
+    margin-top:12px;padding:13px 16px;border-radius:14px;
+    background:linear-gradient(90deg, rgba(56,189,248,.10), rgba(167,139,250,.06) 55%, transparent);
+    border:1px solid rgba(56,189,248,.28);
+  }
+  .topmeasure .tm-head{display:flex;flex-wrap:wrap;align-items:center;gap:9px}
+  .topmeasure .tm-label{font-size:13.5px;font-weight:800;color:#e8f6ff;letter-spacing:-.01em;line-height:1.5}
+  .topmeasure .tm-label b{color:#7dd3fc;font-weight:900}
+  .topmeasure .tm-sub{margin-top:6px;font-size:11.5px;color:#9fb0c8;line-height:1.65}
+  .topmeasure .tm-sub b{color:#cbd5e1}
+  .topmeasure .tm-pri{margin-top:6px;font-size:11.5px;color:#c7d2e3;line-height:1.65}
+  .topmeasure .tm-pri b{color:#fff}
+  .topmeasure .tm-link{font-size:11px;color:#7dd3fc;text-decoration:none;border-bottom:1px dotted rgba(125,211,252,.5)}
+  .topmeasure .tm-link:hover{color:#bae6fd}
 
   /* ============ stat strip ============ */
   .stats{display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-top:14px}
@@ -613,8 +630,8 @@
         </svg>
       </span>
       <span class="brand-txt">
-        <strong>본한방병원 <em>GEO</em> 컨트롤타워 <span class="pill em" style="font-size:9px;vertical-align:2px">V3.1</span></strong>
-        <small>탑똘마니 검토 반영 · 팀 실측 내장 · 최근 작업 기록 동기화 · 6인 교차 검증 · 원고 5건</small>
+        <strong>본한방병원 <em>GEO</em> 컨트롤타워 <span class="pill em" style="font-size:9px;vertical-align:2px">V3.2</span></strong>
+        <small>탑똘마니 웹 검색 10문항 실측 · 검토 7/15 반영 · 최근 작업 기록 동기화 · 6인 교차 검증 · 원고 5건</small>
       </span>
     </a>
     <div class="bar-right">
@@ -651,6 +668,7 @@
     </div>
     <p class="lb-honest">아래 카드는 팀원이 <b>마지막으로 남긴 작업 기록</b>입니다. <b>지금 접속 중</b>이라는 뜻이 아니며, 접속·로그인 상태를 보여주는 화면도 아닙니다. 마지막 활동 시각과 파일 갱신 시각을 함께 보세요.</p>
     <div class="lb-agents" id="live-agents"></div>
+    <p class="lb-honest lb-topmeasure" id="live-topmeasure" hidden></p>
     <div class="lb-foot">
       <span id="live-updated">팀 상태 갱신 –</span>
       <ol id="live-events" class="lb-events"></ol>
@@ -661,9 +679,19 @@
   <section class="notice" aria-label="데이터 신뢰 기준">
     <span class="ic" aria-hidden="true">GEO</span>
     <div>
-      <p><b>V3.1 — 팀원 1~5번의 실측·판정에 탑똘마니(ChatGPT)의 V3 검토 15칸을 더했습니다.</b> 병원명을 뺀 환자 질문 10개는 <b>2026-11-27 18:00 KST 공개 웹 인덱스</b> 조회로 <b>공식 7(1위 5·2위 2) · 미노출 3(q5·q6·q9)</b>, 원고는 <b>d1~d5 5건</b>입니다. 이번 검토에서 d2의 ‘본인부담금 0원’ 문구를 빼고, d1·d4 주차 문구를 ‘치료시간 내’로 통일했으며, <b>JSON-LD는 공개 승인한 원고만</b> 내보냅니다. <b>탑똘마니 항목 검토는 7/15칸(수정 3·보류 4)</b>이고, <b>ChatGPT 검색 인용 측정은 0/10칸</b>으로 따로 표시합니다. <b>이 검토는 발행 승인이 아닙니다</b> — 병원 사실 확인과 매체별 심의 대상 여부 확인 전에는 발행하지 않습니다.</p>
+      <p><b>V3.2 — 탑똘마니의 검색 인용 10문항 1차 점검 결과를 넣었습니다.</b> 2026-11-27 저녁, V3.1 질문 원문 10개를 <b>병원명 없이 웹 검색 1회차</b>로 확인해 <b>10/10 확인 완료 · 제3자 인용 근거 2(q1 야간·q2 공휴일) · 공식 홈페이지 검색 노출 0</b>이고, 나머지 8문항은 <b>본한 미노출이거나 근거 부족</b>(q3·q6·q7·q9·q10)입니다. 피클3의 <b>공개 웹 인덱스 실측</b>(2026-11-27 18:00 KST, 공식 7·미노출 3)과는 <b>측정 기반이 달라 두 값을 따로</b> 표시합니다. 원고 d1~d5와 <b>탑똘마니 항목 검토 7/15칸(수정 3·보류 4)</b>은 그대로입니다. <b>이 측정은 발행 승인이 아닙니다</b> — 병원 사실 확인과 매체별 심의 대상 여부 확인 전에는 발행하지 않습니다.</p>
       <span class="mini-line">측정 기준일 2026-11-27 18:00 KST · 대상 본한방병원(충남 아산시 탕정면 한들물빛6로 14, 041-541-7581)</span>
     </div>
+  </section>
+
+  <section class="topmeasure" id="top-measure" aria-label="탑똘마니 웹 검색 실측 요약">
+    <div class="tm-head">
+      <span class="pill em">웹 검색 실측</span>
+      <span class="tm-label" id="tm-label">탑똘마니 웹 검색: <b>10문항 확인</b> · 제3자 인용 근거 <b>2</b> · 공식 홈페이지 검색 노출 <b>0</b></span>
+      <a class="tm-link" href="https://github.com/soomonjjang-lab/pickle-pc-control/issues/1#issuecomment-7215261312" target="_blank" rel="noopener">근거 원문(Issue #1 #7215261312)</a>
+    </div>
+    <p class="tm-sub" id="tm-sub">2026-11-27 저녁 · <b>ChatGPT 웹 검색 1회차</b>(질문 원문 10개, 병원명 없이 한 문항씩) — <b>ChatGPT 대화 추천률도, 네이버·구글 순위도 아닙니다.</b> 다른 AI에는 보내지 않았고, 이름만 나오거나 문항 조건을 뒷받침하지 않는 자료는 인용에서 뺐습니다. <span id="tm-split"></span></p>
+    <p class="tm-pri" id="tm-pri">우선순위 — 야간·주말 진료와 주차를 본한 공식 페이지에서 한눈에 확인되게 하는 것이 먼저이고, 검색에서 경쟁 페이지와 차이가 뚜렷한 수술 후 재활은 병원 확인 뒤 다음 차례입니다. <b>이 측정은 발행 승인이 아닙니다.</b></p>
   </section>
 
   <section class="stats" id="stat-strip" aria-label="요약 지표"></section>
@@ -722,7 +750,7 @@
     <div class="sect-head">
       <div>
         <h2>6인 교차 검증 보드</h2>
-        <p>탑똘마니(ChatGPT)와 피클1~5가 같은 질문·원고를 서로 다른 관점에서 검증합니다. <b>항목 검토</b>와 <b>ChatGPT 검색 인용 측정</b>은 별개 지표입니다 — 탑똘마니는 15개 항목 중 7개(d1·d2·d4 수정요청, d3·d5·q6·q9 보류)를 검토했고, 검색 인용 측정은 0/10칸입니다.</p>
+        <p>탑똘마니(ChatGPT)와 피클1~5가 같은 질문·원고를 서로 다른 관점에서 검증합니다. <b>항목 검토</b>와 <b>웹 검색 실측</b>은 별개 지표입니다 — 탑똘마니는 15개 항목 중 7개(d1·d2·d4 수정요청, d3·d5·q6·q9 보류)를 검토했고, 웹 검색 실측은 <b>10/10 확인(제3자 인용 2 · 공식 홈페이지 노출 0)</b>으로 별도 표기합니다.</p>
       </div>
       <div class="consensus" id="consensus-mini">
         <div><b id="cons-pct">–</b><small>합의율</small></div>
@@ -761,8 +789,8 @@
   <section id="questions" class="sect" aria-label="질문 실행기">
     <div class="sect-head">
       <div>
-        <h2>질문 10개 — 웹 실측(피클3) + 탑똘마니(ChatGPT) 검색 인용</h2>
-        <p>외부 AI 바로 열기 버튼은 없앴습니다. 남긴 측정 레인은 <b>피클3의 웹 실측 10칸</b>과 <b>탑똘마니(ChatGPT) 검색 인용 10칸</b>뿐이고, ChatGPT 칸은 실제로 물어본 뒤에만 채웁니다(기본 미측정). <b>이 10칸은 항목 검토(7/15)와 다른 지표입니다.</b> 상태 pill을 누르면 미측정 → 공식 인용 → 제3자 인용 → 경쟁사 선점 → 미노출 순으로 순환합니다.</p>
+        <h2>질문 10개 — 웹 실측(피클3) + 탑똘마니(ChatGPT) 웹 검색</h2>
+        <p>외부 AI 바로 열기 버튼은 없앴습니다. 남긴 측정 레인은 <b>피클3의 공개 웹 인덱스 실측 10칸</b>과 <b>탑똘마니(ChatGPT) 웹 검색 10칸</b>입니다. 탑똘마니 칸은 <b>2026-11-27 저녁 웹 검색 1회차로 10칸 모두 확인</b>했습니다(제3자 인용 2 · 공식 홈페이지 0 · 미노출·근거부족 8). <b>이 10칸은 항목 검토(7/15)와 다른 지표입니다.</b> 상태 pill을 누르면 미측정 → 공식 인용 → 제3자 인용 → 경쟁사 선점 → 미노출 순으로 순환합니다.</p>
       </div>
       <form class="addq" id="add-form">
         <input id="add-question" type="text" placeholder="예) 아산 탕정 한방병원 야간 접수 마감 시간" autocomplete="off" required aria-label="새 질문">
@@ -774,7 +802,7 @@
       <summary>측정 방법 (같은 조건으로 재측정할 때)</summary>
       <ol>
         <li><b>웹 실측(피클3)</b> — 시크릿 창에서 질문 문장을 그대로 검색하고, 상위 8건에서 본한 공식/제3자/미노출을 기록합니다. 순위(1위·2위)와 조회 일시를 함께 남깁니다.</li>
-        <li><b>탑똘마니(ChatGPT)</b> — 대표님이 실제로 쓰는 ChatGPT 1종에 질문을 붙여넣고(검색 켬), 답변에 본한방병원이 나오면 인용 페이지가 공식인지 제3자인지 확인합니다.</li>
+        <li><b>탑똘마니(ChatGPT)</b> — 질문 원문을 병원명 없이 한 문항씩 ChatGPT 웹 검색에 넣고, 답변에 쓸 근거가 나오면 그 출처가 공식(bonhanbang.com)인지 제3자인지 확인합니다. 이름만 나오거나 문항 조건을 뒷받침하지 않는 자료는 인용에서 뻐고, 엔진·시점이 다르면 결과도 달라진다고 보고 검색 1회차 기준으로 기록합니다.</li>
         <li>다른 병원만 추천되면 ‘경쟁사 선점’, 병원이 전혀 안 나오면 ‘미노출’로 기록합니다.</li>
         <li>측정 시각·로그인 여부에 따라 결과가 달라지므로, 같은 날 한 번에 측정하고 메모에 날짜를 적습니다.</li>
       </ol>
@@ -785,18 +813,18 @@
     <div class="sect-head">
       <div>
         <h2>측정 대장 — 누가 · 언제 · 어떻게 쟀는지</h2>
-        <p>숫자마다 출처가 붙어야 가짜 수치가 섞이지 않습니다. 웹 실측은 피클3이 2026-11-27 18:00 KST에 공개 웹 인덱스로 조회한 값이고, 탑똘마니(ChatGPT) 검색 인용 10칸은 아직 미측정입니다(항목 검토 7/15칸과 별개).</p>
+        <p>숫자마다 출처가 붙어야 가짜 수치가 섞이지 않습니다. 웹 실측은 피클3이 2026-11-27 18:00 KST에 공개 웹 인덱스로 조회한 값이고, 탑똘마니(ChatGPT) 웹 검색 10칸은 <b>2026-11-27 저녁 1회차로 10/10 확인</b>(제3자 인용 2 · 공식 홈페이지 0)했습니다. 두 레인은 측정 기반이 달라 합산하지 않습니다.</p>
       </div>
-      <span class="pill">피클3 실측 10칸 · ChatGPT 인용 0/10</span>
+      <span class="pill" id="ledger-pill">피클3 실측 10칸 · 탑똘마니 웹 검색 10/10</span>
     </div>
     <div class="card matrix-card">
       <div class="matrix-scroll">
         <table class="matrix ledger">
-          <thead><tr><th class="rowh">질문</th><th>측정자</th><th>웹 결과</th><th>출처 페이지</th><th>측정자</th><th>ChatGPT</th></tr></thead>
+          <thead><tr><th class="rowh">질문</th><th>측정자</th><th>웹 결과</th><th>출처 페이지</th><th>측정자</th><th>탑똘마니 결과</th><th>탑똘마니 근거·요약</th></tr></thead>
           <tbody id="ledger-body"></tbody>
         </table>
       </div>
-      <p class="hint" style="margin:10px 2px 0">웹 실측은 네이버·구글 SERP 직접 캡처가 아니라 공개 웹 인덱스 조회 값입니다 — 엔진·시점에 따라 순위가 달라질 수 있고, 못 본 칸은 비워 뒀습니다(추정 없음).</p>
+      <p class="hint" style="margin:10px 2px 0">웹 실측은 네이버·구글 SERP 직접 캡처가 아니라 공개 웹 인덱스 조회 값이고, 탑똘마니 칸은 ChatGPT 웹 검색 1회차 값입니다 — 엔진·시점에 따라 순위·인용이 달라질 수 있고, 못 본 칸은 비워 뒀습니다(추정 없음).</p>
     </div>
   </section>
 
@@ -875,8 +903,8 @@
       <a href="https://m.booking.naver.com/booking/13/bizes/1422662" target="_blank" rel="noopener">네이버 예약</a>
       <a href="https://www.instagram.com/bonhan_7581/" target="_blank" rel="noopener">인스타그램 @bonhan_7581</a>
     </div>
-    <div>본한방병원 GEO 컨트롤타워 V3.1 · 단일 HTML · 외부 CDN·광고·추적 없음 · 기록은 이 브라우저의 localStorage에만 저장됩니다.</div>
-    <div>실측 2026-11-27 18:00 KST · ChatGPT 검색 인용 10칸은 실제 측정 전까지 ‘미측정’ 유지(항목 검토 7/15칸은 별도 표기).</div>
+    <div>본한방병원 GEO 컨트롤타워 V3.2 · 단일 HTML · 외부 CDN·광고·추적 없음 · 기록은 이 브라우저의 localStorage에만 저장됩니다.</div>
+    <div>실측 2026-11-27 18:00 KST · 탑똘마니 웹 검색 10문항 1회차(제3자 인용 2 · 공식 0) · 항목 검토 7/15칸은 별도 표기.</div>
     <div>최근 작업 기록 동기화는 공개 저장소의 <code>geo/6dc8fbcf3bd8/live-state.json</code> 한 파일만 읽습니다(60초 간격, 개인정보 없음).</div>
   </footer>
 
@@ -888,13 +916,17 @@
 (function(){
   "use strict";
 
-  var STORE_KEY = "bonhan-geo-v3-1";
-  var LEGACY_KEY = "bonhan-geo-v3";      /* 이전 화면의 저장분 — 자동 이관하지 않고, 가져오기(JSON)만 호환 */
-  var LEGACY_KEY_V1 = "bonhan-geo-v2";
-  var VERSION = 3.1;
+  var STORE_KEY = "bonhan-geo-v3-2";
+  var LEGACY_KEY = "bonhan-geo-v3-1";    /* 이전 화면의 저장분 — 자동 이관하지 않고, 가져오기(JSON)만 호환 */
+  var LEGACY_KEY_V1 = "bonhan-geo-v3";
+  var VERSION = 3.2;
   var MEASURED_DATE = "2026-11-27";
   var MEASURED_AT = "2026-11-27T18:00:00+09:00";
   var MEASURED_LABEL = "2026-11-27 18:00 KST";
+  /* 탑똘마니 웹 검색 1회차 실측(2026-11-27 저녁, Issue #1 #7215261312) */
+  var TOP_AT = "2026-11-27T18:55:31+09:00";
+  var TOP_BY = "탑똘마니";
+  var TOP_ENGINE = "ChatGPT 웹 검색 1회차";
   var CLINIC = "본한방병원";
 
   /* 실시간 라이브 동기화 — 공개 저장소의 상태 파일만 읽습니다(개인정보 없음) */
@@ -923,12 +955,12 @@
   ];
 
   var AGENTS = [
-    { id: "gpt", name: "탑똘마니", sub: "ChatGPT", role: "총괄 검증 · 최종 취합", cps: ["항목 검토 7/15칸(수정 3·보류 4) · 검색 인용 측정 0/10칸", "교통사고 0원 문구 삭제·공개 승인 FAQ만 내보내기 권고", "이 검토는 발행 승인이 아님(Issue #1 #7214735772)"] },
+    { id: "gpt", name: "탑똘마니", sub: "ChatGPT", role: "총괄 검증 · 최종 취합", cps: ["항목 검토 7/15칸(수정 3·보류 4) · 웹 검색 실측 10/10칸(제3자 2·공식 0)", "10문항 1회차 점검: 제3자 인용 근거 2(q1·q2), 공식 홈페이지 노출 0, 미노출·근거부족 8", "교통사고 0원 문구 삭제·공개 승인 FAQ만 내보내기 권고 · 이 검토는 발행 승인이 아님"] },
     { id: "p1",  name: "피클1",   sub: "본한방 현장/인스타", role: "현장 사실 · 인스타 콘텐츠", cps: ["진료시간·주소·주차 사실 확인", "1인실·입원실 인스타 근거 확인", "체외충격파 타수별 단가 확인"] },
     { id: "p2",  name: "피클2",   sub: "블로그/SEO", role: "검색 스니펫 · 블로그 원고", cps: ["레메디 블로그·GEO 게시판 벤치마크", "질문형 제목·한 줄 답변 구조", "키워드 축: 탕정역·1번 출구·주말"] },
     { id: "p3",  name: "피클3",   sub: "유입/측정", role: "10문항 웹 실측 · 유입 진단", cps: ["10문항 웹 노출 실측 18:00 KST", "예약 링크·UTM 유입 손실 진단", "채널별 전환 추적 설계"] },
     { id: "p4",  name: "피클4",   sub: "콘텐츠/UX", role: "환자 문안 · 화면 동선", cps: ["환자 문안·금지 표현 검수", "d1~d5 원고 작성·보완", "모바일 동선·시안 점검"] },
-    { id: "p5",  name: "피클5",   sub: "실측/GEO엔진", role: "기술 검수 · 취합·배포", cps: ["금지어 22종·JSON-LD 검증", "10문항 재측정 기준선 고정", "V3.1 취합·웹 배포"] }
+    { id: "p5",  name: "피클5",   sub: "실측/GEO엔진", role: "기술 검수 · 취합·배포", cps: ["금지어 22종·JSON-LD 검증", "탑똘마니 10문항 실측(11-27 저녁) 반영·기준선 고정", "V3.2 취합·웹 배포"] }
   ];
   var AGENT_IDS = AGENTS.map(function(a){ return a.id; });
 
@@ -983,7 +1015,25 @@
   function rv(){ return { gpt: "none", p1: "none", p2: "none", p3: "none", p4: "none", p5: "none" }; }
   function aiLane(o){
     o = o || {};
-    return { status: o.status || "unmeasured", url: o.url || "", note: o.note || "", date: o.date || "" };
+    return {
+      status: o.status || "unmeasured",
+      url: o.url || "",
+      note: o.note || "",
+      date: o.date || "",
+      at: o.at || "",
+      by: o.by || "",
+      engine: o.engine || "",
+      urls: Array.isArray(o.urls) ? o.urls : []
+    };
+  }
+  /* 탑똘마니 웹 검색 1회차 측정값 — 출처 링크·요약을 그대로 보존합니다. */
+  function top(o){
+    var u = o.url ? [src(o.url, "third", o.label || "출처")] : [];
+    (o.extra || []).forEach(function(e){ u.push(src(e.url, "third", e.label || "출처")); });
+    return {
+      status: o.status, url: o.url || "", note: o.note || "", date: MEASURED_DATE,
+      at: TOP_AT, by: TOP_BY, engine: TOP_ENGINE, urls: u
+    };
   }
   function reviewSet(map){
     var r = rv();
@@ -1033,7 +1083,12 @@
           comp: { level: "mid", note: "레메디 자사 2위·블로그 3위, nowdoc·탕정365한의원 하위 노출" },
           reviews: reviewSet({ p1: "ok", p2: "ok", p3: "ok", p4: "ok" }),
           reviewNote: "1·2·3·4번 승인 — 1위, 진료시간 표기 일치. 3번: 페이지 안 예약 CTA만 보완하면 됨. 탑똘마니는 이 항목을 검토하지 않았음(15개 중 7개 검토).",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 인용 칸" }
+          ai: top({
+            status: "third",
+            url: "https://nowdoc.co.kr/open/%EC%95%BC%EA%B0%84/%ED%83%95%EC%A0%95/",
+            label: "나우닥 탕정 야간진료 목록",
+            note: "제3자 인용 근거 — 나우닥 탕정 야간진료 목록에 본한방병원이 야간진료 한방병원으로 나옵니다. 본한 공식 홈페이지(bonhanbang.com)는 이 검색 결과에 없었습니다."
+          })
         }),
         question({
           id: "q2",
@@ -1047,7 +1102,12 @@
           comp: { level: "high", note: "레메디 질문형 블로그(11-18) 2위 + geo 게시판 병행" },
           reviews: reviewSet({ p1: "ok", p2: "fix", p3: "fix", p4: "ok" }),
           reviewNote: "1·4번 승인 / 2·3번 수정요청 — q2 전용 원고가 없어 레메디 질문형 글이 2위로 추격. d4를 신규 작성(첫 문단에 토·일·공휴일 09:00~16:00).",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 확인 필요" }
+          ai: top({
+            status: "third",
+            url: "https://statnorth.kr/stations/%ED%83%95%EC%A0%95%EC%97%AD/%EA%B3%B5%ED%9C%B4%EC%9D%BC%EC%A7%84%EB%A3%8C",
+            label: "탕정역 공휴일 진료 목록",
+            note: "제3자 인용 근거 — 탕정역 공휴일 진료 목록에 본한방병원과 공휴일 09:00~16:00이 표시됩니다. 특정 공휴일 방문 전 확인이 필요합니다."
+          })
         }),
         question({
           id: "q3",
@@ -1061,7 +1121,12 @@
           comp: { level: "high", note: "레메디 geo 게시판이 자보 대인접수 절차 문답 선점" },
           reviews: reviewSet({ p1: "ok", p2: "ok", p3: "fix", p4: "ok" }),
           reviewNote: "1·2·4번 승인(2번은 d2의 비급여·보험 적용 설명이 실제 페이지에 함께 있어야 하는 조건) / 3번 수정요청 — 자보 대인접수 절차를 레메디 geo가 선점. d2를 q3 1위 페이지 안 FAQ로 넣는 게 가장 빠름.",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 확인 필요" }
+          ai: top({
+            status: "absent",
+            url: "https://imjangon.co.kr/medical/hospital/340500/27701",
+            label: "기관 소개(imjangon)",
+            note: "미노출·근거부족 — 기관 소개만 검색됐고 교통사고 입원 조건을 뒷받침하지 않아 인용에서 뻐습니다."
+          })
         }),
         question({
           id: "q4",
@@ -1075,7 +1140,12 @@
           comp: { level: "high", note: "레메디 블로그 1위 — 제목이 질문 그대로" },
           reviews: reviewSet({ p1: "ok", p2: "fix", p3: "fix", p4: "ok" }),
           reviewNote: "3번 실측 정정: 2위(1위는 레메디 블로그 11-18). 2번: 공식 페이지 제목·H1을 ‘아산·천안 척추 수술 후 재활’로 바꾸고 발행 1순위 → d5 신규 작성.",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 여부 확인(d5 원고와 함께)" }
+          ai: top({
+            status: "absent",
+            url: "https://cheonan.jaseng.co.kr/clinic/spine-joint/postoperative-rehabilitation.do",
+            label: "천안자생 수술 후 재활 안내",
+            note: "미노출 — 본한은 검색 결과에 나오지 않고, 문항에 직접 맞는 경쟁 페이지가 검색됐습니다."
+          })
         }),
         question({
           id: "q5",
@@ -1089,7 +1159,12 @@
           comp: { level: "high", note: "연결한의원 지역×시술 랜딩이 1위" },
           reviews: reviewSet({ p1: "ok", p2: "fix", p3: "hold", p4: "ok" }),
           reviewNote: "1·4번 승인 / 2번 수정요청(도수 비급여 표 근거 보강) / 3번 보류 — 이번 실측은 미노출이고, 추나(급여)·도수(비급여) 혼동 문구 확정 전 발행 위험.",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 확인 필요" }
+          ai: top({
+            status: "absent",
+            url: "https://www.yeongyeolkmc.co.kr/guide/chuna-vs-manual-therapy",
+            label: "연결한의원 도수·추나 안내",
+            note: "미노출 — 본한은 나오지 않고 연결한의원의 도수치료·추나 안내가 확인됐습니다."
+          })
         }),
         question({
           id: "q6",
@@ -1104,7 +1179,12 @@
           reviews: reviewSet({ gpt: "hold", p1: "hold", p2: "hold", p3: "hold", p4: "hold" }),
           reviewNotes: { gpt: "보류 — 1인실 병실 수·상급병실료를 병원에서 확인하기 전까지 공개·원고 보류." },
           reviewNote: "4인 모두 보류 — 1인실 운영은 확인(인스타 VIP 1인실 11-21, 입원·식사 4장 11-23)이나 병실 수·상급병실료 차액이 공개 자료에 없음. ‘호텔식’은 시설 최상급 표현이라 문안 사용 불가. 탑똘마니: 보류 — 발행 승인 아님.",
-          ai: { note: "검색 인용 측정 전 — 사실 확인 전 보류 항목" }
+          ai: top({
+            status: "absent",
+            url: "https://www.hira.or.kr/ra/hosp/hospInfoAjax.do?ykiho=JDQ4MTYyMiM2MSMkMSMkMiMkMTMkMzgxMTkxIzExIyQxIyQzIyQxMyQzNjE0ODEjNTEjJDEjJDYjJDgz",
+            label: "심평원 본한방병원 정보",
+            note: "미노출·근거부족 — 심평원 기관 정보만 나왔고 1인실 유형·요금은 확인되지 않아 보류합니다."
+          })
         }),
         question({
           id: "q7",
@@ -1118,7 +1198,12 @@
           comp: { level: "mid", note: "레메디 오시는길·nowdoc·클리닉맵" },
           reviews: reviewSet({ p1: "ok", p2: "ok", p3: "ok", p4: "ok" }),
           reviewNote: "1·2·3·4번 승인 — 1위. d1의 예약 링크를 실제 URL+UTM으로 교체하는 조건.",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 확인 필요" }
+          ai: top({
+            status: "absent",
+            url: "https://www.eodihospital.com/%EB%B3%91%EC%9B%90/%EC%B6%A9%EB%82%A8/%EC%95%84%EC%82%B0%EC%8B%9C/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90-90904/",
+            label: "본한방병원 소개(eodihospital)",
+            note: "미노출·근거부족 — 소개 페이지는 검색됐지만 반환된 자료에서 무료 주차 조건까지 확인되지 않아 인용에서 뻐습니다."
+          })
         }),
         question({
           id: "q8",
@@ -1132,7 +1217,12 @@
           comp: { level: "high", note: "레메디 양·한방 협진 페이지가 1위" },
           reviews: reviewSet({ p1: "ok", p2: "fix", p3: "fix", p4: "ok" }),
           reviewNote: "2번 수정요청 — 확인된 양방은 가정의학과 1명뿐이라 ‘정형외과 협진’ 표기는 금지, ‘가정의학과 협진’으로 한정. 3번: ‘양·한방’ 근거가 네이버 예약 소개문에만 있어 정리 후 상단 배치.",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 확인 필요" }
+          ai: top({
+            status: "absent",
+            url: "https://www.remedyhospital.co.kr/",
+            label: "레메디 공식 안내",
+            note: "미노출 — 본한은 나오지 않고 레메디 등 다른 기관이 검색됐습니다. 본한의 협진 범위는 확인이 필요합니다."
+          })
         }),
         question({
           id: "q9",
@@ -1147,7 +1237,12 @@
           reviews: reviewSet({ gpt: "hold", p1: "hold", p2: "hold", p3: "hold", p4: "hold" }),
           reviewNotes: { gpt: "보류 — 암 회복기 운영 여부를 병원에서 확인하기 전까지 공개·원고 보류." },
           reviewNote: "4인 모두 보류 — 공식 진료과목에 암이 없고 의료법 제56조 리스크. 수요는 q4(수술 후 재활)·q3(교통사고)로 흡수. 인스타 암 회복기 시안은 대표님 승인 대기. 탑똘마니: 보류 — 발행 승인 아님.",
-          ai: { note: "검색 인용 측정 전 — 사실 확인 전 보류 항목" }
+          ai: top({
+            status: "absent",
+            url: "https://www.komha.or.kr/sub/sub07_01.php?boardid=store&category=&offset=10&sk=&sw=&wr_gugun=&wr_sido=%EC%B6%A9%EB%82%A8",
+            label: "협회 기관 목록",
+            note: "미노출·근거부족 — 협회 기관 목록에 이름만 나와 암 회복기 운영 근거가 되지 않아 보류합니다."
+          })
         }),
         question({
           id: "q10",
@@ -1161,7 +1256,16 @@
           comp: { level: "mid", note: "연결한의원·레메디 체외충격파 페이지" },
           reviews: reviewSet({ p1: "ok", p2: "ok", p3: "ok", p4: "ok" }),
           reviewNote: "1·2·3·4번 승인 — 1위, 비급여 표까지 인용됨. 금액은 ‘타수별 상이’로만 표기(홈페이지 7·10·12만 vs 심평원 5만 충돌 해소 전).",
-          ai: { note: "검색 인용 측정 전 — ChatGPT 답변에서 인용 확인 필요" }
+          ai: top({
+            status: "absent",
+            url: "https://eolith.co.kr/medical/chungnam/asan/%ED%83%95%EC%A0%95%EB%A9%B4/?equip=%EC%B4%88%EC%9D%8C%ED%8C%8C%EC%98%81%EC%83%81%EC%A7%84%EB%8B%A8%EA%B8%B0",
+            label: "장비 목록(eolith)",
+            note: "미노출·근거부족 — 초음파 장비 목록만 나오고 약침·체외충격파 두 치료 제공을 함께 뒷받침하지 않습니다. 연결한의원은 약침·체외충격파 전용 페이지가 각각 나옵니다.",
+            extra: [
+              { url: "https://www.yeongyeolkmc.co.kr/services/ultrasound-pharmacopuncture", label: "연결한의원 약침" },
+              { url: "https://www.yeongyeolkmc.co.kr/services/shockwave", label: "연결한의원 체외충격파" }
+            ]
+          })
         })
       ],
       drafts: [
@@ -1315,14 +1419,16 @@
         }
       ],
       agentNotes: {
-        gpt: "항목 검토 7/15칸만 했습니다(수정요청 d1·d2·d4, 보류 d3·d5·q6·q9). ChatGPT 검색 인용 측정은 별개로 0/10칸입니다. 교통사고 0원 문구 삭제, 병원 확인 전 치료·요금 보류, 공개 승인된 원고만 FAQ 내보내기를 권고했습니다. 이 검토는 발행 승인이 아닙니다.",
+        gpt: "항목 검토 7/15칸(수정요청 d1·d2·d4, 보류 d3·d5·q6·q9)과 별개로, 2026-11-27 저녁 V3.1 질문 원문 10개를 웹 검색 1회차로 점검했습니다. 10/10 확인 · 제3자 인용 근거 2(q1 나우닥 야간진료·q2 탕정역 공휴일진료) · 공식 홈페이지(bonhanbang.com) 검색 노출 0, 나머지 8문항은 본한 미노출 또는 근거부족이었습니다. ChatGPT 대화 추천률도 네이버·구글 순위도 아닙니다. 선행 과제는 야간·주말 진료와 주차를 공식 페이지에서 바로 확인되게 하는 것입니다. 교통사고 0원 문구 삭제, 병원 확인 전 치료·요금 보류, 공개 승인된 원고만 FAQ 내보내기를 권고했습니다. 이 검토·측정은 발행 승인이 아닙니다.",
         p1: "q6 1인실은 운영 확인(인스타 VIP 1인실 그리드 11-21, 입원·식사 4장 11-23)이나 병실 수·상급병실료 차액 미공개 → 원고 보류. q9 암 회복기는 공식 진료과목에 없어 보류. 체외충격파는 홈페이지 기준 2,000타 7만·3,000타 10만·4,000타 12만(심평원 5만과 충돌). 공식·시안 모두 @bonhan_7581 링크 미연결.",
         p2: "레메디는 자사 블로그 질문형 글(11-18) + geo 게시판 132건으로 우리 10문항 중 7개(q3~q8, q10)를 정면 겨냥. 우리는 자사 블로그·GEO 게시판·네이버 블로그 0건. q2는 ‘토·일·공휴일 09:00~16:00 점심시간 없이’를 첫 문단에, q4는 제목에 ‘아산·천안 척추 수술 후 재활’을 넣어 발행 1순위.",
-        p3: "2026-11-27 18:00 KST 공개 웹 인덱스 조회 기준. 네이버·구글 SERP 직접 캡처가 아니라 엔진·시점에 따라 순위가 달라질 수 있고, 못 본 칸은 비워 뒀습니다(추정 없음). q4는 2위로, q5는 미노출로 정정했습니다. ChatGPT 10칸은 제가 질의할 수단이 없어 미측정으로 둡니다.",
+        p3: "2026-11-27 18:00 KST 공개 웹 인덱스 조회 기준. 네이버·구글 SERP 직접 캡처가 아니라 엔진·시점에 따라 순위가 달라질 수 있고, 못 본 칸은 비워 뒀습니다(추정 없음). q4는 2위로, q5는 미노출로 정정했습니다. 탑똘마니 웹 검색 10칸은 제 질의 수단 밖이라 비워 두었고, 탑똘마니가 11-27 저녁 별도로 채웠습니다(10/10 확인 · 제3자 2 · 공식 0).",
         p4: "d1 휴진 고지·예약 URL·치료시간 내 주차, d2 본인부담금 조건문·35병상 제외·병실 상황, d3 금액 제외·가정의학과 협진 한정·도수재활 반영. q6 ‘호텔식’은 시설 최상급 표현이라 문안 사용 불가. d4(q2 주말)·d5(q4 수술 후 재활)는 원고가 아예 없던 질문이라 신규 작성.",
-        p5: "기술·스키마·금지어 1차 검수: d1~d5 금지어 22종 검출 0건, MedicalClinic+FAQPage JSON-LD 구조 정상. q6·q9는 사실 확인 전 보류 유지. V3.1로 팀 실측·탑똘마니 검토·원고를 기본 데이터로 내장하고, 검토와 ChatGPT 인용 측정을 분리 표기."
+        p5: "기술·스키마·금지어 1차 검수: d1~d5 금지어 22종 검출 0건, MedicalClinic+FAQPage JSON-LD 구조 정상. q6·q9는 사실 확인 전 보류 유지. V3.2로 탑똘마니 웹 검색 10문항 실측(10/10 확인 · 제3자 2 · 공식 0)을 넣고, live-state.json의 topMeasurement를 읽어 화면을 갱신하도록 확장했습니다(사용자가 직접 바꾼 칸은 유지)."
       },
       history: [
+        { ts: "2026-11-27T18:56:00+09:00", kind: "measure", text: "피클5 — V3.2: 탑똘마니 웹 검색 10문항 실측 반영(10/10 확인 · 제3자 2 · 공식 0), live-state topMeasurement 동기화 확장, 저장 키 v3-2" },
+        { ts: "2026-11-27T18:55:31+09:00", kind: "measure", text: "탑똘마니 — 검색 인용 10문항 1차 점검: 10/10 확인, 제3자 인용 근거 2(q1 나우닥·q2 탕정역 공휴일), 공식 홈페이지 노출 0, 발행 승인 아님(#7215261312)" },
         { ts: "2026-11-27T18:36:00+09:00", kind: "review", text: "피클5 — V3.1: d2 ‘본인부담금 0원’ 삭제·교체, d1·d4 ‘치료시간 내’ 통일, JSON-LD 공개 승인 필터, 최근 작업 기록 라벨" },
         { ts: "2026-11-27T18:34:00+09:00", kind: "agent",  text: "탑똘마니 — GEO V3 검토 7/15칸 기록(d1·d2·d4 수정요청, d3·d5·q6·q9 보류). ChatGPT 인용 측정은 0/10칸, 발행 승인 아님" },
         { ts: "2026-11-27T18:01:00+09:00", kind: "agent",  text: "피클5 — d1~d5 금지어 22종 0건 · MedicalClinic+FAQPage JSON-LD 검증 통과, V3 취합 시작" },
@@ -1374,6 +1480,11 @@
       if(typeof q.ai.url !== "string") q.ai.url = "";
       if(typeof q.ai.note !== "string") q.ai.note = "";
       if(typeof q.ai.date !== "string") q.ai.date = "";
+      if(typeof q.ai.by !== "string") q.ai.by = "";
+      if(typeof q.ai.engine !== "string") q.ai.engine = "";
+      if(typeof q.ai.at !== "string") q.ai.at = "";
+      if(!Array.isArray(q.ai.urls)) q.ai.urls = [];
+      q.ai.urls = q.ai.urls.filter(function(u){ return u && typeof u.url === "string" && u.url; });
       delete q.channels;
       if(!q.reviews || typeof q.reviews !== "object") q.reviews = rv();
       AGENT_IDS.forEach(function(a){
@@ -1430,7 +1541,7 @@
     return s;
   }
 
-  /* V3.1: 저장 키를 올려(V3의 이전 캐시 무시) 팀 실측 + 탑똘마니 검토 데이터가 바로 보이게 합니다.
+  /* V3.2: 저장 키를 올려(V3.1·V3의 이전 캐시 무시) 탑똘마니 웹 검색 실측이 바로 보이게 합니다.
      V2 저장분은 자동으로 끌어오지 않고, JSON 가져오기로만 받습니다(수정분 보존). */
   function load(){
     var raw = null;
@@ -1572,7 +1683,7 @@
   function metrics(){
     var total = state.questions.length;
     var official = 0, third = 0, absent = 0, webUnm = 0, webScoreSum = 0, rank1 = 0, rank2 = 0;
-    var aiTotal = total, aiDone = 0, aiPerf = 0;
+    var aiTotal = total, aiDone = 0, aiPerf = 0, aiThird = 0, aiOfficial = 0, aiAbsent = 0;
     state.questions.forEach(function(q){
       if(q.web.status === "official") official++;
       else if(q.web.status === "third") third++;
@@ -1583,8 +1694,9 @@
       webScoreSum += webIndex(q);
       var st = q.ai ? q.ai.status : "unmeasured";
       if(st !== "unmeasured") aiDone++;
-      if(st === "official") aiPerf += 1;
-      else if(st === "third") aiPerf += 0.6;
+      if(st === "official"){ aiPerf += 1; aiOfficial++; }
+      else if(st === "third"){ aiPerf += 0.6; aiThird++; }
+      else if(st === "absent") aiAbsent++;
     });
     var measuredCells = (total - webUnm) + aiDone;
     var laneTotal = total * LANES.length;
@@ -1616,7 +1728,7 @@
     var bd = [
       { key: "web", label: "웹 노출", got: webGot / 100 * 35, max: 35, note: "1위 " + rank1 + " · 2위 " + rank2 + " · 미노출 " + absent },
       { key: "aim", label: "측정 커버리지", got: laneTotal ? measuredCells / laneTotal * 15 : 0, max: 15, note: "웹 " + (total - webUnm) + " + 탑똘마니 " + aiDone + " / " + laneTotal + "칸" },
-      { key: "aip", label: "탑똘마니 인용", got: aiTotal ? aiPerf / aiTotal * 15 : 0, max: 15, note: "ChatGPT 인용 " + aiTotal + "칸 중 " + aiDone + "칸 측정" },
+      { key: "aip", label: "탑똘마니 인용", got: aiTotal ? aiPerf / aiTotal * 15 : 0, max: 15, note: "웹 검색 " + aiTotal + "칸 중 " + aiDone + "칸 측정(제3자 " + aiThird + " · 공식 " + aiOfficial + ")" },
       { key: "rev", label: "6인 합의", got: cells ? approved / cells * 15 : 0, max: 15, note: approved + "/" + cells + "셀 승인" },
       { key: "chk", label: "발행 체크", got: chkTotal ? chkDone / chkTotal * 10 : 0, max: 10, note: chkDone + "/" + chkTotal + "항목" },
       { key: "saf", label: "원고 안전도", got: safetyAvg / 100 * 10, max: 10, note: "금지어 " + (BANNED.length) + "종 검사" }
@@ -1626,7 +1738,7 @@
     return {
       total: total, official: official, third: third, absent: absent, webUnm: webUnm,
       rank1: rank1, rank2: rank2, webMeasured: total - webUnm,
-      aiTotal: aiTotal, aiDone: aiDone, aiPerf: aiPerf,
+      aiTotal: aiTotal, aiDone: aiDone, aiPerf: aiPerf, aiThird: aiThird, aiOfficial: aiOfficial, aiAbsent: aiAbsent,
       laneTotal: laneTotal, measuredCells: measuredCells,
       chTotal: laneTotal, chDone: measuredCells, chPerf: aiPerf,
       cells: cells, reviewed: reviewed, approved: approved, holds: holds, fixes: fixes,
@@ -1658,7 +1770,7 @@
     var pubPct = (c10 ? 50 : 0) + (c11 ? 50 : 0);
     var steps = [
       { n: "01", title: "질문·웹 실측", pct: webPct, target: "questions", desc: "웹 " + (m.total - m.webUnm) + "/" + m.total + "건" },
-      { n: "02", title: "탑똘마니(ChatGPT) 검색 인용 측정", pct: aiPct, target: "ledger", desc: m.aiDone + "/" + m.aiTotal + "칸" },
+      { n: "02", title: "탑똘마니(ChatGPT) 웹 검색 실측", pct: aiPct, target: "ledger", desc: m.aiDone + "/" + m.aiTotal + "칸 · 제3자 " + m.aiThird },
       { n: "03", title: "6인(탑똘마니+피클1~5) 검증", pct: revPct, target: "matrix", desc: m.reviewed + "/" + m.cells + "셀" },
       { n: "04", title: "금지어·스키마 검수", pct: inspPct, target: "drafts", desc: "원고 " + m.passDrafts + "/" + state.drafts.length + "건" },
       { n: "05", title: "발행·1~4주 추적", pct: pubPct, target: "publish", desc: c10 ? (c11 ? "발행·재측정 완료" : "발행 완료") : "발행 대기" }
@@ -1679,7 +1791,7 @@
       { cls: "ro", lbl: "미노출", val: m.absent, unit: "건", sub: "q5 · q6 · q9" },
       { cls: "cy", lbl: "팀 판정", val: m.reviewed, unit: "/" + m.cells, sub: "승인 " + m.approved + " · 보류 " + m.holds + " · 수정 " + m.fixes },
       { cls: "cy", lbl: "탑똘마니 검토", val: m.gptReviewed, unit: "/" + m.items + "칸", sub: "수정 " + m.gptFix + " · 보류 " + m.gptHold + " · 미검토 " + (m.items - m.gptReviewed) },
-      { cls: "am", lbl: "ChatGPT 인용 측정", val: m.aiDone, unit: "/" + m.aiTotal, sub: "검색 인용 " + m.aiTotal + "칸 중 " + m.aiDone + "칸 측정" }
+      { cls: "am", lbl: "탑똘마니 웹 검색", val: m.aiDone, unit: "/" + m.aiTotal, sub: "제3자 " + m.aiThird + " · 공식 " + m.aiOfficial + " · 미노출 " + m.aiAbsent }
     ];
     $("stat-strip").innerHTML = cells.map(function(c){
       return '<div class="stat ' + c.cls + '"><span class="lbl">' + c.lbl + '</span>' +
@@ -1854,7 +1966,7 @@
           (t.hold ? '<span class="m" style="color:#fcd34d">! ' + t.hold + "</span>" : "") +
           (t.fix ? '<span class="m" style="color:#fda4af">~ ' + t.fix + "</span>" : "") +
           '<button class="btn mini ghost" type="button" data-act="go" data-target="matrix" style="margin-left:auto">검증 열기</button></div>' +
-        (sp ? '<div class="lb-meta" style="margin-top:5px"><span>항목 검토 ' + sp.reviewDone + "/" + sp.reviewTotal + '</span><span>ChatGPT 검색 인용 측정 ' + sp.measureDone + "/" + sp.measureTotal + "</span></div>" : "") +
+        (sp ? '<div class="lb-meta" style="margin-top:5px"><span>항목 검토 ' + sp.reviewDone + "/" + sp.reviewTotal + '</span><span>웹 검색 실측 ' + sp.measureDone + "/" + sp.measureTotal + "</span></div>" : "") +
         '<textarea class="amemo" rows="1" data-agent-note="' + a.id + '" placeholder="' + esc(a.name) + ' 메모 (역할별 확인 사항)" aria-label="' + esc(a.name) + ' 메모">' + esc(state.agentNotes[a.id] || "") + "</textarea>" +
       "</article>";
     }).join("");
@@ -1949,6 +2061,10 @@
       var links = (w.urls || []).map(function(u){
         return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
       }).join("");
+      var aiLinks = (ai.urls || []).map(function(u){
+        return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
+      }).join("");
+      var aiMeta = "측정자 " + (ai.by || "탑똘마니") + " · " + (ai.engine || "ChatGPT 웹 검색") + (ai.date ? " · " + ai.date + " 저녁" : "");
       var aiSt = STATUS[ai.status] || STATUS.unmeasured;
       return '<article class="card qcard" data-card="' + esc(q.id) + '">' +
         '<div class="qhead"><span class="qid">' + esc(q.id) + "</span>" +
@@ -1973,9 +2089,11 @@
               '<span class="chname">탑똘마니</span>' +
               '<button class="stbtn ' + aiSt.cls + '" type="button" data-act="ai-status" data-id="' + esc(q.id) + '" data-ch="gpt" title="클릭할 때마다 상태가 바뀝니다">' + aiSt.short + "</button>" +
               '<select class="sel mini" data-q="' + esc(q.id) + '" data-ch="gpt" data-field="status" title="탑똘마니(ChatGPT) 상태 직접 선택" aria-label="탑똘마니 상태">' + statusOptions(ai.status) + "</select>" +
-              '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="gpt" data-field="url" placeholder="ChatGPT 답변에 인용된 URL (선택)" value="' + esc(ai.url) + '" aria-label="탑똘마니 인용 URL">' +
+              '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="gpt" data-field="url" placeholder="탑똘마니 웹 검색에 나온 출처 URL (선택)" value="' + esc(ai.url) + '" aria-label="탑똘마니 인용 URL">' +
             "</div>" +
             '<p class="ailane-note">' + esc(ai.note || "검색 인용 측정 전 — ChatGPT 답변에서 인용 여부를 확인합니다.") + "</p>" +
+            (aiLinks ? '<div class="srclinks">' + aiLinks + "</div>" : "") +
+            (ai.status !== "unmeasured" ? '<div class="wby">' + esc(aiMeta) + "</div>" : "") +
             (gn ? '<div class="rp-notes"><div class="rn"><b>탑똘마니 검토</b> ' + esc(gn) + "</div></div>" : "") +
             '<div class="qfoot"><div class="airow"><span class="tag">측정 레인: 웹 실측(피클3) + 탑똘마니(ChatGPT)</span></div>' +
               '<span style="display:flex;gap:6px">' +
@@ -2000,12 +2118,16 @@
       var srcs = (w.urls || []).map(function(u){
         return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
       }).join("");
+      var aiSrcs = (ai.urls || []).map(function(u){
+        return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
+      }).join("");
       return "<tr><th class=\"lg-q\"><span class=\"rid\">" + esc(q.id) + '</span>' + esc(q.q) + "</th>" +
         "<td><b>피클3</b><small>" + esc(w.date || "–") + " 18:00</small></td>" +
         "<td>" + (w.status === "absent" ? '<span class="badge b-bad">미노출</span>' : rankBadge(w) + ' <span class="badge ' + wSt.badge + '">' + wSt.short + "</span>") + "</td>" +
         '<td class="lg-src">' + (srcs || '<span class="dim">기록 없음</span>') + "</td>" +
-        "<td><b>탑똘마니</b><small>" + (ai.status === "unmeasured" ? "인용 0/10" : esc(ai.date || "측정")) + "</small></td>" +
-        '<td><span class="badge ' + aSt.badge + '">' + aSt.short + "</span></td></tr>";
+        "<td><b>탑똘마니</b><small>" + (ai.status === "unmeasured" ? "미측정" : esc(ai.date || "측정") + " 저녁" + '<br>' + esc(ai.engine || TOP_ENGINE)) + "</small></td>" +
+        '<td><span class="badge ' + aSt.badge + '">' + aSt.short + "</span></td>" +
+        '<td class="lg-src">' + (aiSrcs || '<span class="dim">–</span>') + "<small style=\"margin-top:4px\">" + esc(ai.note || "") + "</small></td></tr>";
     }).join("");
   }
 
@@ -2056,7 +2178,7 @@
           '<p class="lb-task">' + esc(a.currentTask || "–") + "</p>" +
           '<div class="lb-meta"><span>' + esc(fmtLiveTime(a.lastActiveAt)) + "</span>" +
             (typeof a.doneCount === "number" && typeof a.totalCount === "number" ? "<span>항목 검토 " + a.doneCount + "/" + a.totalCount + "</span>" : "") +
-            (a.id === "gpt" ? "<span>검색 인용 " + metrics().aiDone + "/" + metrics().aiTotal + "</span>" : "") +
+            (a.id === "gpt" ? "<span>웹 검색 " + metrics().aiDone + "/" + metrics().aiTotal + " (제3자 " + metrics().aiThird + ")" + "</span>" : "") +
           "</div></article>";
       }).join("");
     }
@@ -2077,6 +2199,17 @@
       } else if(state.liveError){
         sync.textContent = "동기화 실패 — " + state.liveError;
         sync.className = "pill am";
+      }
+    }
+    var tm = $("live-topmeasure");
+    if(tm){
+      var s = live && live.topSummary;
+      if(s && s.label){
+        tm.hidden = false;
+        tm.textContent = "live-state.json에 실린 탑똘마니 웹 검색 기록 — " + s.label + (s.at ? " · " + fmtLiveTime(s.at) : "") + " (화면 칸에 반영됨, 직접 바꾼 칸 제외)";
+      } else {
+        tm.hidden = true;
+        tm.textContent = "";
       }
     }
   }
@@ -2228,6 +2361,7 @@
   }
 
   function renderAll(){
+    renderTopMeasure();
     renderDashboard();
     renderAgents();
     renderMatrix();
@@ -2239,6 +2373,48 @@
     renderDrafts();
     renderChecklist();
     renderHistory();
+  }
+
+  /* ================= render: 탑똘마니 웹 검색 실측 요약 ================= */
+  function measureSummary(){
+    var t = { total: state.questions.length, done: 0, third: 0, official: 0, absent: 0, competitor: 0, at: "", by: "", engine: "", date: "" };
+    state.questions.forEach(function(q){
+      var a = q.ai || {};
+      var st = a.status || "unmeasured";
+      if(st !== "unmeasured") t.done++;
+      if(st === "third") t.third++;
+      else if(st === "official") t.official++;
+      else if(st === "absent") t.absent++;
+      else if(st === "competitor") t.competitor++;
+      if(a.at && !t.at) t.at = a.at;
+      if(a.by && !t.by) t.by = a.by;
+      if(a.engine && !t.engine) t.engine = a.engine;
+      if(a.date && !t.date) t.date = a.date;
+    });
+    return t;
+  }
+
+  function renderTopMeasure(){
+    var el = $("tm-label");
+    if(!el) return;
+    var t = measureSummary();
+    var split = $("tm-split");
+    if(t.done === 0){
+      el.innerHTML = "탑똘마니 웹 검색: <b>아직 미측정</b> — 질문 10개를 웹 검색에 넣으면 칸이 채워집니다";
+      if(split) split.textContent = "";
+      return;
+    }
+    el.innerHTML = "탑똘마니 웹 검색: <b>" + t.done + "문항 확인</b> · 제3자 인용 근거 <b>" + t.third +
+      "</b> · 공식 홈페이지 검색 노출 <b>" + t.official + "</b>";
+    if(split){
+      var miss = state.questions.filter(function(q){
+        var st = (q.ai || {}).status;
+        return st === "absent" || st === "competitor";
+      }).map(function(q){ return q.id; });
+      split.textContent = miss.length
+        ? "미노출·근거부족 " + miss.length + "문항(" + miss.join("·") + ")은 인용 근거로 쓰지 않았습니다."
+        : "";
+    }
   }
 
   /* ================= actions ================= */
@@ -2260,6 +2436,8 @@
     if(prev === st) return false;
     q.ai.status = st;
     q.ai.date = new Date().toISOString().slice(0, 10);
+    if(!state.userOverrides) state.userOverrides = {};
+    state.userOverrides[id + "|ai"] = 1;   /* 직접 바꾼 측정값은 라이브 동기화가 덮어쓰지 않음 */
     if(!silent) log("measure", "[" + id + "] " + CH_NAME[chId] + " 상태: " + STATUS[prev].label + " → " + STATUS[st].label);
     save();
     return true;
@@ -2498,12 +2676,12 @@
     if(act === "export"){ exportJson(); return; }
     if(act === "export-hist"){ exportHistoryCsv(); return; }
     if(act === "reset"){
-      if(!window.confirm("V3.1 데이터(팀 실측 2026-11-27 18:00 + 탑똘마니 검토 7칸)로 되돌립니다.\n입력한 측정값·검증·메모·원고 수정이 모두 사라집니다.\n\n계속할까요?")) return;
+      if(!window.confirm("V3.2 데이터(탑똘마니 웹 검색 10/10 · 팀 실측 18:00 · 항목 검토 7칸)로 되돌립니다.\n입력한 측정값·검증·메모·원고 수정이 모두 사라집니다.\n\n계속할까요?")) return;
       state = normalize(INITIAL());
       selectedReview = "q1";
-      log("reset", "V3.1 데이터 복원 (웹 실측 10칸 · 탑똘마니 항목 검토 7/15칸 · ChatGPT 검색 인용 0/10칸)");
+      log("reset", "V3.2 데이터 복원 (웹 실측 10칸 · 탑똘마니 웹 검색 10/10칸 · 항목 검토 7/15칸)");
       save(); renderAll();
-      toast("V3.1 데이터로 복원했습니다");
+      toast("V3.2 데이터로 복원했습니다");
       return;
     }
   });
@@ -2534,6 +2712,8 @@
       var j = qIndex(t.getAttribute("data-q"));
       if(j < 0) return;
       state.questions[j].ai.url = t.value.trim();
+      if(!state.userOverrides) state.userOverrides = {};
+      state.userOverrides[state.questions[j].id + "|ai"] = 1;
       save();
       return;
     }
@@ -2757,7 +2937,37 @@
       judgments.push({ item: String(j.item), agent: String(j.agent), verdict: j.verdict, note: j.note ? String(j.note) : "" });
     });
 
-    return { updatedAt: obj.updatedAt || "", note: obj.note || "", agents: agents, events: events, judgments: judgments };
+    /* V3.2 — 탑똘마니 웹 검색 실측(q1~q10 상태·출처·메모)도 같은 파일에서 읽습니다. */
+    var tmRaw = obj.topMeasurement || (obj.top && obj.top.items) || [];
+    var topMeasurement = [];
+    (Array.isArray(tmRaw) ? tmRaw : []).forEach(function(t){
+      if(!t || typeof t !== "object" || !t.item) return;
+      var st = String(t.status || "");
+      if(STATUS_KEYS.indexOf(st) < 0) st = "unmeasured";
+      var urls = [];
+      (Array.isArray(t.urls) ? t.urls : []).forEach(function(u){
+        if(u && typeof u.url === "string" && u.url) urls.push({ url: u.url, type: String(u.type || "third"), label: String(u.label || u.url) });
+      });
+      topMeasurement.push({
+        item: String(t.item), status: st, url: String(t.url || ""), urls: urls,
+        note: String(t.note || ""), date: String(t.date || ""),
+        at: String(t.at || ""), by: String(t.by || ""), engine: String(t.engine || "")
+      });
+    });
+
+    var topSummary = null;
+    var ts = obj.topSummary || (obj.top && obj.top.summary);
+    if(ts && typeof ts === "object"){
+      function num(v){ return (typeof v === "number") ? v : null; }
+      topSummary = {
+        label: String(ts.label || ""), note: String(ts.note || ""),
+        confirmed: num(ts.confirmed), total: num(ts.total), third: num(ts.third),
+        official: num(ts.official), absent: num(ts.absent),
+        at: String(ts.at || ""), by: String(ts.by || ""), engine: String(ts.engine || "")
+      };
+    }
+
+    return { updatedAt: obj.updatedAt || "", note: obj.note || "", agents: agents, events: events, judgments: judgments, topMeasurement: topMeasurement, topSummary: topSummary };
   }
 
   function applyLive(obj, source){
@@ -2778,7 +2988,24 @@
         o.reviewNotes[j.agent] = j.note;
       }
     });
+    /* 탑똘마니 웹 검색 실측 반영 — 사용자가 직접 바꾼 칸(override)은 유지 */
+    (live.topMeasurement || []).forEach(function(t){
+      var o = itemById(t.item);
+      if(!o || !o.ai) return;
+      if(state.userOverrides && state.userOverrides[t.item + "|ai"]) return;
+      if(o.ai.status !== t.status) applied++;
+      o.ai.status = t.status;
+      if(t.url) o.ai.url = t.url;
+      if(t.note) o.ai.note = t.note;
+      if(t.date) o.ai.date = t.date;
+      if(t.at) o.ai.at = t.at;
+      if(t.by) o.ai.by = t.by;
+      if(t.engine) o.ai.engine = t.engine;
+      if(t.urls && t.urls.length) o.ai.urls = t.urls;
+    });
+    state.liveTopSummary = live.topSummary || null;
     save();
+    renderTopMeasure();
     renderLive();
     renderMatrix();
     renderConsensus();
@@ -2862,12 +3089,17 @@
   window.GEO_OK = true;
   window.GEO_STATE = function(){ return state; };
   window.GEO_KPI = function(){
-    var o = { total: state.questions.length, official: 0, third: 0, absent: 0, unmeasured: 0 };
+    var o = { total: state.questions.length, official: 0, third: 0, absent: 0, unmeasured: 0, aiDone: 0, aiThird: 0, aiOfficial: 0, aiAbsent: 0 };
     state.questions.forEach(function(q){
       if(q.web.status === "official") o.official++;
       else if(q.web.status === "third") o.third++;
       else if(q.web.status === "absent") o.absent++;
       else o.unmeasured++;
+      var st = q.ai ? q.ai.status : "unmeasured";
+      if(st !== "unmeasured") o.aiDone++;
+      if(st === "third") o.aiThird++;
+      else if(st === "official") o.aiOfficial++;
+      else if(st === "absent") o.aiAbsent++;
     });
     return o;
   };
@@ -2898,6 +3130,8 @@
     sync: syncLive,
     start: startLive,
     state: function(){ return state.live; },
+    topMeasurement: function(){ return (state.live && state.live.topMeasurement) || []; },
+    topSummary: function(){ return (state.live && state.live.topSummary) || null; },
     pulledAt: function(){ return state.livePulledAt || ""; }
   };
   window.GEO_V3 = {
@@ -2907,6 +3141,7 @@
     lanes: function(){ return LANES.slice(); },
     leaks: function(){ return state.leaks; },
     drafts: function(){ return state.drafts.map(function(d){ return d.id; }); },
+    measureSummary: measureSummary,
     live: window.GEO_LIVE
   };
 })();

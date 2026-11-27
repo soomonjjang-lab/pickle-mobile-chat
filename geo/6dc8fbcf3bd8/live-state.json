@@ -1,18 +1,20 @@
 {
   "version": 1,
-  "scope": "본한방병원 GEO 컨트롤타워 V3.1 — 공개 가능한 작업 상태만 담습니다(개인정보·비공개 경로 없음). 이 파일은 ‘최근 작업 기록’이며 접속 상태가 아닙니다.",
-  "updatedAt": "2026-11-27T18:39:15.248+09:00",
-  "note": "피클1~5·탑똘마니가 작업을 시작하면 status를 working으로, 끝나면 done으로 바꿔 이 파일을 커밋하세요. 열려 있는 화면은 60초 안에 받아 ‘마지막 작업 기록’으로 표시합니다(접속 여부 표시 아님). 탑똘마니의 항목 검토(doneCount)와 ChatGPT 검색 인용 측정은 별개 지표입니다.",
+  "scope": "본한방병원 GEO 컨트롤타워 V3.2 — 공개 가능한 작업 상태만 담습니다(개인정보·비공개 경로 없음). 이 파일은 ‘최근 작업 기록’이며 접속 상태가 아닙니다.",
+  "updatedAt": "2026-11-27T19:01:43.350+09:00",
+  "note": "피클1~5·탑똘마니가 작업을 시작하면 status를 working으로, 끝나면 done으로 바꿔 이 파일을 커밋하세요. 열려 있는 화면은 60초 안에 받아 ‘마지막 작업 기록’으로 표시합니다(접속 여부 표시 아님). topSummary·topMeasurement는 탑똘마니 웹 검색 실측으로, 화면의 q1~q10 측정 칸에 반영됩니다(사용자가 직접 바꾼 칸은 유지). 항목 검토(doneCount)와 웹 검색 실측은 별개 지표입니다.",
   "agents": [
     {
       "id": "gpt",
       "name": "탑똘마니",
       "role": "총괄 검증·최종 취합",
       "status": "done",
-      "currentTask": "의료광고·FAQ 검토 7/15: 수정 3·보류 4. 교통사고 0원 문구 삭제 권고, 승인 전 공개·FAQ 내보내기 보류.",
-      "lastActiveAt": "2026-11-27T18:32:03.928+09:00",
+      "currentTask": "검색 인용 10문항 1차 점검 완료 — 10/10 확인 · 제3자 인용 근거 2(q1 나우닥·q2 탕정역 공휴일) · 공식 홈페이지 노출 0 · 항목 검토 7/15는 별개",
+      "lastActiveAt": "2026-11-27T18:55:31+09:00",
       "doneCount": 7,
-      "totalCount": 15
+      "totalCount": 15,
+      "measureDone": 10,
+      "measureTotal": 10
     },
     {
       "id": "p1",
@@ -59,13 +61,23 @@
       "name": "피클5",
       "role": "실측·GEO엔진",
       "status": "done",
-      "currentTask": "V3.1 취합·배포 — 탑똘마니 검토 7칸 병합, JSON-LD 공개 승인 필터, 회귀 테스트 통과",
-      "lastActiveAt": "2026-11-27T18:39:15.248+09:00",
+      "currentTask": "V3.2 취합·배포 — 탑똘마니 웹 검색 10/10(제3자 2·공식 0) 반영, live-state topMeasurement 동기화 확장, 회귀 테스트",
+      "lastActiveAt": "2026-11-27T19:01:43.350+09:00",
       "doneCount": 5,
       "totalCount": 15
     }
   ],
   "events": [
+    {
+      "at": "2026-11-27T19:01:43.350+09:00",
+      "who": "피클5",
+      "text": "V3.2 배포 — 탑똘마니 웹 검색 10문항 실측(10/10 확인 · 제3자 인용 2 · 공식 홈페이지 노출 0) 반영, live-state topMeasurement 동기화 확장(직접 바꾼 칸 유지)"
+    },
+    {
+      "at": "2026-11-27T18:55:31+09:00",
+      "who": "탑똘마니",
+      "text": "검색 인용 10문항 1차 점검: 10/10 확인 · 제3자 인용 근거 2(q1 나우닥 야간진료·q2 탕정역 공휴일진료) · 공식 홈페이지 검색 노출 0 · 나머지 8문항 미노출/근거부족. 발행 승인 아님. 세부: PC 소통창 #7215261312"
+    },
     {
       "at": "2026-11-27T18:39:15.248+09:00",
       "who": "피클5",
@@ -115,11 +127,6 @@
       "at": "2026-11-27T17:56:00+09:00",
       "who": "피클1",
       "text": "q9 암 회복기 공식 안내 없음 · 체외충격파 2,000타 7만/3,000타 10만/4,000타 12만(심평원 5만과 충돌) · 인스타 링크 미연결"
-    },
-    {
-      "at": "2026-11-27T17:55:00+09:00",
-      "who": "피클1",
-      "text": "13:30 회차 승인 맞답글 2건 등록(17:53~17:55), 17:30 피드·댓글 4건 등록(17:51)"
     }
   ],
   "judgments": [
@@ -462,6 +469,200 @@
       "item": "q9",
       "agent": "gpt",
       "verdict": "hold"
+    }
+  ],
+  "topSummary": {
+    "label": "탑똘마니 웹 검색: 10문항 확인 · 제3자 인용 근거 2 · 공식 홈페이지 검색 노출 0",
+    "note": "ChatGPT 대화 추천률도 네이버·구글 순위도 아닙니다. 질문 원문 10개를 병원명 없이 웹 검색 1회차로 확인했고, 다른 AI에는 보내지 않았습니다. 이름만 나오거나 문항 조건을 뒷받침하지 않는 자료는 인용에서 뺐습니다. 발행 승인이 아닙니다. 근거 원문: Issue #1 #7215261312.",
+    "confirmed": 10,
+    "total": 10,
+    "third": 2,
+    "official": 0,
+    "absent": 8,
+    "at": "2026-11-27T18:55:31+09:00",
+    "by": "탑똘마니",
+    "engine": "ChatGPT 웹 검색 1회차"
+  },
+  "topMeasurement": [
+    {
+      "item": "q1",
+      "status": "third",
+      "url": "https://nowdoc.co.kr/open/%EC%95%BC%EA%B0%84/%ED%83%95%EC%A0%95/",
+      "urls": [
+        {
+          "url": "https://nowdoc.co.kr/open/%EC%95%BC%EA%B0%84/%ED%83%95%EC%A0%95/",
+          "type": "third",
+          "label": "나우닥 탕정 야간진료 목록"
+        }
+      ],
+      "note": "제3자 인용 근거 — 나우닥 탕정 야간진료 목록에 본한방병원이 야간진료 한방병원으로 나옵니다. 본한 공식 홈페이지(bonhanbang.com)는 이 검색 결과에 없었습니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q2",
+      "status": "third",
+      "url": "https://statnorth.kr/stations/%ED%83%95%EC%A0%95%EC%97%AD/%EA%B3%B5%ED%9C%B4%EC%9D%BC%EC%A7%84%EB%A3%8C",
+      "urls": [
+        {
+          "url": "https://statnorth.kr/stations/%ED%83%95%EC%A0%95%EC%97%AD/%EA%B3%B5%ED%9C%B4%EC%9D%BC%EC%A7%84%EB%A3%8C",
+          "type": "third",
+          "label": "탕정역 공휴일 진료 목록"
+        }
+      ],
+      "note": "제3자 인용 근거 — 탕정역 공휴일 진료 목록에 본한방병원과 공휴일 09:00~16:00이 표시됩니다. 특정 공휴일 방문 전 확인이 필요합니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q3",
+      "status": "absent",
+      "url": "https://imjangon.co.kr/medical/hospital/340500/27701",
+      "urls": [
+        {
+          "url": "https://imjangon.co.kr/medical/hospital/340500/27701",
+          "type": "third",
+          "label": "기관 소개(imjangon)"
+        }
+      ],
+      "note": "미노출·근거부족 — 기관 소개만 검색됐고 교통사고 입원 조건을 뒷받침하지 않아 인용에서 뻐습니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q4",
+      "status": "absent",
+      "url": "https://cheonan.jaseng.co.kr/clinic/spine-joint/postoperative-rehabilitation.do",
+      "urls": [
+        {
+          "url": "https://cheonan.jaseng.co.kr/clinic/spine-joint/postoperative-rehabilitation.do",
+          "type": "third",
+          "label": "천안자생 수술 후 재활 안내"
+        }
+      ],
+      "note": "미노출 — 본한은 검색 결과에 나오지 않고, 문항에 직접 맞는 경쟁 페이지가 검색됐습니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q5",
+      "status": "absent",
+      "url": "https://www.yeongyeolkmc.co.kr/guide/chuna-vs-manual-therapy",
+      "urls": [
+        {
+          "url": "https://www.yeongyeolkmc.co.kr/guide/chuna-vs-manual-therapy",
+          "type": "third",
+          "label": "연결한의원 도수·추나 안내"
+        }
+      ],
+      "note": "미노출 — 본한은 나오지 않고 연결한의원의 도수치료·추나 안내가 확인됐습니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q6",
+      "status": "absent",
+      "url": "https://www.hira.or.kr/ra/hosp/hospInfoAjax.do?ykiho=JDQ4MTYyMiM2MSMkMSMkMiMkMTMkMzgxMTkxIzExIyQxIyQzIyQxMyQzNjE0ODEjNTEjJDEjJDYjJDgz",
+      "urls": [
+        {
+          "url": "https://www.hira.or.kr/ra/hosp/hospInfoAjax.do?ykiho=JDQ4MTYyMiM2MSMkMSMkMiMkMTMkMzgxMTkxIzExIyQxIyQzIyQxMyQzNjE0ODEjNTEjJDEjJDYjJDgz",
+          "type": "third",
+          "label": "심평원 본한방병원 정보"
+        }
+      ],
+      "note": "미노출·근거부족 — 심평원 기관 정보만 나왔고 1인실 유형·요금은 확인되지 않아 보류합니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q7",
+      "status": "absent",
+      "url": "https://www.eodihospital.com/%EB%B3%91%EC%9B%90/%EC%B6%A9%EB%82%A8/%EC%95%84%EC%82%B0%EC%8B%9C/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90-90904/",
+      "urls": [
+        {
+          "url": "https://www.eodihospital.com/%EB%B3%91%EC%9B%90/%EC%B6%A9%EB%82%A8/%EC%95%84%EC%82%B0%EC%8B%9C/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90-90904/",
+          "type": "third",
+          "label": "본한방병원 소개(eodihospital)"
+        }
+      ],
+      "note": "미노출·근거부족 — 소개 페이지는 검색됐지만 반환된 자료에서 무료 주차 조건까지 확인되지 않아 인용에서 뻐습니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q8",
+      "status": "absent",
+      "url": "https://www.remedyhospital.co.kr/",
+      "urls": [
+        {
+          "url": "https://www.remedyhospital.co.kr/",
+          "type": "third",
+          "label": "레메디 공식 안내"
+        }
+      ],
+      "note": "미노출 — 본한은 나오지 않고 레메디 등 다른 기관이 검색됐습니다. 본한의 협진 범위는 확인이 필요합니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q9",
+      "status": "absent",
+      "url": "https://www.komha.or.kr/sub/sub07_01.php?boardid=store&category=&offset=10&sk=&sw=&wr_gugun=&wr_sido=%EC%B6%A9%EB%82%A8",
+      "urls": [
+        {
+          "url": "https://www.komha.or.kr/sub/sub07_01.php?boardid=store&category=&offset=10&sk=&sw=&wr_gugun=&wr_sido=%EC%B6%A9%EB%82%A8",
+          "type": "third",
+          "label": "협회 기관 목록"
+        }
+      ],
+      "note": "미노출·근거부족 — 협회 기관 목록에 이름만 나와 암 회복기 운영 근거가 되지 않아 보류합니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
+    },
+    {
+      "item": "q10",
+      "status": "absent",
+      "url": "https://eolith.co.kr/medical/chungnam/asan/%ED%83%95%EC%A0%95%EB%A9%B4/?equip=%EC%B4%88%EC%9D%8C%ED%8C%8C%EC%98%81%EC%83%81%EC%A7%84%EB%8B%A8%EA%B8%B0",
+      "urls": [
+        {
+          "url": "https://eolith.co.kr/medical/chungnam/asan/%ED%83%95%EC%A0%95%EB%A9%B4/?equip=%EC%B4%88%EC%9D%8C%ED%8C%8C%EC%98%81%EC%83%81%EC%A7%84%EB%8B%A8%EA%B8%B0",
+          "type": "third",
+          "label": "장비 목록(eolith)"
+        },
+        {
+          "url": "https://www.yeongyeolkmc.co.kr/services/ultrasound-pharmacopuncture",
+          "type": "third",
+          "label": "연결한의원 약침"
+        },
+        {
+          "url": "https://www.yeongyeolkmc.co.kr/services/shockwave",
+          "type": "third",
+          "label": "연결한의원 체외충격파"
+        }
+      ],
+      "note": "미노출·근거부족 — 초음파 장비 목록만 나오고 약침·체외충격파 두 치료 제공을 함께 뒷받침하지 않습니다. 연결한의원은 약침·체외충격파 전용 페이지가 각각 나옵니다.",
+      "date": "2026-11-27",
+      "at": "2026-11-27T18:55:31+09:00",
+      "by": "탑똘마니",
+      "engine": "ChatGPT 웹 검색 1회차"
     }
   ]
 }
