@@ -252,7 +252,7 @@
   .step:hover .st{color:#fff}
 
   /* ============ sections ============ */
-  .sect,#dash,#pipeline{margin-top:30px;scroll-margin-top:96px}
+  .sect,#dash,#pipeline{margin-top:30px;scroll-margin-top:112px}
   .sect-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
   .sect-head h2{font-size:19px;letter-spacing:-.45px;font-weight:900}
   .sect-head p{font-size:12.5px;color:var(--muted);margin-top:3px;max-width:64ch}
@@ -411,7 +411,7 @@
   .check.fail{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.35);color:#fda4af}
   .chips{display:flex;gap:4px;flex-wrap:wrap;width:100%}
   .chip-h{font-size:10px;font-weight:800;border-radius:6px;padding:1px 6px;background:rgba(2,6,23,.45);border:1px solid currentColor}
-  .hlbox{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:rgba(2,6,23,.4);padding:9px 11px;max-height:170px;overflow:auto}
+  .hlbox{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:rgba(2,6,23,.4);padding:9px 11px;max-height:210px;overflow:auto}
   .hlbox .etitle{font-size:10px;font-weight:800;color:var(--dim);letter-spacing:.05em}
   .hl{font-size:11.5px;line-height:1.75;color:#9fb0c7;margin-top:5px;white-space:pre-wrap;word-break:keep-all}
   mark.hl-h{background:rgba(251,113,133,.26);color:#fecdd3;border-bottom:1px solid rgba(251,113,133,.8);padding:0 1px;border-radius:2px}
@@ -440,8 +440,8 @@
   .chk{display:flex;gap:11px;align-items:flex-start;padding:11px 2px;border-bottom:1px solid rgba(148,163,184,.08);cursor:pointer}
   .chk:last-child{border-bottom:0}
   .chk input{width:17px;height:17px;margin-top:3px;accent-color:var(--em);flex:0 0 auto;cursor:pointer}
-  .chk .ct{font-size:13px;font-weight:700;color:var(--txt)}
-  .chk .cn{font-size:11.5px;color:var(--muted);margin-top:2px;white-space:pre-line;line-height:1.6}
+  .chk .ct{display:block;font-size:13px;font-weight:700;color:var(--txt)}
+  .chk .cn{display:block;font-size:11.5px;color:var(--muted);margin-top:3px;white-space:pre-line;line-height:1.6}
   .chk.done .ct{color:var(--muted);text-decoration:line-through}
   .publish-order{margin-top:12px}
   .publish-order ol{margin:8px 0 0;padding-left:20px;font-size:12.5px;color:#c7d2e3;line-height:1.9}
@@ -1699,7 +1699,7 @@
       var s = draftSafety(d);
       return '<article class="card dcard" data-draft-card="' + esc(d.id) + '">' +
         '<div class="dhead"><h3>' + esc(d.title) + "</h3>" +
-          '<div class="safe" style="min-width:200px"><span class="meter" data-safe-bar="' + esc(d.id) + '"><i style="width:' + s + "%;background:" + safetyColor(s) + '"></i></span>' +
+          '<div class="safe" style="width:190px;flex:0 0 190px"><span class="meter" data-safe-bar="' + esc(d.id) + '"><i style="width:' + s + "%;background:" + safetyColor(s) + '"></i></span>' +
           '<b data-safe-num="' + esc(d.id) + '" style="color:' + safetyColor(s) + '">안전도 ' + s + "</b></div></div>" +
         '<p class="dq">질문: ' + esc(d.question) + "</p>" +
         (chips ? '<div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">' + chips + "</div>" : "") +
