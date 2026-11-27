@@ -53,7 +53,7 @@
     -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
     border-bottom:1px solid var(--line);
   }
-  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:13px;padding-bottom:13px;flex-wrap:wrap}
+  .topbar-in{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:13px;padding-bottom:13px;flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:12px;min-width:0}
   .logo{
     width:42px;height:42px;border-radius:13px;flex:0 0 auto;display:grid;place-items:center;
@@ -223,6 +223,7 @@
   .feed-list span{font-size:12px;color:#cbd5e1;line-height:1.5;word-break:keep-all}
   .feed-empty{font-size:12px;color:var(--dim);text-align:center;padding:26px 6px;line-height:1.7}
   .feed-list li.feed-empty{display:block;border-left:0;margin-left:0;padding:26px 8px}
+  .feed-list.is-empty{display:flex;align-items:center;justify-content:center}
   .feed-list li.feed-empty::before{display:none}
   .feed .btn{margin-top:12px;width:100%}
 
@@ -486,7 +487,7 @@
   @media (max-width:680px){
     body{font-size:14.5px}
     .wrap{padding:0 14px}
-    .bar{padding-top:10px;padding-bottom:10px}
+    .topbar-in{padding-top:10px;padding-bottom:10px}
     .brand-txt small{display:none}
     .bar-right .chip{display:none}
     .stats{grid-template-columns:repeat(2,1fr)}
@@ -501,8 +502,8 @@
     .step .pct{margin:0;display:inline;font-size:10px}
     .step .pbar{display:none}
     .qhead{flex-wrap:wrap}
-    .runrow{grid-template-columns:58px 1fr;grid-template-areas:"n s" "u u";}
-    .runrow .chname{grid-area:n}.runrow .stbtn{grid-area:s}.runrow select{display:none}.runrow input{grid-area:u}
+    .runrow{grid-template-columns:58px 1fr 26px;grid-template-areas:"n s d" "u u u";}
+    .runrow .chname{grid-area:n}.runrow .stbtn{grid-area:s}.runrow select.sel.mini{grid-area:d;display:block}.runrow input{grid-area:u}
     .hist li{grid-template-columns:1fr;gap:2px}
   }
 </style>
@@ -511,7 +512,7 @@
 <a class="skip" href="#dash">본문으로 이동</a>
 
 <header class="topbar">
-  <div class="bar wrap">
+  <div class="topbar-in wrap">
     <a class="brand" href="#dash" data-act="go" data-target="dash" aria-label="대시보드로">
       <span class="logo" aria-hidden="true">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
@@ -1455,10 +1456,12 @@
     if(!host) return;
     var m = metrics();
     if(!state.history.length){
+      host.className = "feed-list is-empty";
       host.innerHTML = '<li class="feed-empty">아직 기록이 없습니다.<br>AI 상태·검증 판정·원고 수정·복사 등<br>조작을 하면 이 타임라인에 실시간으로 쌓입니다.<br><br>' +
         '<span style="color:#64748b">현재 합의율 ' + (m.consensus === null ? "–" : Math.round(m.consensus) + "%") + " · 점수 " + m.score + "/100</span></li>";
       return;
     }
+    host.className = "feed-list";
     host.innerHTML = state.history.slice(0, 14).map(function(h){
       return '<li class="k-' + esc(h.kind) + '"><time>' + esc(fmtShort(h.ts)) + "</time><span>" + esc(h.text) + "</span></li>";
     }).join("");
