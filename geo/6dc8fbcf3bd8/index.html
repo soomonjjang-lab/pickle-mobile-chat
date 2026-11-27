@@ -3,342 +3,728 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>본한방병원 GEO 모니터 (1차)</title>
-<meta name="description" content="본한방병원의 AI 검색 노출·인용 출처·원고 초안·수정 이력을 한 화면에서 관리하는 1차 정적 웹 도구">
+<title>본한방병원 GEO 컨트롤타워 V2</title>
+<meta name="description" content="본한방병원 AI 검색 노출 실측·6인 교차 검증·원고 검수·발행 추적을 한 화면에서 굴리는 GEO 컨트롤타워 V2 (단일 HTML, 외부 리소스 없음)">
 <style>
   :root{
-    --orange:#DB4E14;
-    --orange-dark:#B93F0E;
-    --orange-soft:#FDF1EA;
-    --slate-900:#0F172A;
-    --slate-700:#334155;
-    --slate-500:#64748B;
-    --slate-300:#CBD5E1;
-    --line:#E5E9EF;
-    --bg:#F6F7F9;
-    --white:#FFFFFF;
-    --ok:#0F766E;
-    --ok-soft:#E6F5F2;
-    --warn:#B45309;
-    --warn-soft:#FEF3E2;
-    --bad:#B91C1C;
-    --bad-soft:#FDECEC;
-    --radius:14px;
-    --shadow:0 1px 2px rgba(15,23,42,.05), 0 8px 24px rgba(15,23,42,.05);
+    --bg:#05080f;
+    --panel:#0a1220;
+    --panel-2:#0d1729;
+    --line:rgba(148,163,184,.14);
+    --line-2:rgba(148,163,184,.24);
+    --txt:#e8eefb;
+    --muted:#94a3b8;
+    --dim:#64748b;
+    --em:#34d399;
+    --em-d:#10b981;
+    --cy:#38bdf8;
+    --am:#fbbf24;
+    --ro:#fb7185;
+    --vi:#a78bfa;
+    --r:18px;
+    --shadow:0 30px 60px -34px rgba(0,0,0,.95), 0 2px 10px rgba(0,0,0,.35);
+    --inset:inset 0 1px 0 rgba(255,255,255,.055);
   }
   *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
   html,body{margin:0;padding:0}
   body{
-    background:var(--bg);color:var(--slate-900);line-height:1.55;
+    background:
+      radial-gradient(1100px 620px at 12% -12%, rgba(16,185,129,.13), transparent 62%),
+      radial-gradient(900px 520px at 92% -6%, rgba(56,189,248,.12), transparent 58%),
+      radial-gradient(900px 700px at 50% 110%, rgba(167,139,250,.07), transparent 60%),
+      var(--bg);
+    color:var(--txt);line-height:1.55;font-size:15px;-webkit-text-size-adjust:100%;
     font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR","Segoe UI",sans-serif;
-    font-size:15px;-webkit-text-size-adjust:100%;
+    min-height:100vh;
   }
-  a{color:var(--orange-dark)}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 18px}
+  a{color:#7dd3fc;text-decoration:none}
+  a:hover{color:#bae6fd}
+  h1,h2,h3,h4,p{margin:0}
+  button{font:inherit}
+  .wrap{width:100%;max-width:1240px;margin:0 auto;padding:0 20px}
+  .skip{position:absolute;left:-9999px}
+  .skip:focus{left:12px;top:8px;background:#0f172a;padding:8px 12px;border-radius:8px;z-index:99}
 
-  /* header */
-  .top{background:var(--white);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:20}
-  .top-inner{display:flex;gap:14px;align-items:center;justify-content:space-between;padding-top:14px;padding-bottom:14px;flex-wrap:wrap}
-  .brand{display:flex;gap:12px;align-items:center;min-width:0}
-  .dot{width:10px;height:10px;border-radius:50%;background:var(--orange);flex:0 0 auto;box-shadow:0 0 0 4px var(--orange-soft)}
-  .brand h1{font-size:18px;margin:0;letter-spacing:-.3px;display:flex;align-items:center;gap:8px}
-  .tag{font-size:11px;font-weight:700;color:var(--orange);background:var(--orange-soft);border-radius:999px;padding:2px 8px;letter-spacing:0}
-  .brand .sub{margin:2px 0 0;font-size:12px;color:var(--slate-500)}
-  .actions{display:flex;gap:8px;flex-wrap:wrap}
+  /* ============ top bar ============ */
+  .topbar{
+    position:sticky;top:0;z-index:40;
+    background:linear-gradient(180deg, rgba(7,12,22,.94), rgba(7,12,22,.80));
+    -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+    border-bottom:1px solid var(--line);
+  }
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-top:13px;padding-bottom:13px;flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .logo{
+    width:42px;height:42px;border-radius:13px;flex:0 0 auto;display:grid;place-items:center;
+    background:linear-gradient(145deg, rgba(52,211,153,.22), rgba(56,189,248,.14));
+    border:1px solid rgba(52,211,153,.35);
+    box-shadow:var(--inset), 0 8px 24px -10px rgba(16,185,129,.55);
+  }
+  .brand-txt{display:flex;flex-direction:column;min-width:0}
+  .brand-txt strong{font-size:16.5px;letter-spacing:-.4px;font-weight:800;white-space:nowrap}
+  .brand-txt strong em{font-style:normal;color:var(--em)}
+  .brand-txt small{font-size:11.5px;color:var(--muted);letter-spacing:-.1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .live{display:inline-flex;align-items:center;gap:6px;font-size:10.5px;font-weight:800;letter-spacing:.14em;color:var(--em)}
+  .live i{width:7px;height:7px;border-radius:50%;background:var(--em);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:pulse 2.2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(52,211,153,.55)}70%{box-shadow:0 0 0 9px rgba(52,211,153,0)}100%{box-shadow:0 0 0 0 rgba(52,211,153,0)}}
+  .chip{font-size:11.5px;font-weight:700;color:var(--muted);background:rgba(148,163,184,.08);border:1px solid var(--line);border-radius:999px;padding:4px 10px;white-space:nowrap}
   .btn{
-    font:inherit;font-size:13px;font-weight:600;cursor:pointer;
-    border:1px solid var(--line);background:var(--white);color:var(--slate-700);
-    padding:8px 13px;border-radius:10px;transition:.15s;display:inline-flex;align-items:center;gap:6px;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;white-space:nowrap;
+    color:var(--txt);background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+    border:1px solid var(--line-2);border-radius:11px;padding:8px 12px;
+    transition:transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    box-shadow:var(--inset);
   }
-  .btn:hover{border-color:var(--slate-300);background:#FAFBFC}
-  .btn.primary{background:var(--orange);border-color:var(--orange);color:#fff}
-  .btn.primary:hover{background:var(--orange-dark);border-color:var(--orange-dark)}
-  .btn.ghost{color:var(--slate-500)}
-  .btn.mini{padding:5px 9px;font-size:12px;border-radius:8px}
+  .btn:hover{transform:translateY(-1px);border-color:rgba(52,211,153,.45);box-shadow:var(--inset),0 10px 22px -14px rgba(52,211,153,.7)}
+  .btn:active{transform:translateY(0)}
+  .btn.primary{background:linear-gradient(180deg,#34d399,#10b981);color:#04140e;border-color:#34d399;font-weight:800}
+  .btn.primary:hover{box-shadow:var(--inset),0 12px 26px -12px rgba(52,211,153,.85)}
+  .btn.ghost{background:transparent;color:var(--muted);border-color:var(--line)}
+  .btn.ghost:hover{color:var(--txt);border-color:var(--line-2);box-shadow:none}
+  .btn.mini{padding:5px 10px;font-size:11.5px;border-radius:9px}
+  .secnav{display:flex;gap:6px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+  .secnav::-webkit-scrollbar{display:none}
+  .secnav a{
+    font-size:12px;font-weight:700;color:var(--muted);padding:6px 11px;border-radius:999px;
+    border:1px solid transparent;white-space:nowrap;transition:.16s;
+  }
+  .secnav a:hover{color:var(--txt);background:rgba(148,163,184,.08)}
+  .secnav a.on{color:#04140e;background:linear-gradient(180deg,#5eead4,#34d399);border-color:rgba(52,211,153,.6)}
 
-  /* notice */
+  /* ============ generic card ============ */
+  .card{
+    position:relative;background:linear-gradient(180deg, rgba(255,255,255,.045), rgba(255,255,255,.012)), var(--panel);
+    border:1px solid var(--line);border-radius:var(--r);
+    box-shadow:var(--inset), var(--shadow);
+    padding:18px;
+    transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    overflow:hidden;
+  }
+  .card::before{
+    content:"";position:absolute;inset:0 0 auto 0;height:1px;
+    background:linear-gradient(90deg, transparent, rgba(52,211,153,.5), rgba(56,189,248,.35), transparent);
+    opacity:.7;pointer-events:none;
+  }
+  .card:hover{transform:translateY(-2px);border-color:var(--line-2);box-shadow:var(--inset),0 36px 70px -34px rgba(0,0,0,1)}
+  .card-head{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .card-head h2{font-size:14px;letter-spacing:.02em;font-weight:800;text-transform:none}
+  .card-head .hint{margin:0}
+  .hint{font-size:12px;color:var(--muted);margin:6px 0 0;line-height:1.6}
+  .fine{font-size:11.5px;color:var(--dim);margin-top:12px;line-height:1.65}
+  .pill{font-size:11px;font-weight:800;color:var(--muted);border:1px solid var(--line);background:rgba(148,163,184,.07);border-radius:999px;padding:3px 9px;white-space:nowrap}
+  .pill.em{color:var(--em);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.1)}
+  .pill.am{color:var(--am);border-color:rgba(251,191,36,.35);background:rgba(251,191,36,.1)}
+
+  /* ============ notice ============ */
   .notice{
-    margin-top:18px;background:var(--white);border:1px solid var(--line);border-left:4px solid var(--orange);
-    border-radius:12px;padding:13px 16px;font-size:13.5px;color:var(--slate-700);
+    display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:flex-start;
+    margin-top:20px;padding:14px 16px;border-radius:14px;
+    background:linear-gradient(90deg, rgba(52,211,153,.10), rgba(56,189,248,.05) 45%, transparent);
+    border:1px solid rgba(52,211,153,.22);
   }
-  .notice b{color:var(--slate-900)}
-  .notice .mini-line{display:block;margin-top:6px;color:var(--slate-500);font-size:12.5px}
+  .notice .ic{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;background:rgba(52,211,153,.14);border:1px solid rgba(52,211,153,.3);color:var(--em);font-weight:900;font-size:13px}
+  .notice b{color:#fff}
+  .notice p{font-size:13px;color:#c7d2e3}
+  .notice .mini-line{display:block;margin-top:5px;font-size:11.5px;color:var(--muted)}
 
-  /* kpi */
-  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
-  .kpi{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:14px 16px;box-shadow:var(--shadow)}
-  .kpi .label{font-size:12.5px;color:var(--slate-500);margin:0 0 6px}
-  .kpi .num{font-size:28px;font-weight:800;letter-spacing:-1px;line-height:1.1}
-  .kpi .num small{font-size:13px;font-weight:600;color:var(--slate-500);margin-left:3px}
-  .kpi.o .num{color:var(--orange)}
-  .kpi.g .num{color:var(--ok)}
-  .kpi.b .num{color:var(--warn)}
-  .kpi .foot{font-size:11.5px;color:var(--slate-500);margin-top:5px}
-
-  /* tabs */
-  .tabs{display:flex;gap:4px;margin-top:22px;border-bottom:1px solid var(--line);overflow-x:auto}
-  .tab{
-    font:inherit;font-size:14px;font-weight:600;cursor:pointer;border:0;background:none;color:var(--slate-500);
-    padding:11px 15px;border-bottom:2px solid transparent;white-space:nowrap;
+  /* ============ stat strip ============ */
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-top:14px}
+  .stat{
+    position:relative;padding:14px 15px;border-radius:14px;border:1px solid var(--line);
+    background:linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.01)), var(--panel-2);
+    box-shadow:var(--inset);
+    transition:transform .18s ease, border-color .18s ease;
   }
-  .tab[aria-selected="true"]{color:var(--orange);border-bottom-color:var(--orange)}
-  .panel{padding:18px 0 60px}
-  .panel[hidden]{display:none}
+  .stat:hover{transform:translateY(-2px);border-color:var(--line-2)}
+  .stat .lbl{font-size:11px;color:var(--muted);font-weight:700;letter-spacing:.02em}
+  .stat .val{font-size:26px;font-weight:900;letter-spacing:-.04em;line-height:1.15;margin-top:2px;font-variant-numeric:tabular-nums}
+  .stat .val small{font-size:12px;font-weight:700;color:var(--muted);margin-left:2px;letter-spacing:0}
+  .stat .sub{font-size:10.5px;color:var(--dim);margin-top:2px}
+  .stat.em .val{color:var(--em)}
+  .stat.cy .val{color:var(--cy)}
+  .stat.ro .val{color:var(--ro)}
+  .stat.am .val{color:var(--am)}
 
-  /* cards */
-  .card{background:var(--white);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow);margin-bottom:12px}
-  .card h3{margin:0;font-size:15px;letter-spacing:-.2px}
-  .card .qtext{font-size:15.5px;font-weight:700;letter-spacing:-.3px;margin:0}
-  .rowhead{display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}
-  .idchip{font-size:11px;font-weight:700;color:var(--slate-500);background:#F1F5F9;border-radius:6px;padding:2px 7px}
+  /* ============ dashboard ============ */
+  .dash{display:grid;grid-template-columns:repeat(12,1fr);gap:14px;margin-top:16px}
+  .gauge{grid-column:span 4;display:flex;flex-direction:column}
+  .chart{grid-column:span 5}
+  .feed{grid-column:span 3;display:flex;flex-direction:column}
+  .occ-card{grid-column:span 12}
+  .ring-wrap{position:relative;width:min(230px,100%);margin:0 auto;aspect-ratio:1/1}
+  .ring{width:100%;height:100%;display:block;filter:drop-shadow(0 10px 30px rgba(16,185,129,.18))}
+  .ring-track{fill:none;stroke:rgba(148,163,184,.14);stroke-width:14}
+  .ring-val{fill:none;stroke:url(#ringGrad);stroke-width:14;stroke-linecap:round;transition:stroke-dashoffset .9s cubic-bezier(.22,1,.36,1)}
+  .ring-inner{fill:none;stroke:rgba(148,163,184,.10);stroke-width:1;stroke-dasharray:3 6}
+  .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;pointer-events:none}
+  .ring-center b{font-size:46px;font-weight:900;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums;
+    background:linear-gradient(180deg,#e8fff8,#34d399);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .ring-center span{font-size:12px;color:var(--dim);font-weight:700;margin-top:2px}
+  .ring-center small{margin-top:7px;font-size:11px;font-weight:800;color:var(--em);background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.25);padding:2px 9px;border-radius:999px}
+  .ring-note{font-size:11.5px;color:var(--muted);text-align:center;margin:8px 0 14px;line-height:1.6}
+  .breakdown{display:grid;gap:7px;border-top:1px solid var(--line);padding-top:12px;margin-top:auto}
+  .bd{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center}
+  .bd .n{font-size:11.5px;color:var(--muted);font-weight:700}
+  .bd .v{font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .bd .bar{grid-column:1/-1;height:5px;border-radius:99px;background:rgba(148,163,184,.12);overflow:hidden}
+  .bd .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--em-d),var(--cy));transition:width .7s cubic-bezier(.22,1,.36,1)}
+  .bd.b0 .bar i{background:linear-gradient(90deg,#475569,#64748b)}
 
-  .badge{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;border-radius:999px;padding:3px 10px;white-space:nowrap}
-  .b-official{background:var(--ok-soft);color:var(--ok)}
-  .b-third{background:#EEF2FF;color:#3730A3}
-  .b-absent{background:var(--bad-soft);color:var(--bad)}
-  .b-unmeasured{background:#F1F5F9;color:var(--slate-500)}
-  .b-warn{background:var(--warn-soft);color:var(--warn)}
+  /* radar + occupancy */
+  .radar-wrap{width:100%;max-width:400px;margin:0 auto}
+  #radar{width:100%;height:auto;display:block;overflow:visible}
+  #radar text{font-size:10px;fill:#94a3b8;font-weight:700}
+  #radar .axis{stroke:rgba(148,163,184,.12);stroke-width:1}
+  #radar .grid{fill:none;stroke:rgba(148,163,184,.10);stroke-width:1}
+  #radar .poly-bonhan{fill:rgba(52,211,153,.16);stroke:#34d399;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 6px 14px rgba(52,211,153,.25))}
+  #radar .poly-rival{fill:rgba(251,191,36,.09);stroke:#fbbf24;stroke-width:1.6;stroke-dasharray:5 4;stroke-linejoin:round}
+  #radar .dot{fill:#38bdf8;stroke:#04121f;stroke-width:2}
+  .legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;font-size:11px;color:var(--muted)}
+  .legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+  .lg-em{background:#34d399}.lg-am{background:#fbbf24}.lg-cy{background:#38bdf8}
+  .occ{display:grid;gap:10px 26px;grid-template-columns:1fr 1fr}
+  .occrow{display:grid;grid-template-columns:118px 1fr;gap:10px;align-items:center}
+  .occrow .q{font-size:11.5px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .occbars{display:grid;gap:3px}
+  .ob{display:grid;grid-template-columns:1fr 34px;gap:6px;align-items:center}
+  .ob .t{height:6px;border-radius:99px;background:rgba(148,163,184,.10);overflow:hidden}
+  .ob .t i{display:block;height:100%;border-radius:99px;transition:width .7s cubic-bezier(.22,1,.36,1)}
+  .ob.bon i{background:linear-gradient(90deg,#10b981,#5eead4)}
+  .ob.riv i{background:linear-gradient(90deg,#b45309,#fbbf24)}
+  .ob b{font-size:10px;font-weight:800;color:var(--dim);text-align:right;font-variant-numeric:tabular-nums}
 
-  .measured{margin-top:12px;border:1px dashed var(--slate-300);border-radius:10px;padding:11px 13px;background:#FCFCFD}
-  .measured .mtitle{font-size:12px;font-weight:700;color:var(--slate-500);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .measured .mnote{font-size:13px;margin:7px 0 0;color:var(--slate-700)}
-  .srclinks{margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}
-  .srclink{font-size:11.5px;text-decoration:none;border-radius:999px;padding:2px 9px;border:1px solid var(--line);background:#fff;color:var(--slate-700)}
-  .srclink.official{border-color:#A7D8D0;color:var(--ok)}
-  .srclink.third{border-color:#C7D2FE;color:#3730A3}
-
-  .chtable{margin-top:12px;display:grid;gap:6px}
-  .chrow{display:grid;grid-template-columns:78px 132px 1fr;gap:8px;align-items:center}
-  .chname{font-size:12.5px;font-weight:700;color:var(--slate-700)}
-  select.sel,input.url,textarea{
-    font:inherit;font-size:13px;color:var(--slate-900);background:#fff;
-    border:1px solid var(--line);border-radius:8px;padding:6px 9px;width:100%;min-width:0;
+  /* feed */
+  .feed-list{list-style:none;margin:0;padding:0;display:grid;gap:0;flex:1;overflow:auto;max-height:400px;padding-right:2px}
+  .feed-list li{
+    position:relative;display:grid;grid-template-columns:44px 1fr;gap:8px;
+    padding:9px 0 9px 12px;border-left:1px solid var(--line);margin-left:4px;
+    animation:slidein .35s ease both;
   }
-  select.sel:focus,input.url:focus,textarea:focus{outline:2px solid var(--orange-soft);border-color:var(--orange)}
-  textarea{resize:vertical;line-height:1.62}
-  .memo{margin-top:10px}
-  .memo label{font-size:12px;font-weight:700;color:var(--slate-500);display:block;margin-bottom:4px}
-  .qfoot{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between}
+  @keyframes slidein{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+  .feed-list li::before{
+    content:"";position:absolute;left:-4px;top:14px;width:7px;height:7px;border-radius:50%;
+    background:var(--dim);box-shadow:0 0 0 3px rgba(5,8,15,1);
+  }
+  .feed-list li.k-measure::before{background:var(--em)}
+  .feed-list li.k-review::before{background:var(--vi)}
+  .feed-list li.k-draft::before{background:var(--am)}
+  .feed-list li.k-check::before{background:var(--cy)}
+  .feed-list li.k-copy::before{background:#818cf8}
+  .feed-list li.k-question::before{background:#f472b6}
+  .feed-list li.k-reset::before{background:var(--ro)}
+  .feed-list time{font-size:10px;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums;padding-top:1px}
+  .feed-list span{font-size:12px;color:#cbd5e1;line-height:1.5;word-break:keep-all}
+  .feed-empty{font-size:12px;color:var(--dim);text-align:center;padding:26px 6px;line-height:1.7}
+  .feed .btn{margin-top:12px;width:100%}
+
+  /* ============ pipeline ============ */
+  .pipe-card{margin-top:16px;padding:18px 18px 22px}
+  .pipe{display:grid;grid-template-columns:repeat(5,1fr);gap:0;position:relative;margin-top:6px}
+  .pipe::before{content:"";position:absolute;left:6%;right:6%;top:21px;height:2px;background:linear-gradient(90deg,rgba(52,211,153,.55),rgba(56,189,248,.35),rgba(148,163,184,.16));border-radius:99px;z-index:0}
+  .step{
+    position:relative;z-index:1;background:none;border:0;cursor:pointer;text-align:center;
+    padding:0 6px;color:var(--muted);font:inherit;transition:.18s;
+  }
+  .step .num{
+    width:42px;height:42px;margin:0 auto;border-radius:50%;display:grid;place-items:center;
+    font-size:12px;font-weight:900;letter-spacing:.02em;
+    background:var(--panel-2);border:1px solid var(--line-2);color:var(--muted);
+    box-shadow:0 6px 16px -8px rgba(0,0,0,.9);transition:.2s;
+  }
+  .step.done .num{background:linear-gradient(180deg,#34d399,#10b981);border-color:#34d399;color:#04140e;box-shadow:0 10px 24px -10px rgba(52,211,153,.8)}
+  .step.active .num{background:linear-gradient(180deg,rgba(56,189,248,.25),rgba(56,189,248,.08));border-color:var(--cy);color:#e0f2fe;animation:ringpulse 2s infinite}
+  @keyframes ringpulse{0%{box-shadow:0 0 0 0 rgba(56,189,248,.4)}70%{box-shadow:0 0 0 12px rgba(56,189,248,0)}100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}}
+  .step .st{display:block;font-size:11.5px;font-weight:800;margin-top:9px;color:var(--txt);letter-spacing:-.1px}
+  .step .pct{display:block;font-size:10.5px;color:var(--dim);margin-top:1px;font-variant-numeric:tabular-nums}
+  .step .pbar{height:4px;width:64%;margin:7px auto 0;border-radius:99px;background:rgba(148,163,184,.14);overflow:hidden}
+  .step .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--em),var(--cy));border-radius:99px;transition:width .7s ease}
+  .step:hover .num{transform:translateY(-2px);border-color:var(--em)}
+  .step:hover .st{color:#fff}
+
+  /* ============ sections ============ */
+  .sect,#dash,#pipeline{margin-top:30px;scroll-margin-top:96px}
+  .sect-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:12px}
+  .sect-head h2{font-size:19px;letter-spacing:-.45px;font-weight:900}
+  .sect-head p{font-size:12.5px;color:var(--muted);margin-top:3px;max-width:64ch}
+  .sect-head .tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+  /* agents */
+  .agents{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+  .agent{position:relative;padding:16px;border-radius:16px;border:1px solid var(--line);
+    background:linear-gradient(165deg, rgba(255,255,255,.055), rgba(255,255,255,.012)), var(--panel);
+    box-shadow:var(--inset);transition:transform .18s ease,border-color .18s ease}
+  .agent:hover{transform:translateY(-2px);border-color:var(--line-2)}
+  .agent .ah{display:flex;align-items:center;gap:10px}
+  .ava{width:38px;height:38px;border-radius:12px;display:grid;place-items:center;font-size:13px;font-weight:900;flex:0 0 auto;
+    background:rgba(148,163,184,.1);border:1px solid var(--line-2);color:#e2e8f0}
+  .agent[data-agent="gpt"] .ava{background:rgba(52,211,153,.14);border-color:rgba(52,211,153,.4);color:#6ee7b7}
+  .agent[data-agent="p1"] .ava{background:rgba(251,191,36,.13);border-color:rgba(251,191,36,.35);color:#fcd34d}
+  .agent[data-agent="p2"] .ava{background:rgba(56,189,248,.13);border-color:rgba(56,189,248,.35);color:#7dd3fc}
+  .agent[data-agent="p3"] .ava{background:rgba(167,139,250,.13);border-color:rgba(167,139,250,.35);color:#c4b5fd}
+  .agent[data-agent="p4"] .ava{background:rgba(244,114,182,.13);border-color:rgba(244,114,182,.35);color:#f9a8d4}
+  .agent[data-agent="p5"] .ava{background:rgba(52,211,153,.10);border-color:rgba(52,211,153,.3);color:#5eead4}
+  .agent .an{min-width:0;flex:1}
+  .agent .an b{display:block;font-size:13.5px;font-weight:900;letter-spacing:-.2px}
+  .agent .an small{display:block;font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .agent .role{font-size:11.5px;color:#c7d2e3;margin-top:9px;line-height:1.55}
+  .agent .cps{list-style:none;margin:9px 0 0;padding:0;display:grid;gap:4px}
+  .agent .cps li{font-size:11px;color:var(--muted);padding-left:14px;position:relative}
+  .agent .cps li::before{content:"";position:absolute;left:2px;top:6px;width:5px;height:5px;border-radius:2px;background:rgba(52,211,153,.6)}
+  .agent .astats{display:flex;gap:8px;margin-top:11px;align-items:center;flex-wrap:wrap}
+  .agent .astats .m{font-size:10.5px;font-weight:800;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:2px 8px;font-variant-numeric:tabular-nums}
+  .agent .astats .m.ok{color:var(--em);border-color:rgba(52,211,153,.35);background:rgba(52,211,153,.08)}
+  .agent .amemo{width:100%;margin-top:10px;font:inherit;font-size:11.5px;color:var(--txt);background:rgba(2,6,23,.55);border:1px solid var(--line);border-radius:9px;padding:7px 9px;resize:vertical;min-height:34px}
+  .agent .amemo:focus{outline:none;border-color:rgba(52,211,153,.5);box-shadow:0 0 0 3px rgba(52,211,153,.1)}
+
+  .consensus{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;background:rgba(2,6,23,.4);border:1px solid var(--line);border-radius:12px;padding:9px 14px}
+  .consensus div{text-align:right}
+  .consensus b{display:block;font-size:19px;font-weight:900;letter-spacing:-.03em;font-variant-numeric:tabular-nums;line-height:1.1}
+  .consensus small{font-size:10px;color:var(--muted);font-weight:700}
+  #cons-pct{color:var(--em)}
+  #cons-cov{color:var(--cy)}
+
+  /* matrix */
+  .matrix-card{padding:14px}
+  .matrix-scroll{overflow:auto;border-radius:12px;border:1px solid var(--line);background:rgba(2,6,23,.35)}
+  table.matrix{border-collapse:separate;border-spacing:0;width:100%;min-width:720px}
+  table.matrix th,table.matrix td{padding:6px;border-bottom:1px solid rgba(148,163,184,.08);text-align:center}
+  table.matrix thead th{position:sticky;top:0;z-index:2;background:#0b1424;font-size:10.5px;color:var(--muted);font-weight:800;letter-spacing:.02em;border-bottom:1px solid var(--line-2);white-space:nowrap}
+  table.matrix thead th.ag{font-size:10px;line-height:1.25;min-width:64px}
+  table.matrix thead th.ag small{display:block;font-weight:600;color:var(--dim);font-size:9px}
+  table.matrix tbody tr:hover td{background:rgba(52,211,153,.035)}
+  table.matrix th.rowh{text-align:left;min-width:230px;background:#0a1220;position:sticky;left:0;z-index:1;border-right:1px solid var(--line)}
+  table.matrix thead th:first-child{text-align:left;left:0;z-index:3}
+  .rowh button{display:flex;align-items:center;gap:7px;width:100%;background:none;border:0;color:var(--txt);cursor:pointer;font:inherit;font-size:11.5px;text-align:left;padding:2px 0}
+  .rowh button:hover{color:var(--em)}
+  .rowh .rid{font-size:9.5px;font-weight:900;color:var(--dim);background:rgba(148,163,184,.1);border-radius:5px;padding:1px 5px;flex:0 0 auto}
+  .rowh .rt{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:600;max-width:210px}
+  .rowh .rk{font-size:9px;color:var(--dim);flex:0 0 auto}
+  .rowh.sel button{color:var(--em)}
+  .v{width:32px;height:27px;border-radius:8px;border:1px solid var(--line);background:rgba(148,163,184,.06);color:#475569;font-weight:900;font-size:11px;cursor:pointer;transition:.13s;line-height:1}
+  .v:hover{transform:scale(1.07);border-color:var(--line-2);color:var(--txt)}
+  .v-ok{background:rgba(52,211,153,.16);border-color:rgba(52,211,153,.45);color:#6ee7b7}
+  .v-hold{background:rgba(251,191,36,.15);border-color:rgba(251,191,36,.45);color:#fcd34d}
+  .v-fix{background:rgba(251,113,133,.15);border-color:rgba(251,113,133,.45);color:#fda4af}
+  .legend-row{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:10px;align-items:center}
+  .legend-row b{font-weight:800;color:var(--txt)}
+  .review-panel{margin-top:12px;border:1px solid var(--line);border-radius:12px;background:rgba(2,6,23,.35);padding:12px}
+  .rp-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin-bottom:8px}
+  .rp-head b{color:var(--txt);font-size:12px}
+  .rp-chips{display:flex;gap:4px;flex-wrap:wrap;margin-left:auto}
+  .rp-chips .vc{font-size:10px;font-weight:800;border-radius:99px;padding:1px 7px;border:1px solid;white-space:nowrap}
+  .vc.none{color:var(--dim);border-color:var(--line)}
+  .vc.ok{color:var(--em);border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.08)}
+  .vc.hold{color:var(--am);border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.08)}
+  .vc.fix{color:var(--ro);border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.08)}
+  textarea.rnote{width:100%;font:inherit;font-size:12.5px;color:var(--txt);background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:10px;padding:9px 11px;resize:vertical;min-height:52px}
+  textarea.rnote:focus{outline:none;border-color:rgba(52,211,153,.5);box-shadow:0 0 0 3px rgba(52,211,153,.1)}
+
+  /* ============ questions ============ */
+  .addq{display:flex;gap:8px}
+  .addq input{font:inherit;font-size:13px;color:var(--txt);background:rgba(2,6,23,.55);border:1px solid var(--line-2);border-radius:11px;padding:9px 12px;min-width:240px}
+  .addq input:focus{outline:none;border-color:rgba(52,211,153,.55);box-shadow:0 0 0 3px rgba(52,211,153,.1)}
+  .qlist{display:grid;gap:12px}
+  .qcard{padding:0;overflow:hidden}
+  .qcard:hover{transform:none}
+  .qhead{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border-bottom:1px solid var(--line);background:linear-gradient(90deg, rgba(56,189,248,.05), transparent)}
+  .qid{font-size:11px;font-weight:900;color:var(--cy);background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.25);border-radius:8px;padding:3px 8px;flex:0 0 auto}
+  .qmain{min-width:0;flex:1}
+  .qmain h3{font-size:15px;font-weight:800;letter-spacing:-.3px;line-height:1.4}
+  .qmeta{display:flex;gap:5px;flex-wrap:wrap;margin-top:7px;align-items:center}
+  .tag{font-size:10.5px;font-weight:700;color:var(--muted);background:rgba(148,163,184,.08);border:1px solid var(--line);border-radius:6px;padding:2px 7px;white-space:nowrap}
+  .badge{display:inline-flex;align-items:center;gap:4px;font-size:10.5px;font-weight:800;border-radius:99px;padding:2px 9px;white-space:nowrap;border:1px solid}
+  .b-none{color:var(--muted);border-color:var(--line);background:rgba(148,163,184,.07)}
+  .b-ok{color:#6ee7b7;border-color:rgba(52,211,153,.4);background:rgba(52,211,153,.1)}
+  .b-info{color:#7dd3fc;border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.1)}
+  .b-warn{color:#fcd34d;border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.1)}
+  .b-bad{color:#fda4af;border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.1)}
+  .qagents{display:flex;gap:3px;align-items:center;flex:0 0 auto}
+  .qagents .ad{width:12px;height:12px;border-radius:4px;background:rgba(148,163,184,.14);border:1px solid var(--line);cursor:pointer}
+  .qagents .ad.ok{background:var(--em);border-color:var(--em)}
+  .qagents .ad.hold{background:var(--am);border-color:var(--am)}
+  .qagents .ad.fix{background:var(--ro);border-color:var(--ro)}
+  .del{background:none;border:1px solid transparent;color:var(--dim);font-size:11px;cursor:pointer;border-radius:8px;padding:4px 8px;flex:0 0 auto}
+  .del:hover{color:var(--ro);border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.08)}
+  .qbody{display:grid;grid-template-columns:minmax(0,0.9fr) minmax(0,1.1fr);gap:14px;padding:14px 16px 16px}
+  .webbox{border:1px dashed rgba(148,163,184,.28);border-radius:12px;padding:11px 13px;background:rgba(2,6,23,.34);height:100%}
+  .webbox .wt{font-size:10.5px;font-weight:800;color:var(--muted);letter-spacing:.03em;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+  .webbox p{font-size:12px;color:#cbd5e1;margin-top:7px;line-height:1.65}
+  .srclinks{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+  .srclink{font-size:10.5px;text-decoration:none;border-radius:99px;padding:2px 9px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--muted);white-space:nowrap}
+  .srclink:hover{color:var(--txt);border-color:var(--line-2)}
+  .srclink.official{border-color:rgba(52,211,153,.35);color:#6ee7b7}
+  .srclink.third{border-color:rgba(56,189,248,.3);color:#7dd3fc}
+  .runner{display:grid;gap:6px}
+  .runrow{display:grid;grid-template-columns:70px 104px 112px minmax(0,1fr);gap:6px;align-items:center}
+  .chname{font-size:11.5px;font-weight:800;color:#cbd5e1}
+  .stbtn{border-radius:99px;padding:4px 8px;font-size:10.5px;font-weight:900;border:1px solid;cursor:pointer;transition:.14s;white-space:nowrap}
+  .stbtn:hover{transform:translateY(-1px)}
+  .st-none{color:var(--muted);border-color:var(--line-2);background:rgba(148,163,184,.08)}
+  .st-ok{color:#6ee7b7;border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.12)}
+  .st-info{color:#7dd3fc;border-color:rgba(56,189,248,.45);background:rgba(56,189,248,.12)}
+  .st-warn{color:#fcd34d;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.12)}
+  .st-bad{color:#fda4af;border-color:rgba(251,113,133,.45);background:rgba(251,113,133,.12)}
+  select.sel,input.url{font:inherit;font-size:11.5px;color:var(--txt);background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:8px;padding:5px 7px;width:100%;min-width:0}
+  select.sel:focus,input.url:focus{outline:none;border-color:rgba(52,211,153,.5)}
+  select.sel option{background:#0b1424;color:var(--txt)}
+  .qfoot{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:2px}
   .airow{display:flex;gap:5px;flex-wrap:wrap}
-  .ai-link{
-    font-size:11.5px;font-weight:700;text-decoration:none;color:var(--slate-700);
-    border:1px solid var(--line);border-radius:999px;padding:3px 10px;background:#fff;cursor:pointer;
-  }
-  .ai-link:hover{border-color:var(--orange);color:var(--orange)}
-  .danger-link{font-size:11.5px;color:var(--slate-500);background:none;border:0;cursor:pointer;text-decoration:underline;padding:2px}
+  .ai-link{font-size:10.5px;font-weight:800;text-decoration:none;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:3px 9px;background:rgba(255,255,255,.03);white-space:nowrap;display:inline-flex;align-items:center;gap:4px}
+  .ai-link:hover{color:#04140e;background:linear-gradient(180deg,#5eead4,#34d399);border-color:#34d399}
+  .memo{grid-column:1/-1}
+  .memo textarea{width:100%;font:inherit;font-size:12px;color:#cbd5e1;background:rgba(2,6,23,.5);border:1px solid var(--line);border-radius:9px;padding:8px 10px;resize:vertical;min-height:44px}
+  .memo textarea:focus{outline:none;border-color:rgba(52,211,153,.5)}
+  details.method{margin-top:14px;border:1px solid var(--line);border-radius:12px;background:rgba(2,6,23,.3);padding:12px 14px}
+  details.method summary{cursor:pointer;font-size:12.5px;font-weight:800;color:#7dd3fc}
+  details.method ol{font-size:12px;color:#c7d2e3;padding-left:20px;margin:9px 0 0;line-height:1.7}
 
-  /* forms */
-  .addq{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:6px}
-  .addq input{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:10px;padding:10px 12px}
-  .hint{font-size:12px;color:var(--slate-500);margin:6px 0 0}
-
-  /* drafts */
-  .draft h4{margin:0;font-size:14.5px}
-  .draft .dq{font-size:13px;color:var(--slate-500);margin:4px 0 0}
-  .draft textarea{margin-top:10px;min-height:150px;font-size:13.5px}
-  .draft-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
-  .check{margin-top:10px;border-radius:10px;padding:9px 12px;font-size:12.5px}
-  .check.pass{background:var(--ok-soft);color:var(--ok);border:1px solid #BFE5DE}
-  .check.fail{background:var(--bad-soft);color:var(--bad);border:1px solid #F3C9C9}
-  .check.warn{background:var(--warn-soft);color:var(--warn);border:1px solid #F5DDB4}
-  .check .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:6px}
-  .chip{font-size:11.5px;font-weight:700;border-radius:6px;padding:1px 7px;background:#fff;border:1px solid currentColor}
-  .evidence{margin-top:10px;font-size:12.5px;color:var(--slate-700);background:#FAFBFC;border:1px solid var(--line);border-radius:10px;padding:9px 12px}
-  .evidence ul{margin:6px 0 0;padding-left:18px}
+  /* ============ drafts ============ */
+  #jsonld-preview{background:#020617;color:#a5f3fc;font-size:11.5px;line-height:1.6;border:1px solid var(--line-2);border-radius:12px;padding:14px;overflow:auto;max-height:320px;margin:0 0 12px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .dlist{display:grid;gap:12px}
+  .dcard{overflow:hidden}
+  .dhead{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--line)}
+  .dhead h3{font-size:14.5px;font-weight:800;letter-spacing:-.2px}
+  .dq{font-size:12px;color:var(--muted);margin-top:8px}
+  .dgrid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,0.95fr);gap:12px;margin-top:12px}
+  .dcol label{display:block;font-size:10.5px;font-weight:800;color:var(--dim);letter-spacing:.04em;margin-bottom:5px}
+  .dcol textarea{width:100%;font:inherit;font-size:12.5px;line-height:1.7;color:#dbe6f5;background:rgba(2,6,23,.55);border:1px solid var(--line);border-radius:10px;padding:11px 12px;resize:vertical;min-height:190px}
+  .dcol textarea:focus{outline:none;border-color:rgba(52,211,153,.5);box-shadow:0 0 0 3px rgba(52,211,153,.08)}
+  .dtools{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px}
+  .dtools .cnt{font-size:10.5px;color:var(--dim);font-variant-numeric:tabular-nums;margin-left:auto}
+  .check{border-radius:10px;padding:9px 11px;font-size:11.5px;font-weight:800;border:1px solid;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .check.pass{background:rgba(52,211,153,.1);border-color:rgba(52,211,153,.35);color:#6ee7b7}
+  .check.warn{background:rgba(251,191,36,.1);border-color:rgba(251,191,36,.35);color:#fcd34d}
+  .check.fail{background:rgba(251,113,133,.1);border-color:rgba(251,113,133,.35);color:#fda4af}
+  .chips{display:flex;gap:4px;flex-wrap:wrap;width:100%}
+  .chip-h{font-size:10px;font-weight:800;border-radius:6px;padding:1px 6px;background:rgba(2,6,23,.45);border:1px solid currentColor}
+  .hlbox{margin-top:9px;border:1px solid var(--line);border-radius:10px;background:rgba(2,6,23,.4);padding:9px 11px;max-height:170px;overflow:auto}
+  .hlbox .etitle{font-size:10px;font-weight:800;color:var(--dim);letter-spacing:.05em}
+  .hl{font-size:11.5px;line-height:1.75;color:#9fb0c7;margin-top:5px;white-space:pre-wrap;word-break:keep-all}
+  mark.hl-h{background:rgba(251,113,133,.26);color:#fecdd3;border-bottom:1px solid rgba(251,113,133,.8);padding:0 1px;border-radius:2px}
+  mark.hl-c{background:rgba(251,191,36,.22);color:#fde68a;border-bottom:1px solid rgba(251,191,36,.7);padding:0 1px;border-radius:2px}
+  .safe{display:flex;align-items:center;gap:9px;margin-top:9px}
+  .safe .meter{flex:1;height:7px;border-radius:99px;background:rgba(148,163,184,.12);overflow:hidden}
+  .safe .meter i{display:block;height:100%;border-radius:99px;transition:width .5s ease, background .3s}
+  .safe b{font-size:12px;font-weight:900;font-variant-numeric:tabular-nums;min-width:52px;text-align:right}
+  .safe small{font-size:10px;color:var(--dim);font-weight:700}
+  .evidence{margin-top:10px;font-size:11.5px;color:#b8c6da;background:rgba(2,6,23,.32);border:1px solid var(--line);border-radius:10px;padding:9px 12px;line-height:1.65}
+  .evidence ul{margin:5px 0 0;padding-left:17px}
   .evidence li{margin:2px 0}
-  .evidence .etitle{font-weight:700;color:var(--slate-500);font-size:11.5px;letter-spacing:.2px}
+  .evidence .etitle{font-weight:800;color:var(--dim);font-size:10px;letter-spacing:.05em}
+  .pnote{margin-top:9px;font-size:11.5px;color:#fcd34d;background:rgba(251,191,36,.07);border:1px solid rgba(251,191,36,.22);border-radius:9px;padding:8px 11px;line-height:1.6}
+  .dreview{display:flex;gap:5px;align-items:center;margin-top:10px;flex-wrap:wrap;font-size:10.5px;color:var(--dim)}
+  .banned{display:flex;gap:5px;flex-wrap:wrap}
+  .banned .bdg{font-size:10.5px;font-weight:800;border-radius:7px;padding:2px 8px;border:1px solid;cursor:help}
+  .banned .bdg.h{color:#fda4af;border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.08)}
+  .banned .bdg.c{color:#fcd34d;border-color:rgba(251,191,36,.32);background:rgba(251,191,36,.07)}
 
-  /* checklist */
-  .chk{display:flex;gap:10px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line)}
+  /* ============ checklist ============ */
+  .prog{display:flex;align-items:center;gap:10px}
+  .prog .bar{width:150px;height:7px;border-radius:99px;background:rgba(148,163,184,.14);overflow:hidden}
+  .prog .bar i{display:block;height:100%;background:linear-gradient(90deg,var(--em),var(--cy));border-radius:99px;transition:width .6s ease}
+  .prog b{font-size:12px;font-weight:900;color:var(--em);font-variant-numeric:tabular-nums}
+  .chk{display:flex;gap:11px;align-items:flex-start;padding:11px 2px;border-bottom:1px solid rgba(148,163,184,.08);cursor:pointer}
   .chk:last-child{border-bottom:0}
-  .chk input{width:18px;height:18px;margin-top:2px;accent-color:var(--orange);flex:0 0 auto}
-  .chk .ct{font-size:14px;font-weight:600}
-  .chk .cn{font-size:12.5px;color:var(--slate-500);margin-top:2px;white-space:pre-line}
-  .chk.done .ct{color:var(--slate-500);text-decoration:line-through}
+  .chk input{width:17px;height:17px;margin-top:3px;accent-color:var(--em);flex:0 0 auto;cursor:pointer}
+  .chk .ct{font-size:13px;font-weight:700;color:var(--txt)}
+  .chk .cn{font-size:11.5px;color:var(--muted);margin-top:2px;white-space:pre-line;line-height:1.6}
+  .chk.done .ct{color:var(--muted);text-decoration:line-through}
+  .publish-order{margin-top:12px}
+  .publish-order ol{margin:8px 0 0;padding-left:20px;font-size:12.5px;color:#c7d2e3;line-height:1.9}
+  .publish-order .fine{margin-top:8px}
 
-  /* history */
-  .hist{list-style:none;margin:8px 0 0;padding:0}
-  .hist li{display:grid;grid-template-columns:132px 1fr;gap:10px;padding:8px 0;border-bottom:1px dashed var(--line);font-size:13px}
-  .hist time{color:var(--slate-500);font-size:12px;font-variant-numeric:tabular-nums}
-  .hist .empty{color:var(--slate-500);border:0}
-
-  .section-title{display:flex;align-items:baseline;gap:10px;margin:24px 0 10px;flex-wrap:wrap}
-  .section-title h2{font-size:16px;margin:0;letter-spacing:-.3px}
-  .section-title p{margin:0;font-size:12.5px;color:var(--slate-500)}
+  /* ============ history ============ */
+  .hist{list-style:none;margin:0;padding:0}
+  .hist li{display:grid;grid-template-columns:118px 92px 1fr;gap:10px;padding:8px 2px;border-bottom:1px dashed rgba(148,163,184,.1);font-size:12px;align-items:baseline}
+  .hist time{color:var(--dim);font-size:10.5px;font-variant-numeric:tabular-nums}
+  .hist .k{font-size:9.5px;font-weight:900;color:var(--muted);border:1px solid var(--line);border-radius:99px;padding:1px 7px;text-align:center;white-space:nowrap}
+  .hist .t{color:#cbd5e1}
+  .hist .empty{display:block;color:var(--dim);border:0;text-align:center;padding:22px 0}
 
   /* toast */
   #toast{
-    position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(20px);
-    background:var(--slate-900);color:#fff;font-size:13px;font-weight:600;padding:10px 18px;border-radius:999px;
-    opacity:0;pointer-events:none;transition:.22s;z-index:50;max-width:90vw;text-align:center;
+    position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(18px);
+    background:linear-gradient(180deg,#0f1c2e,#0a1220);color:#fff;font-size:12.5px;font-weight:700;
+    padding:11px 18px;border-radius:999px;border:1px solid rgba(52,211,153,.4);
+    opacity:0;pointer-events:none;transition:.24s;z-index:80;max-width:90vw;text-align:center;
+    box-shadow:0 20px 40px -18px rgba(0,0,0,.9), inset 0 1px 0 rgba(255,255,255,.06);
   }
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  footer{margin:44px 0 30px;padding-top:18px;border-top:1px solid var(--line);font-size:11.5px;color:var(--dim);line-height:1.8}
+  footer a{color:var(--muted);text-decoration:underline;text-underline-offset:2px}
+  footer .fl{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:6px}
 
-  details.method{margin-top:12px}
-  details.method summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--orange-dark)}
-  details.method ol{font-size:13px;color:var(--slate-700);padding-left:20px;margin:8px 0 0}
-  details.method li{margin:4px 0}
-
-  @media (max-width:860px){
-    .kpis{grid-template-columns:repeat(2,1fr)}
-    .chrow{grid-template-columns:64px 1fr;grid-template-areas:"n s" ". u";}
-    .chrow .chname{grid-area:n}
-    .chrow select{grid-area:s}
-    .chrow input{grid-area:u}
+  @media (max-width:1100px){
+    .gauge{grid-column:span 5}
+    .chart{grid-column:span 7}
+    .feed{grid-column:span 12}
+    .occ-card{grid-column:span 12}
+    .feed-list{max-height:230px}
+    .agents{grid-template-columns:repeat(2,1fr)}
   }
-  @media (max-width:560px){
+  @media (max-width:900px){
+    .stats{grid-template-columns:repeat(3,1fr)}
+    .pipe{grid-template-columns:repeat(5,1fr)}
+    .step .st{font-size:10px}
+    .qbody{grid-template-columns:1fr}
+    .dgrid{grid-template-columns:1fr}
+    .runrow{grid-template-columns:62px 96px 108px minmax(0,1fr)}
+  }
+  @media (max-width:680px){
     body{font-size:14.5px}
-    .brand h1{font-size:16px}
-    .kpi .num{font-size:24px}
-    .hist li{grid-template-columns:1fr}
-    .addq{grid-template-columns:1fr}
+    .wrap{padding:0 14px}
+    .bar{padding-top:10px;padding-bottom:10px}
+    .brand-txt small{display:none}
+    .bar-right .chip{display:none}
+    .stats{grid-template-columns:repeat(2,1fr)}
+    .gauge,.chart{grid-column:span 12}
+    .occ{grid-template-columns:1fr}
+    .agents{grid-template-columns:1fr}
+    .pipe{grid-template-columns:1fr;gap:10px}
+    .pipe::before{display:none}
+    .step{display:grid;grid-template-columns:42px 1fr;text-align:left;gap:10px;align-items:center;padding:6px 8px;border:1px solid var(--line);border-radius:12px;background:rgba(2,6,23,.3)}
+    .step .num{margin:0}
+    .step .st{margin:0;font-size:11.5px}
+    .step .pct{margin:0;display:inline;font-size:10px}
+    .step .pbar{display:none}
+    .qhead{flex-wrap:wrap}
+    .runrow{grid-template-columns:58px 1fr;grid-template-areas:"n s" "u u";}
+    .runrow .chname{grid-area:n}.runrow .stbtn{grid-area:s}.runrow select{display:none}.runrow input{grid-area:u}
+    .hist li{grid-template-columns:1fr;gap:2px}
   }
 </style>
 </head>
 <body>
+<a class="skip" href="#dash">본문으로 이동</a>
 
-<header class="top">
-  <div class="wrap top-inner">
-    <div class="brand">
-      <span class="dot" aria-hidden="true"></span>
-      <div>
-        <h1>본한방병원 GEO 모니터 <span class="tag">1차</span></h1>
-        <p class="sub">AI 검색 노출 · 인용 출처 · 원고 초안 · 수정 이력 추적</p>
-      </div>
-    </div>
-    <div class="actions">
-      <button id="btn-export" class="btn" type="button">JSON 내보내기</button>
+<header class="topbar">
+  <div class="bar wrap">
+    <a class="brand" href="#dash" data-act="go" data-target="dash" aria-label="대시보드로">
+      <span class="logo" aria-hidden="true">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 2.6l8.1 4.7v9.4L12 21.4 3.9 16.7V7.3L12 2.6z" stroke="#6ee7b7" stroke-width="1.3"/>
+          <circle cx="12" cy="12" r="3.1" stroke="#38bdf8" stroke-width="1.5"/>
+          <circle cx="12" cy="12" r="6.4" stroke="#34d399" stroke-width="1" stroke-dasharray="2 3" opacity=".75"/>
+        </svg>
+      </span>
+      <span class="brand-txt">
+        <strong>본한방병원 <em>GEO</em> 컨트롤타워 <span class="pill em" style="font-size:9px;vertical-align:2px">V2</span></strong>
+        <small>AI 검색 노출 실측 · 6인 교차 검증 · 원고 검수 · 발행 추적</small>
+      </span>
+    </a>
+    <div class="bar-right">
+      <span class="live"><i></i>LIVE</span>
+      <span class="chip">실측 2026-11-27</span>
+      <button class="btn" type="button" data-act="export">JSON 내보내기</button>
       <label class="btn" for="file-import" role="button" tabindex="0">JSON 가져오기</label>
       <input id="file-import" type="file" accept=".json,application/json" hidden>
-      <button id="btn-reset" class="btn ghost" type="button">초기 실측 데이터 복원</button>
+      <button class="btn ghost" type="button" data-act="reset">초기 복원</button>
     </div>
   </div>
+  <nav class="secnav wrap" aria-label="섹션 이동">
+    <a href="#dash" data-act="go" data-target="dash" class="on">대시보드</a>
+    <a href="#pipeline" data-act="go" data-target="pipeline">파이프라인</a>
+    <a href="#agents" data-act="go" data-target="agents">6인 검증</a>
+    <a href="#matrix" data-act="go" data-target="matrix">검증 매트릭스</a>
+    <a href="#questions" data-act="go" data-target="questions">질문 실행</a>
+    <a href="#drafts" data-act="go" data-target="drafts">원고·스키마</a>
+    <a href="#publish" data-act="go" data-target="publish">발행</a>
+    <a href="#history" data-act="go" data-target="history">활동 로그</a>
+  </nav>
 </header>
 
 <main class="wrap">
 
   <section class="notice" aria-label="데이터 신뢰 기준">
-    <b>이 화면의 숫자는 전부 실제 측정값입니다.</b>
-    병원명을 뺀 환자 질문 10개를 <b>2026-11-27 일반 웹 검색</b>으로 실측해, 본한방병원이 <b>공식 홈페이지 / 제3자 페이지 / 미노출</b> 중 어디로 잡히는지 기록했습니다.
-    <b>ChatGPT·Gemini·Perplexity·Claude 4개 칸은 아직 ‘미측정’</b>이며, 직접 확인한 뒤 아래에서 상태와 인용 URL을 입력하면 됩니다. 측정하지 않은 값을 채워 넣지 않았습니다.
-    <span class="mini-line">측정 기준일 2026-11-27 · 대상 본한방병원(충남 아산시 탕정면 한들물빛6로 14, 041-541-7581)</span>
-  </section>
-
-  <section class="kpis" aria-label="요약 지표">
-    <div class="kpi o">
-      <p class="label">총 추적 질문</p>
-      <div class="num" id="kpi-total">0<small>개</small></div>
-      <div class="foot">병원명 없는 환자 질문</div>
-    </div>
-    <div class="kpi g">
-      <p class="label">공식 사이트 인용</p>
-      <div class="num" id="kpi-official">0<small>건</small></div>
-      <div class="foot">bonhanbang.com 노출</div>
-    </div>
-    <div class="kpi">
-      <p class="label">제3자 페이지 인용</p>
-      <div class="num" id="kpi-third">0<small>건</small></div>
-      <div class="foot">공식 사이트 없이 외부 페이지로만</div>
-    </div>
-    <div class="kpi b">
-      <p class="label">미노출 (보완 필요)</p>
-      <div class="num" id="kpi-absent">0<small>건</small></div>
-      <div class="foot">본한방병원이 전혀 잡히지 않음</div>
+    <span class="ic" aria-hidden="true">GEO</span>
+    <div>
+      <p><b>이 화면의 숫자는 전부 실제 측정값입니다.</b> 병원명을 뺀 환자 질문 10개를 <b>2026-11-27 일반 웹 검색</b>으로 실측해 공식 홈페이지 / 제3자 페이지 / 미노출을 기록했습니다. <b>AI 4종 40칸은 아직 ‘미측정’</b>이며, 직접 확인한 뒤 상태를 누르면 모든 차트와 점수가 즉시 다시 계산됩니다.</p>
+      <span class="mini-line">측정 기준일 2026-11-27 · 대상 본한방병원(충남 아산시 탕정면 한들물빛6로 14, 041-541-7581)</span>
     </div>
   </section>
-  <p class="hint" id="kpi-note"></p>
 
-  <nav class="tabs" role="tablist" aria-label="메뉴">
-    <button class="tab" role="tab" id="tab-analysis" aria-controls="panel-analysis" aria-selected="true" type="button">1. 분석 — 질문·인용 출처</button>
-    <button class="tab" role="tab" id="tab-execution" aria-controls="panel-execution" aria-selected="false" type="button">2. 실행 — 원고·금지어·이력</button>
-    <button class="tab" role="tab" id="tab-publish" aria-controls="panel-publish" aria-selected="false" type="button">3. 발행 — 점검 체크리스트</button>
-  </nav>
+  <section class="stats" id="stat-strip" aria-label="요약 지표"></section>
 
-  <!-- ============ TAB 1 ============ -->
-  <section class="panel" id="panel-analysis" role="tabpanel" aria-labelledby="tab-analysis">
-    <div class="section-title">
-      <h2>질문별 노출·인용 추적</h2>
-      <p>상태를 바꾸면 이 기기에 자동 저장되고, 수정 이력에 남습니다.</p>
+  <section id="dash" class="dash" aria-label="실시간 대시보드">
+    <div class="card gauge">
+      <div class="card-head"><h2>GEO 노출 점수</h2><span class="pill" id="score-pill">측정 전</span></div>
+      <div class="ring-wrap">
+        <svg class="ring" viewBox="0 0 220 220" role="img" aria-label="GEO 노출 점수 링 차트">
+          <defs>
+            <linearGradient id="ringGrad" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#34d399"/><stop offset=".55" stop-color="#38bdf8"/><stop offset="1" stop-color="#a78bfa"/>
+            </linearGradient>
+          </defs>
+          <circle class="ring-track" cx="110" cy="110" r="88"></circle>
+          <circle id="score-ring" class="ring-val" cx="110" cy="110" r="88" stroke-dasharray="552.92" stroke-dashoffset="552.92" transform="rotate(-90 110 110)"></circle>
+          <circle class="ring-inner" cx="110" cy="110" r="70"></circle>
+        </svg>
+        <div class="ring-center"><b id="score-num">0</b><span>/ 100</span><small id="score-label">기반 구축</small></div>
+      </div>
+      <p class="ring-note">웹 노출 35 · AI 측정 15 · AI 인용 15 · 6인 합의 15 · 발행·안전 20<br>상태를 바꾸면 링과 아래 지표가 함께 움직입니다.</p>
+      <div id="score-breakdown" class="breakdown"></div>
     </div>
-    <div id="question-list"></div>
 
+    <div class="card chart">
+      <div class="card-head"><h2>질문 카테고리 점유 비교</h2><span class="pill">본한 vs 경쟁권</span></div>
+      <div class="radar-wrap"><svg id="radar" viewBox="0 0 400 330" role="img" aria-label="질문 10개 카테고리별 노출 레이더 차트"></svg></div>
+      <div class="legend" id="radar-legend"></div>
+      <p class="fine">지수는 2026-11-27 실측 결과를 0~100으로 환산한 값입니다(공식 100 · 제3자 50 · 미노출 0). 레메디한방병원은 q2에서만 이름이 확인되어 다른 질문은 0이 아니라 ‘미측정’으로 비워 둡니다.</p>
+    </div>
+
+    <aside class="card feed">
+      <div class="card-head"><h2>실시간 활동</h2><span class="live"><i></i>REC</span></div>
+      <ol id="feed-list" class="feed-list"></ol>
+      <button class="btn mini ghost" type="button" data-act="go" data-target="history">전체 로그 보기</button>
+    </aside>
+
+    <div class="card occ-card">
+      <div class="card-head"><h2>질문별 점유 바</h2><span class="pill">노출 지수 · 경쟁 압력</span></div>
+      <div id="occ-list" class="occ" style="margin-top:0;border-top:0;padding-top:0;max-height:none"></div>
+      <div class="legend" style="justify-content:flex-start;margin-top:10px"><span><i class="lg-em"></i>본한방병원</span><span><i class="lg-am"></i>경쟁 압력(실측 메모)</span></div>
+    </div>
+  </section>
+
+  <section id="pipeline" class="card pipe-card" aria-label="실행 파이프라인">
+    <div class="card-head">
+      <h2>실행 파이프라인 — 01 → 05</h2>
+      <span class="hint" style="margin:0">단계를 누르면 해당 작업 구역으로 이동합니다.</span>
+    </div>
+    <div class="pipe" id="pipeline-steps"></div>
+  </section>
+
+  <section id="agents" class="sect" aria-label="6인 교차 검증 보드">
+    <div class="sect-head">
+      <div>
+        <h2>6인 교차 검증 보드</h2>
+        <p>ChatGPT(탑똘마니)와 피클1~5가 같은 질문·원고를 서로 다른 관점에서 검증합니다. 아래 매트릭스에서 셀을 눌러 판정하면 각 카드의 진행률과 전체 합의율이 즉시 갱신됩니다.</p>
+      </div>
+      <div class="consensus" id="consensus-mini">
+        <div><b id="cons-pct">–</b><small>합의율</small></div>
+        <div><b id="cons-cov">0%</b><small>검토 커버리지</small></div>
+        <div><b id="cons-cells">0/78</b><small>승인 셀</small></div>
+      </div>
+    </div>
+    <div class="agents" id="agent-grid"></div>
+  </section>
+
+  <section id="matrix" class="sect" aria-label="교차 검증 매트릭스">
+    <div class="sect-head">
+      <div>
+        <h2>교차 검증 매트릭스</h2>
+        <p>셀을 누를 때마다 미검토 → 승인 → 보류 → 수정요청 순으로 바뀝니다. 항목 이름을 누르면 아래에 코멘트를 남길 수 있고, 변경은 이 기기에 자동 저장됩니다.</p>
+      </div>
+      <div class="consensus" id="consensus-big">
+        <div><b id="cons-pct2">–</b><small>합의율</small></div>
+        <div><b id="cons-cov2">0%</b><small>커버리지</small></div>
+        <div><b id="cons-cells2">0/78</b><small>승인 셀</small></div>
+      </div>
+    </div>
+    <div class="card matrix-card">
+      <div class="matrix-scroll" id="matrix-host"></div>
+      <div class="legend-row">
+        <span><b>·</b> 미검토</span>
+        <span style="color:#6ee7b7"><b>✓</b> 승인</span>
+        <span style="color:#fcd34d"><b>!</b> 보류</span>
+        <span style="color:#fda4af"><b>~</b> 수정요청</span>
+        <span style="margin-left:auto">승인 셀 1개당 합의율이 올라갑니다</span>
+      </div>
+      <div class="review-panel" id="review-panel"></div>
+    </div>
+  </section>
+
+  <section id="questions" class="sect" aria-label="질문 실행기">
+    <div class="sect-head">
+      <div>
+        <h2>질문 실행기 — AI 4종 교차 측정</h2>
+        <p>프롬프트를 복사해 4개 AI에 붙여넣고, 결과를 원클릭으로 기록하세요. 상태 pill을 누르면 미측정 → 공식 인용 → 제3자 인용 → 경쟁사 선점 → 미노출 순으로 순환합니다. 기본값은 전부 미측정입니다.</p>
+      </div>
+      <form class="addq" id="add-form">
+        <input id="add-question" type="text" placeholder="예) 아산 탕정 한방병원 야간 접수 마감 시간" autocomplete="off" required aria-label="새 질문">
+        <button class="btn primary" type="submit">질문 추가</button>
+      </form>
+    </div>
+    <div id="question-list" class="qlist"></div>
     <details class="method">
       <summary>AI 4종 수동 측정 방법 (같은 조건으로 재측정할 때)</summary>
       <ol>
         <li>브라우저 시크릿 창에서 AI에 로그인하지 않은 상태로 엽니다.</li>
         <li>질문 문장을 그대로 붙여넣고, 검색 기능이 있는 모델은 검색을 켭니다.</li>
         <li>답변에 <b>본한방병원</b>이 나오면, 근거로 링크된 페이지가 공식(bonhanbang.com)인지 제3자인지 확인합니다.</li>
-        <li>상태(미측정/공식 인용/제3자 인용/미노출)와 인용 URL을 이 화면에 입력하고, 재측정 날짜를 메모에 적습니다.</li>
-        <li>측정 시각과 로그인 여부에 따라 결과가 달라지므로, 같은 날 여러 모델을 한 번에 측정하는 편이 비교에 유리합니다.</li>
+        <li>다른 병원만 추천되면 ‘경쟁사 선점’, 병원이 전혀 안 나오면 ‘미노출’로 기록합니다.</li>
+        <li>상태와 인용 URL을 입력하고, 재측정 날짜를 메모에 적습니다. 측정 시각·로그인 여부에 따라 결과가 달라지므로 여러 모델을 같은 날 한 번에 측정하세요.</li>
       </ol>
     </details>
-
-    <div class="card" style="margin-top:18px">
-      <h3>새 질문 추가</h3>
-      <form class="addq" id="add-form">
-        <input id="add-question" type="text" placeholder="예) 아산 탕정 한방병원 야간 접수 마감 시간" autocomplete="off" required>
-        <button class="btn primary" type="submit">추가</button>
-      </form>
-      <p class="hint">병원명을 넣지 않은 실제 환자 질문으로 넣어야 AI 검색 노출을 측정할 수 있습니다.</p>
-    </div>
   </section>
 
-  <!-- ============ TAB 2 ============ -->
-  <section class="panel" id="panel-execution" role="tabpanel" aria-labelledby="tab-execution" hidden>
-    <div class="section-title">
-      <h2>취약 질문 보완 원고 (초안 3건)</h2>
-      <p>공식 확인 사실만으로 작성했습니다. 수정하면 금지어 검사와 수정 이력이 자동으로 갱신됩니다.</p>
-    </div>
-
-    <div class="card" style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between">
+  <section id="drafts" class="sect" aria-label="원고 검수기">
+    <div class="sect-head">
       <div>
-        <h3>FAQPage 구조화 데이터 (JSON-LD)</h3>
-        <p class="hint" style="margin:4px 0 0">아래 초안 3건을 schema.org FAQPage 스니펫으로 만들어 복사합니다. 붙여넣을 위치와 적용 여부는 병원·개발 담당 확인이 필요합니다.</p>
+        <h2>원고 검수기 — 금지어·스키마</h2>
+        <p>공식 확인 사실만으로 쓴 초안 3건입니다. 입력하면 금지어가 하이라이트되고 안전도가 실시간으로 움직입니다. 수정은 자동 저장됩니다.</p>
       </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn" type="button" id="btn-copy-jsonld">JSON-LD 복사</button>
-        <button class="btn ghost" type="button" id="btn-view-jsonld">미리보기</button>
+      <div class="tools">
+        <button class="btn mini" type="button" data-act="copy-jsonld">JSON-LD 복사</button>
+        <button class="btn mini ghost" type="button" data-act="view-jsonld">스키마 미리보기</button>
       </div>
     </div>
-    <pre id="jsonld-preview" hidden style="background:#0F172A;color:#E2E8F0;font-size:12px;line-height:1.6;border-radius:12px;padding:14px;overflow:auto;max-height:340px"></pre>
-
-    <div id="draft-list" style="margin-top:16px"></div>
-
+    <pre id="jsonld-preview" hidden></pre>
+    <div id="draft-list" class="dlist"></div>
     <div class="card" id="no-draft-card"></div>
-
-    <div class="section-title">
-      <h2>의료법 제56조 금지·주의 표현</h2>
-      <p>초안 입력 시 실시간으로 검사합니다. ‘주의’는 맥락 확인이 필요한 표현입니다.</p>
-    </div>
-    <div class="card"><div id="banned-legend" style="display:flex;gap:6px;flex-wrap:wrap"></div></div>
-
-    <div class="section-title">
-      <h2>수정 이력</h2>
-      <p>측정 상태·메모·원고·체크리스트를 바꿀 때마다 시각과 함께 기록됩니다.</p>
-    </div>
-    <div class="card">
-      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">
-        <span class="hint" style="margin:0" id="hist-count"></span>
-        <button class="btn mini ghost" type="button" id="btn-export-hist">이력만 CSV로 내보내기</button>
-      </div>
-      <ul class="hist" id="history-list"></ul>
+    <div class="card" style="margin-top:12px">
+      <div class="card-head"><h2>의료법 제56조 금지·주의 표현 22종</h2><span class="pill">자동 검사</span></div>
+      <div id="banned-legend" class="banned"></div>
+      <p class="hint">‘주의’ 등급은 맥락 확인이 필요한 표현입니다. 자동 검사는 보조 수단이며, 최종 판단은 병원 확인과 의료광고 심의 대상 여부 확인을 거쳐야 합니다.</p>
     </div>
   </section>
 
-  <!-- ============ TAB 3 ============ -->
-  <section class="panel" id="panel-publish" role="tabpanel" aria-labelledby="tab-publish" hidden>
-    <div class="section-title">
-      <h2>발행 전 점검 체크리스트</h2>
-      <p>2026-11-27 실측으로 확인된 항목은 근거를 함께 적었습니다. 체크 상태도 이 기기에 저장됩니다.</p>
+  <section id="publish" class="sect" aria-label="발행 점검">
+    <div class="sect-head">
+      <div>
+        <h2>발행 전 점검 · 1~4주 추적</h2>
+        <p>2026-11-27 실측으로 확인된 항목은 근거를 함께 적었습니다. 체크 상태도 이 기기에 저장되고 게이지·파이프라인에 반영됩니다.</p>
+      </div>
+      <div class="prog" id="check-progress"></div>
     </div>
     <div class="card" id="checklist"></div>
-    <div class="card">
-      <h3>발행 순서 (권장)</h3>
-      <p class="hint" style="margin:6px 0 0;white-space:pre-line">1) 공식 사이트 색인·접속 확인 → 2) 병원 정보 표기 통일(진료시간·인스타·플레이스) → 3) 원고 병원 승인 → 4) 의료광고 심의 대상 여부 확인 → 5) 발행 → 6) 48시간 후 같은 10개 질문 재측정 → 7) 미노출 질문이 줄었는지 이 화면에 기록.
-
-※ 48시간은 재측정 간격일 뿐, 노출 개선을 보장하는 시간이 아닙니다.</p>
+    <div class="card publish-order">
+      <h3 style="font-size:13.5px;font-weight:800">발행 순서 (권장)</h3>
+      <ol>
+        <li>공식 사이트 색인·접속 확인</li>
+        <li>병원 정보 표기 통일 (진료시간 · 인스타 · 플레이스)</li>
+        <li>원고 병원 승인</li>
+        <li>의료광고 심의 대상 여부 확인</li>
+        <li>발행 → 48시간 후 같은 10개 질문 재측정</li>
+        <li>미노출 질문이 줄었는지 이 화면에 기록 (1~4주 추적)</li>
+      </ol>
+      <p class="fine">※ 48시간은 재측정 간격일 뿐, 노출 개선을 보장하는 시간이 아닙니다. 1~4주는 같은 질문을 반복 측정해 변화 추이를 보는 기간입니다.</p>
     </div>
   </section>
+
+  <section id="history" class="sect" aria-label="활동 로그">
+    <div class="sect-head">
+      <div><h2>활동 로그</h2><p>측정·검증·원고·복사·발행 체크까지 모든 조작이 시각과 함께 기록됩니다.</p></div>
+      <div class="tools">
+        <span class="pill" id="hist-count">기록 0건</span>
+        <button class="btn mini ghost" type="button" data-act="export-hist">CSV 내보내기</button>
+      </div>
+    </div>
+    <div class="card"><ul class="hist" id="history-list"></ul></div>
+  </section>
+
+  <footer>
+    <div class="fl">
+      <a href="http://www.bonhanbang.com/" target="_blank" rel="noopener">공식 홈페이지</a>
+      <a href="https://bonhanbang-premium-preview.netlify.app/" target="_blank" rel="noopener">새 홈페이지 시안</a>
+      <a href="https://m.booking.naver.com/booking/13/bizes/1422662" target="_blank" rel="noopener">네이버 예약</a>
+      <a href="https://www.instagram.com/bonhan_7581/" target="_blank" rel="noopener">인스타그램 @bonhan_7581</a>
+    </div>
+    <div>본한방병원 GEO 컨트롤타워 V2 · 단일 HTML · 외부 CDN·서버·추적 없음 · 기록은 이 브라우저의 localStorage에만 저장됩니다.</div>
+    <div>실측 2026-11-27 · AI 4종 칸은 실제 측정 전까지 ‘미측정’으로 유지됩니다.</div>
+  </footer>
 
 </main>
 
@@ -348,17 +734,21 @@
 (function(){
   "use strict";
 
-  var STORE_KEY = "bonhan-geo-v1";
+  var STORE_KEY = "bonhan-geo-v2";
+  var LEGACY_KEY = "bonhan-geo-v1";
   var MEASURED_DATE = "2026-11-27";
   var CLINIC = "본한방병원";
 
   var STATUS = {
-    unmeasured: { label: "미측정", cls: "b-unmeasured" },
-    official:   { label: "공식 인용", cls: "b-official" },
-    third:      { label: "제3자 인용", cls: "b-third" },
-    absent:     { label: "미노출", cls: "b-absent" }
+    unmeasured: { label: "미측정",     short: "미측정",   cls: "st-none", badge: "b-none", idx: 0 },
+    official:   { label: "공식 인용",  short: "공식",     cls: "st-ok",   badge: "b-ok",   idx: 1 },
+    third:      { label: "제3자 인용", short: "제3자",    cls: "st-info", badge: "b-info", idx: 2 },
+    competitor: { label: "경쟁사 선점", short: "경쟁사",   cls: "st-warn", badge: "b-warn", idx: 3 },
+    absent:     { label: "미노출",     short: "미노출",   cls: "st-bad",  badge: "b-bad",  idx: 4 }
   };
-  var STATUS_KEYS = ["unmeasured", "official", "third", "absent"];
+  var STATUS_KEYS = ["unmeasured", "official", "third", "competitor", "absent"];
+  var WEB_KEYS = ["unmeasured", "official", "third", "absent"];
+  var CYCLE = ["unmeasured", "official", "third", "competitor", "absent"];
 
   var CHANNELS = ["chatgpt", "gemini", "perplexity", "claude"];
   var CH_NAME = { chatgpt: "ChatGPT", gemini: "Gemini", perplexity: "Perplexity", claude: "Claude" };
@@ -367,6 +757,31 @@
     gemini:     function(q){ return "https://gemini.google.com/app"; },
     perplexity: function(q){ return "https://www.perplexity.ai/search?q=" + encodeURIComponent(q); },
     claude:     function(q){ return "https://claude.ai/new?q=" + encodeURIComponent(q); }
+  };
+
+  var AGENTS = [
+    { id: "gpt", name: "탑똘마니", sub: "ChatGPT", role: "총괄 검증 · 최종 취합", cps: ["Issue #1 소통창 보고 형식", "5→1 순차 검증 결과 취합", "발행 전 최종 승인 판단"] },
+    { id: "p1",  name: "피클1",   sub: "본한방 현장/인스타", role: "현장 사실 · 인스타 콘텐츠", cps: ["진료시간·주소·전화 사실 확인", "@bonhan_7581 표기 일치", "원내 실사·콘텐츠 톤 검증"] },
+    { id: "p2",  name: "피클2",   sub: "블로그/SEO", role: "검색 스니펫 · 블로그 원고", cps: ["검색 스니펫·제목 검증", "블로그 원고 키워드 반영", "공식·제3자 인용 구조 점검"] },
+    { id: "p3",  name: "피클3",   sub: "유입/트래픽", role: "유입 경로 · 전환", cps: ["CTA·링크 도달 점검", "네이버 예약 링크 동작", "질문의 검색 의도 분류"] },
+    { id: "p4",  name: "피클4",   sub: "콘텐츠/UX", role: "원고 톤 · 화면 동선", cps: ["원고 톤·가독성 검수", "금지어·면책 문장 확인", "모바일 동선 점검"] },
+    { id: "p5",  name: "피클5",   sub: "실측/GEO엔진", role: "질문 실측 · 인용 근거", cps: ["10개 질문 웹 실측 기록", "AI 4종 상태·인용 URL 검증", "체외충격파 단가 충돌 확인"] }
+  ];
+  var AGENT_IDS = AGENTS.map(function(a){ return a.id; });
+
+  var REVIEW = {
+    none: { label: "미검토",   mark: "·", cls: "" },
+    ok:   { label: "승인",     mark: "✓", cls: "v-ok" },
+    hold: { label: "보류",     mark: "!", cls: "v-hold" },
+    fix:  { label: "수정요청", mark: "~", cls: "v-fix" }
+  };
+  var REVIEW_CYCLE = ["none", "ok", "hold", "fix"];
+
+  var COMP = {
+    none: { label: "경쟁 기록 없음", idx: 0,   cls: "st-none" },
+    low:  { label: "경쟁 일부",      idx: 30,  cls: "st-none" },
+    mid:  { label: "경쟁 중간",      idx: 60,  cls: "st-info" },
+    high: { label: "경쟁 선점",      idx: 100, cls: "st-warn" }
   };
 
   var BANNED = [
@@ -400,13 +815,22 @@
 
   function src(url, type, label){ return { url: url, type: type, label: label }; }
   function ch(){ return { status: "unmeasured", url: "", note: "" }; }
+  function rv(){ return { gpt: "none", p1: "none", p2: "none", p3: "none", p4: "none", p5: "none" }; }
+
+  function question(o){
+    o.channels = o.channels || { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() };
+    o.reviews = rv();
+    o.reviewNote = "";
+    o.memo = o.memo || "";
+    return o;
+  }
 
   function INITIAL(){
     return {
-      version: 1,
+      version: 2,
       measuredAt: MEASURED_DATE,
       questions: [
-        {
+        question({
           id: "q1",
           q: "아산 탕정 야간 진료 한방병원",
           intent: "야간 진료",
@@ -416,10 +840,9 @@
             note: "공식 홈페이지가 1번째 결과. 진료시간에 '평일 AM 9:00 ~ PM 8:00 (야간진료)' 표기 확인. 제3자(nowdoc·메드노트)도 함께 노출.",
             urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "none", note: "" }
+        }),
+        question({
           id: "q2",
           q: "탕정역 주말 공휴일 한방병원",
           intent: "주말·공휴일 진료",
@@ -429,10 +852,9 @@
             note: "공식 홈페이지 1번째. 같은 검색에서 경쟁 병원(레메디한방병원)이 '주말·공휴일 진료' 자사 블로그 글을 상위에 3건 이상 올려 이 질문을 선점 중 — 보완 우선순위 높음.",
             urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "high", note: "레메디한방병원이 '주말·공휴일 진료' 자사 블로그 글을 상위에 3건 이상 노출" }
+        }),
+        question({
           id: "q3",
           q: "아산 교통사고 입원 한방병원",
           intent: "교통사고 입원",
@@ -442,10 +864,9 @@
             note: "공식 홈페이지 1번째(교통사고후유증·입원 집중치료). 제3자로 메드노트 노출. 다만 '자보 대인접수 절차' 설명 글은 경쟁 병원 블로그가 상위 다수.",
             urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "high", note: "자보 대인접수 절차 설명 글에서 경쟁 병원 블로그가 상위 다수" }
+        }),
+        question({
           id: "q4",
           q: "천안 아산 척추 수술 후 재활 한방병원",
           intent: "수술 후 재활",
@@ -455,10 +876,9 @@
             note: "상위 8건에 공식 홈페이지 없음. 메드노트(제3자)에 '수술 후 재활 특화' 소개로만 잡힘. 경쟁 병원 자사 블로그가 1~2위.",
             urls: [ src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트"), src("https://www.m7.co.kr/hospital/%EC%B6%A9%EB%82%A8_%ED%95%9C%EB%B0%A9%EC%9E%AC%ED%99%9C%EC%9D%98%ED%95%99%EA%B3%BC_%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90_%EC%B0%BE%EA%B8%B0", "third", "m7 병원 목록") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "high", note: "경쟁 병원 자사 블로그가 1~2위" }
+        }),
+        question({
           id: "q5",
           q: "탕정 도수치료 추나요법 병원",
           intent: "도수·추나",
@@ -468,10 +888,9 @@
             note: "공식 홈페이지 없음. 오메디(제3자) 병원 정보 페이지에 도수치료 비급여가로만 노출. 검색 상위는 경쟁 한의원 자사 페이지·블로그.",
             urls: [ src("https://www.5medi.com/%EB%B3%91%EC%9B%90/JDQ4MTYyMiM2MSMkMSMkMiMkMTMkMzgxMTkxIzExIyQxIyQzIyQxMyQzNjE0ODEjNTEjJDEjJDYjJDgz", "third", "오메디(5medi)") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "high", note: "경쟁 한의원 자사 페이지·블로그가 상위" }
+        }),
+        question({
           id: "q6",
           q: "아산 한방병원 1인실 호텔식 입원실",
           intent: "입원실 등급",
@@ -481,10 +900,9 @@
             note: "본한방병원이 전혀 잡히지 않음. 상위는 경쟁 병원(1인실 갤러리 페이지, 1인실 병실료 15만원 공개)과 입원실 안내 페이지. 본한은 1인실·병실 등급 정보를 담은 페이지가 검색에 없음 — 확인된 사실이 없어 원고는 만들지 않았습니다.",
             urls: []
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "high", note: "경쟁 병원 1인실 갤러리·병실료 공개 페이지가 상위" }
+        }),
+        question({
           id: "q7",
           q: "탕정역 주차 가능한 한방병원",
           intent: "주차·접근성",
@@ -494,10 +912,9 @@
             note: "공식 홈페이지 1번째(주차안내: 지하주차장 치료시간 내 무료, 탕정역 공영주차장). 지역 병원 목록(제3자)도 함께 노출.",
             urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "none", note: "" }
+        }),
+        question({
           id: "q8",
           q: "아산 양한방 협진 비수술 통증 병원",
           intent: "양한방 협진",
@@ -507,10 +924,9 @@
             note: "공식 홈페이지가 2번째. 1번째는 경쟁 병원(양·한방 협진·비수술 클리닉 페이지). 본한은 '양·한방 협진'을 상위에 걸 문장이 적어 1위를 내준 상태.",
             urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "high", note: "경쟁 병원 양·한방 협진·비수술 클리닉 페이지가 1위" }
+        }),
+        question({
           id: "q9",
           q: "천안 아산 암환자 회복기 한방병원",
           intent: "암 회복기",
@@ -520,10 +936,9 @@
             note: "본한방병원이 전혀 잡히지 않음. 상위는 대학한방병원 암센터·암 전문 병원. 본한방병원의 암 회복기 진료 여부는 확인된 사실이 없어 원고 작성 대상에서 제외했습니다.",
             urls: []
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        },
-        {
+          comp: { level: "mid", note: "대학한방병원 암센터·암 전문 병원이 상위" }
+        }),
+        question({
           id: "q10",
           q: "아산 탕정 초음파 약침 체외충격파",
           intent: "장비·시술",
@@ -533,9 +948,8 @@
             note: "공식 홈페이지 1번째. 비급여 진료비 표에 초음파 통증약침·초음파약침(도침)·체외충격파 단가가 공개되어 있어 인용 근거가 가장 단단한 질문.",
             urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc") ]
           },
-          channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-          memo: ""
-        }
+          comp: { level: "none", note: "" }
+        })
       ],
       drafts: [
         {
@@ -550,7 +964,8 @@
             "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00(야간진료) / 주말·공휴일 09:00~16:00 / 점심시간 없이 진료 / 365일 연중무휴",
             "네이버 예약 페이지 접속 확인(HTTP 200, 2026-11-27)"
           ],
-          publishNote: "‘네이버 예약(예약 링크)’ 자리에 실제 예약 URL을 넣어 발행하세요."
+          publishNote: "‘네이버 예약(예약 링크)’ 자리에 실제 예약 URL을 넣어 발행하세요.",
+          reviews: rv(), reviewNote: ""
         },
         {
           id: "d2",
@@ -564,7 +979,8 @@
             "공공데이터(심평원) 기준 입원실 35병상",
             "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00 / 주말·공휴일 09:00~16:00 / 점심시간 없이 진료"
           ],
-          publishNote: "본인부담금 0원은 비급여 예외가 있으므로 ‘비급여 항목·보험사 심사에 따라 달라질 수 있음’ 문장을 빼지 마세요."
+          publishNote: "본인부담금 0원은 비급여 예외가 있으므로 ‘비급여 항목·보험사 심사에 따라 달라질 수 있음’ 문장을 빼지 마세요.",
+          reviews: rv(), reviewNote: ""
         },
         {
           id: "d3",
@@ -579,7 +995,8 @@
             "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00 / 주말·공휴일 09:00~16:00",
             "인스타그램 @bonhan_7581 소개: ‘1:1 맞춤 도수재활·추나·양·한방 협진’ 표기"
           ],
-          publishNote: "비급여 가격은 홈페이지 고지(타수별 7만·10만·12만 원)와 심평원 공개 자료(5만 원)가 달라, 금액을 본문에 넣기 전에 병원 확인이 필요합니다. 확인 전에는 금액 없이 '가격 공개'만 안내하세요."
+          publishNote: "비급여 가격은 홈페이지 고지(타수별 7만·10만·12만 원)와 심평원 공개 자료(5만 원)가 달라, 금액을 본문에 넣기 전에 병원 확인이 필요합니다. 확인 전에는 금액 없이 '가격 공개'만 안내하세요.",
+          reviews: rv(), reviewNote: ""
         }
       ],
       checklist: [
@@ -592,21 +1009,29 @@
         { id: "c7", text: "원고 3건 금지어 검사 통과", note: "2번 탭의 금지어 검사에서 ‘통과’ 확인 후 체크", done: false },
         { id: "c8", text: "의료광고 심의 대상 여부 확인", note: "매체·표현에 따라 사전심의 대상이 될 수 있어 병원 측 확인 필요", done: false },
         { id: "c9", text: "병원 승인 후 발행", note: "원고·가격·진료시간은 병원 확인 후 발행", done: false },
-        { id: "c10", text: "발행 후 48시간 뒤 같은 10개 질문 재측정", note: "재측정 결과를 1번 탭에 입력하고 미노출 건수 변화를 기록", done: false }
+        { id: "c10", text: "발행 후 48시간 뒤 같은 10개 질문 재측정", note: "재측정 결과를 질문 실행기에 입력하고 미노출 건수 변화를 기록", done: false }
       ],
+      agentNotes: { gpt: "", p1: "", p2: "", p3: "", p4: "", p5: "" },
       history: []
     };
   }
-
-  /* ---------- state ---------- */
+  /* ================= state ================= */
   var state = null;
   var saveTimer = null;
+  var selectedReview = "q1";
+
+  var KIND_LABEL = {
+    measure: "측정", review: "검증", draft: "원고", check: "체크", copy: "복사",
+    question: "질문", memo: "메모", import: "가져오기", reset: "복원",
+    prompt: "프롬프트", schema: "스키마", agent: "에이전트", export: "내보내기"
+  };
 
   function clone(o){ return JSON.parse(JSON.stringify(o)); }
 
   function normalize(s){
     if(!s || typeof s !== "object") return null;
     if(!Array.isArray(s.questions)) return null;
+    s.version = 2;
     s.questions.forEach(function(q){
       if(!q.channels || typeof q.channels !== "object") q.channels = {};
       CHANNELS.forEach(function(c){
@@ -615,10 +1040,18 @@
         if(typeof q.channels[c].url !== "string") q.channels[c].url = "";
       });
       if(!q.web || typeof q.web !== "object") q.web = { status: "unmeasured", date: "", note: "", urls: [] };
-      if(STATUS_KEYS.indexOf(q.web.status) < 0) q.web.status = "unmeasured";
+      if(WEB_KEYS.indexOf(q.web.status) < 0) q.web.status = "unmeasured";
       if(!Array.isArray(q.web.urls)) q.web.urls = [];
+      if(!q.reviews || typeof q.reviews !== "object") q.reviews = rv();
+      AGENT_IDS.forEach(function(a){
+        if(REVIEW_CYCLE.indexOf(q.reviews[a]) < 0) q.reviews[a] = "none";
+      });
+      if(typeof q.reviewNote !== "string") q.reviewNote = "";
       if(typeof q.memo !== "string") q.memo = "";
       if(typeof q.q !== "string") q.q = "";
+      if(!q.comp || typeof q.comp !== "object") q.comp = { level: "none", note: "" };
+      if(!COMP[q.comp.level]) q.comp.level = "none";
+      if(typeof q.comp.note !== "string") q.comp.note = "";
     });
     if(!Array.isArray(s.drafts)) s.drafts = [];
     s.drafts.forEach(function(d){
@@ -626,9 +1059,24 @@
       if(typeof d.body !== "string") d.body = "";
       if(typeof d.title !== "string") d.title = "원고";
       if(typeof d.question !== "string") d.question = "";
+      if(!Array.isArray(d.evidence)) d.evidence = [];
+      if(typeof d.publishNote !== "string") d.publishNote = "";
+      if(!d.reviews || typeof d.reviews !== "object") d.reviews = rv();
+      AGENT_IDS.forEach(function(a){
+        if(REVIEW_CYCLE.indexOf(d.reviews[a]) < 0) d.reviews[a] = "none";
+      });
+      if(typeof d.reviewNote !== "string") d.reviewNote = "";
     });
     if(!Array.isArray(s.checklist)) s.checklist = [];
+    s.checklist.forEach(function(c){
+      if(typeof c.text !== "string") c.text = "";
+      if(typeof c.note !== "string") c.note = "";
+      c.done = !!c.done;
+    });
+    if(!s.agentNotes || typeof s.agentNotes !== "object") s.agentNotes = {};
+    AGENT_IDS.forEach(function(a){ if(typeof s.agentNotes[a] !== "string") s.agentNotes[a] = ""; });
     if(!Array.isArray(s.history)) s.history = [];
+    if(typeof s.measuredAt !== "string") s.measuredAt = MEASURED_DATE;
     return s;
   }
 
@@ -639,8 +1087,26 @@
       try {
         var parsed = normalize(JSON.parse(raw));
         if(parsed) return parsed;
-      } catch(e){ /* fall through to initial */ }
+      } catch(e){ /* fall through */ }
     }
+    /* one-time migration from the V1 tool's saved data */
+    try {
+      var legacy = window.localStorage.getItem(LEGACY_KEY);
+      if(legacy){
+        var old = JSON.parse(legacy);
+        if(old && Array.isArray(old.questions)){
+          old.questions.forEach(function(q){
+            q.reviews = rv();
+            q.reviewNote = "";
+            q.comp = { level: "none", note: "" };
+          });
+          (old.drafts || []).forEach(function(d){ d.reviews = rv(); d.reviewNote = ""; });
+          old.agentNotes = { gpt: "", p1: "", p2: "", p3: "", p4: "", p5: "" };
+          var migrated = normalize(old);
+          if(migrated) return migrated;
+        }
+      }
+    } catch(e){ /* ignore */ }
     return INITIAL();
   }
 
@@ -651,16 +1117,17 @@
 
   function log(kind, text){
     state.history.unshift({ ts: new Date().toISOString(), kind: kind, text: text });
-    if(state.history.length > 300) state.history.length = 300;
+    if(state.history.length > 400) state.history.length = 400;
   }
 
-  /* ---------- helpers ---------- */
+  /* ================= helpers ================= */
   function esc(s){
     return String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;")
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
   function $(id){ return document.getElementById(id); }
+  function pad2(n){ return String(n).padStart(2, "0"); }
   function fmtTime(iso){
     try {
       return new Date(iso).toLocaleString("ko-KR", {
@@ -669,12 +1136,18 @@
       });
     } catch(e){ return iso; }
   }
+  function fmtShort(iso){
+    try {
+      return new Date(iso).toLocaleTimeString("ko-KR", { timeZone: "Asia/Seoul", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+    } catch(e){ return ""; }
+  }
   function toast(msg){
     var t = $("toast");
+    if(!t) return;
     t.textContent = msg;
     t.className = "show";
     window.clearTimeout(toast._t);
-    toast._t = window.setTimeout(function(){ t.className = ""; }, 1900);
+    toast._t = window.setTimeout(function(){ t.className = ""; }, 2100);
   }
   function copyText(text){
     function fallback(){
@@ -690,17 +1163,19 @@
       document.body.removeChild(ta);
       return ok;
     }
-    if(navigator.clipboard && window.isSecureContext){
-      return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return fallback(); });
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      try {
+        return navigator.clipboard.writeText(text).then(function(){ return true; }, function(){ return fallback(); });
+      } catch(e){ /* fall through */ }
     }
     return Promise.resolve(fallback());
   }
   function statusBadge(key){
     var s = STATUS[key] || STATUS.unmeasured;
-    return '<span class="badge ' + s.cls + '">' + s.label + "</span>";
+    return '<span class="badge ' + s.badge + '">' + s.label + "</span>";
   }
-  function statusOptions(cur){
-    return STATUS_KEYS.map(function(k){
+  function statusOptions(cur, keys){
+    return (keys || STATUS_KEYS).map(function(k){
       return '<option value="' + k + '"' + (k === cur ? " selected" : "") + ">" + STATUS[k].label + "</option>";
     }).join("");
   }
@@ -708,347 +1183,637 @@
     for(var i = 0; i < state.questions.length; i++){ if(state.questions[i].id === id) return i; }
     return -1;
   }
+  function draftIndex(id){
+    for(var i = 0; i < state.drafts.length; i++){ if(state.drafts[i].id === id) return i; }
+    return -1;
+  }
+  function itemById(id){
+    var i = qIndex(id);
+    if(i >= 0) return state.questions[i];
+    var j = draftIndex(id);
+    if(j >= 0) return state.drafts[j];
+    return null;
+  }
+  function itemList(){
+    return state.questions.map(function(q){ return { id: q.id, kind: "질문", title: q.q }; })
+      .concat(state.drafts.map(function(d){ return { id: d.id, kind: "원고", title: d.title }; }));
+  }
   function qTextById(id){
     var i = qIndex(id);
     return i < 0 ? id : state.questions[i].q;
   }
-
-  /* ---------- render: kpi ---------- */
-  function renderKpi(){
-    var total = state.questions.length, off = 0, third = 0, absent = 0, unm = 0;
-    state.questions.forEach(function(q){
-      if(q.web.status === "official") off++;
-      else if(q.web.status === "third") third++;
-      else if(q.web.status === "absent") absent++;
-      else unm++;
+  function shortAxes(){
+    return state.questions.map(function(q){
+      var map = {
+        "야간 진료": "야간", "주말·공휴일 진료": "주말·공휴일", "교통사고 입원": "교통사고",
+        "수술 후 재활": "수술후 재활", "도수·추나": "도수·추나", "입원실 등급": "1인실",
+        "주차·접근성": "주차", "양한방 협진": "양·한방", "암 회복기": "암 회복기", "장비·시술": "장비·시술"
+      };
+      return map[q.intent] || (q.intent || q.id);
     });
-    var chTotal = total * CHANNELS.length, chDone = 0;
-    state.questions.forEach(function(q){
-      CHANNELS.forEach(function(c){ if(q.channels[c].status !== "unmeasured") chDone++; });
-    });
-    $("kpi-total").innerHTML = total + "<small>개</small>";
-    $("kpi-official").innerHTML = off + "<small>건</small>";
-    $("kpi-third").innerHTML = third + "<small>건</small>";
-    $("kpi-absent").innerHTML = absent + "<small>건</small>";
-    var extra = unm > 0 ? " · 웹 검색 미분류 " + unm + "건" : "";
-    $("kpi-note").textContent = "지표는 2026-11-27 일반 웹 검색 실측 기준입니다" + extra +
-      " · AI 4종 측정 칸 " + chDone + "/" + chTotal + " 입력됨";
   }
 
-  /* ---------- render: questions ---------- */
+  /* ================= metrics ================= */
+  function webIndex(q){
+    if(q.web.status === "official") return 100;
+    if(q.web.status === "third") return 50;
+    return 0;
+  }
+  function compIndex(q){
+    return (COMP[q.comp && q.comp.level] || COMP.none).idx;
+  }
+  function scanBanned(text){
+    var hits = [];
+    BANNED.forEach(function(b){
+      if((text || "").indexOf(b.w) >= 0) hits.push(b);
+    });
+    return hits;
+  }
+  function draftSafety(d){
+    var s = 100;
+    scanBanned(d.body || "").forEach(function(h){ s -= (h.level === "high" ? 35 : 10); });
+    return Math.max(0, s);
+  }
+
+  function metrics(){
+    var total = state.questions.length;
+    var official = 0, third = 0, absent = 0, webUnm = 0, webScoreSum = 0;
+    var chTotal = total * CHANNELS.length, chDone = 0, chPerf = 0;
+    state.questions.forEach(function(q){
+      if(q.web.status === "official") official++;
+      else if(q.web.status === "third") third++;
+      else if(q.web.status === "absent") absent++;
+      else webUnm++;
+      webScoreSum += webIndex(q);
+      CHANNELS.forEach(function(c){
+        var st = q.channels[c].status;
+        if(st !== "unmeasured") chDone++;
+        if(st === "official") chPerf += 1;
+        else if(st === "third") chPerf += 0.6;
+      });
+    });
+
+    var cells = itemList().length * AGENT_IDS.length;
+    var reviewed = 0, approved = 0, holds = 0, fixes = 0;
+    itemList().forEach(function(it){
+      var o = itemById(it.id);
+      AGENT_IDS.forEach(function(a){
+        var v = o.reviews[a];
+        if(v !== "none"){ reviewed++; if(v === "ok") approved++; else if(v === "hold") holds++; else if(v === "fix") fixes++; }
+      });
+    });
+
+    var chkDone = state.checklist.filter(function(c){ return c.done; }).length;
+    var chkTotal = state.checklist.length;
+    var passDrafts = state.drafts.filter(function(d){ return scanBanned(d.body).every(function(h){ return h.level !== "high"; }); }).length;
+    var safeSum = 0;
+    state.drafts.forEach(function(d){ safeSum += draftSafety(d); });
+    var safetyAvg = state.drafts.length ? safeSum / state.drafts.length : 100;
+
+    var webGot = total ? (webScoreSum / total) : 0;      /* 0..100 */
+    var bd = [
+      { key: "web", label: "웹 노출", got: webGot / 100 * 35, max: 35, note: official + " 공식 · " + third + " 제3자 · " + absent + " 미노출" },
+      { key: "aim", label: "AI 측정 커버리지", got: chTotal ? chDone / chTotal * 15 : 0, max: 15, note: chDone + "/" + chTotal + "칸 입력" },
+      { key: "aip", label: "AI 인용 성과", got: chTotal ? chPerf / chTotal * 15 : 0, max: 15, note: "공식 1.0 · 제3자 0.6" },
+      { key: "rev", label: "6인 합의", got: cells ? approved / cells * 15 : 0, max: 15, note: approved + "/" + cells + "셀 승인" },
+      { key: "chk", label: "발행 체크", got: chkTotal ? chkDone / chkTotal * 10 : 0, max: 10, note: chkDone + "/" + chkTotal + "항목" },
+      { key: "saf", label: "원고 안전도", got: safetyAvg / 100 * 10, max: 10, note: "금지어 " + (BANNED.length) + "종 검사" }
+    ];
+    var score = bd.reduce(function(a, b){ return a + b.got; }, 0);
+
+    return {
+      total: total, official: official, third: third, absent: absent, webUnm: webUnm,
+      chTotal: chTotal, chDone: chDone, chPerf: chPerf,
+      cells: cells, reviewed: reviewed, approved: approved, holds: holds, fixes: fixes,
+      consensus: reviewed ? approved / reviewed * 100 : null,
+      coverage: cells ? reviewed / cells * 100 : 0,
+      chkDone: chkDone, chkTotal: chkTotal, passDrafts: passDrafts, safetyAvg: safetyAvg,
+      breakdown: bd, score: Math.round(score * 10) / 10, rawScore: score
+    };
+  }
+
+  function scoreLabel(s){
+    if(s < 30) return "기반 구축";
+    if(s < 50) return "측정 진행";
+    if(s < 70) return "노출 확장";
+    if(s < 85) return "선점 진행";
+    return "선점 유지";
+  }
+
+  function pipelineData(m){
+    var webPct = m.total ? (m.total - m.webUnm) / m.total * 100 : 0;
+    var aiPct = m.chTotal ? m.chDone / m.chTotal * 100 : 0;
+    var revPct = m.cells ? m.reviewed / m.cells * 100 : 0;
+    var c7 = state.checklist.some(function(c){ return c.id === "c7" && c.done; });
+    var c9 = state.checklist.some(function(c){ return c.id === "c9" && c.done; });
+    var c10 = state.checklist.some(function(c){ return c.id === "c10" && c.done; });
+    var draftPassPct = state.drafts.length ? m.passDrafts / state.drafts.length * 100 : 0;
+    var inspPct = draftPassPct * 0.5 + (c7 ? 50 : 0);
+    var pubPct = (c9 ? 50 : 0) + (c10 ? 50 : 0);
+    var steps = [
+      { n: "01", title: "질문·웹 실측", pct: webPct, target: "questions", desc: m.total + "개 질문 · 웹 " + (m.total - m.webUnm) + "건 기록" },
+      { n: "02", title: "AI 4종 교차 측정", pct: aiPct, target: "questions", desc: m.chDone + "/" + m.chTotal + "칸 측정" },
+      { n: "03", title: "6인(GPT+피클1~5) 검증", pct: revPct, target: "matrix", desc: m.reviewed + "/" + m.cells + "셀 검토" },
+      { n: "04", title: "금지어·스키마 검수", pct: inspPct, target: "drafts", desc: "원고 " + m.passDrafts + "/" + state.drafts.length + "건 통과" },
+      { n: "05", title: "발행·1~4주 추적", pct: pubPct, target: "publish", desc: c9 ? (c10 ? "발행·재측정 완료" : "발행 완료") : "발행 대기" }
+    ];
+    steps.forEach(function(s, i){
+      s.pct = Math.max(0, Math.min(100, s.pct));
+      s.state = s.pct >= 100 ? "done" : ((s.pct > 0 || (i > 0 && steps[i - 1].state === "done")) ? "active" : "pending");
+    });
+    return steps;
+  }
+
+  /* ================= render: stats / gauge ================= */
+  function renderStats(){
+    var m = metrics();
+    var cells = [
+      { cls: "", lbl: "총 추적 질문", val: m.total, unit: "개", sub: "병원명 없는 환자 질문" },
+      { cls: "em", lbl: "공식 사이트 인용", val: m.official, unit: "건", sub: "bonhanbang.com 노출" },
+      { cls: "cy", lbl: "제3자 페이지", val: m.third, unit: "건", sub: "공식 없이 외부만" },
+      { cls: "ro", lbl: "미노출", val: m.absent, unit: "건", sub: "보완 필요" },
+      { cls: "am", lbl: "AI 측정", val: m.chDone, unit: "/" + m.chTotal, sub: "4종 × " + m.total + "질문" }
+    ];
+    $("stat-strip").innerHTML = cells.map(function(c){
+      return '<div class="stat ' + c.cls + '"><span class="lbl">' + c.lbl + '</span>' +
+        '<div class="val">' + c.val + "<small>" + c.unit + "</small></div>" +
+        '<div class="sub">' + c.sub + "</div></div>";
+    }).join("");
+  }
+
+  function renderGauge(){
+    var m = metrics();
+    var C = 2 * Math.PI * 88;
+    var ring = $("score-ring");
+    if(ring){
+      ring.setAttribute("stroke-dasharray", C.toFixed(2));
+      ring.setAttribute("stroke-dashoffset", (C * (1 - m.score / 100)).toFixed(2));
+    }
+    $("score-num").textContent = m.score;
+    $("score-label").textContent = scoreLabel(m.score);
+    $("score-pill").textContent = m.score >= 70 ? "선점 구간" : (m.score >= 45 ? "확장 구간" : "기반 구축");
+    $("score-pill").className = "pill " + (m.score >= 70 ? "em" : (m.score >= 45 ? "" : "am"));
+    $("score-breakdown").innerHTML = m.breakdown.map(function(b){
+      var pct = b.max ? (b.got / b.max * 100) : 0;
+      return '<div class="bd b' + (b.got < 0.05 ? "0" : "") + '">' +
+        '<span class="n">' + b.label + " · " + b.note + "</span>" +
+        '<span class="v">' + (Math.round(b.got * 10) / 10) + " / " + b.max + "</span>" +
+        '<span class="bar"><i style="width:' + pct.toFixed(1) + '%"></i></span>' +
+        "</div>";
+    }).join("");
+  }
+
+  /* ================= render: radar / occupancy ================= */
+  function renderRadar(){
+    var svg = $("radar");
+    if(!svg) return;
+    var n = state.questions.length;
+    var cx = 200, cy = 156, R = 110;
+    var labels = shortAxes();
+    var out = [];
+    var rings = [0.25, 0.5, 0.75, 1];
+    function point(i, val){
+      var ang = -Math.PI / 2 + (2 * Math.PI * i / n);
+      var r = R * Math.max(0, Math.min(100, val)) / 100;
+      return [cx + Math.cos(ang) * r, cy + Math.sin(ang) * r];
+    }
+    rings.forEach(function(k){
+      var pts = [];
+      for(var i = 0; i < n; i++){ var p = point(i, k * 100); pts.push(p[0].toFixed(1) + "," + p[1].toFixed(1)); }
+      out.push('<polygon class="grid" points="' + pts.join(" ") + '"></polygon>');
+    });
+    for(var i = 0; i < n; i++){
+      var p = point(i, 100);
+      out.push('<line class="axis" x1="' + cx + '" y1="' + cy + '" x2="' + p[0].toFixed(1) + '" y2="' + p[1].toFixed(1) + '"></line>');
+    }
+    var bonPts = [], rivPts = [];
+    state.questions.forEach(function(q, i){
+      var b = point(i, webIndex(q)); bonPts.push(b[0].toFixed(1) + "," + b[1].toFixed(1));
+      var r = point(i, compIndex(q)); rivPts.push(r[0].toFixed(1) + "," + r[1].toFixed(1));
+    });
+    out.push('<polygon class="poly-rival" points="' + rivPts.join(" ") + '"></polygon>');
+    out.push('<polygon class="poly-bonhan" points="' + bonPts.join(" ") + '"></polygon>');
+    state.questions.forEach(function(q, i){
+      var ang = -Math.PI / 2 + (2 * Math.PI * i / n);
+      var lx = cx + Math.cos(ang) * (R + 20), ly = cy + Math.sin(ang) * (R + 20) + 3.5;
+      var anchor = Math.abs(Math.cos(ang)) < 0.25 ? "middle" : (Math.cos(ang) > 0 ? "start" : "end");
+      out.push('<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '">' + esc(labels[i]) + "</text>");
+      if(q.comp && q.comp.level === "high" && /레메디/.test(q.comp.note || "")){
+        var d = point(i, 100);
+        out.push('<circle class="dot" cx="' + d[0].toFixed(1) + '" cy="' + d[1].toFixed(1) + '" r="4.5"></circle>');
+        out.push('<text x="' + (d[0] + 7).toFixed(1) + '" y="' + (d[1] - 5).toFixed(1) + '" text-anchor="start" style="fill:#7dd3fc">레메디</text>');
+      }
+    });
+    out.push('<circle cx="' + cx + '" cy="' + cy + '" r="2.5" fill="rgba(148,163,184,.5)"></circle>');
+    svg.innerHTML = out.join("");
+    $("radar-legend").innerHTML =
+      '<span><i class="lg-em"></i>본한방병원 노출 지수</span>' +
+      '<span><i class="lg-am"></i>경쟁 압력(실측 메모)</span>' +
+      '<span><i class="lg-cy"></i>레메디 확인 지점(q2)</span>';
+  }
+
+  function renderOcc(){
+    var host = $("occ-list");
+    if(!host) return;
+    host.innerHTML = state.questions.map(function(q){
+      var b = webIndex(q), r = compIndex(q);
+      var tip = "q" + q.id.slice(1) + " " + q.q + " · 본한 " + b + " · 경쟁 압력 " + r + (q.comp.note ? " (" + q.comp.note + ")" : "");
+      return '<div class="occrow" title="' + esc(tip) + '">' +
+        '<span class="q"><b style="color:#64748b">' + esc(q.id) + "</b> " + esc(shortAxes()[qIndex(q.id)]) + "</span>" +
+        '<span class="occbars">' +
+          '<span class="ob bon"><span class="t"><i style="width:' + b + '%"></i></span><b>' + b + "</b></span>" +
+          '<span class="ob riv"><span class="t"><i style="width:' + r + '%"></i></span><b>' + r + "</b></span>" +
+        "</span></div>";
+    }).join("");
+  }
+
+  /* ================= render: feed ================= */
+  function renderFeed(){
+    var host = $("feed-list");
+    if(!host) return;
+    var m = metrics();
+    if(!state.history.length){
+      host.innerHTML = '<li class="feed-empty">아직 기록이 없습니다.<br>AI 상태·검증 판정·원고 수정·복사 등<br>조작을 하면 이 타임라인에 실시간으로 쌓입니다.<br><br>' +
+        '<span style="color:#64748b">현재 합의율 ' + (m.consensus === null ? "–" : Math.round(m.consensus) + "%") + " · 점수 " + m.score + "/100</span></li>";
+      return;
+    }
+    host.innerHTML = state.history.slice(0, 14).map(function(h){
+      return '<li class="k-' + esc(h.kind) + '"><time>' + esc(fmtShort(h.ts)) + "</time><span>" + esc(h.text) + "</span></li>";
+    }).join("");
+  }
+
+  /* ================= render: pipeline ================= */
+  function renderPipeline(){
+    var steps = pipelineData(metrics());
+    $("pipeline-steps").innerHTML = steps.map(function(s){
+      return '<button class="step ' + s.state + '" type="button" data-act="go" data-target="' + s.target + '" aria-label="' + s.n + " " + s.title + '">' +
+        '<span class="num">' + s.n + "</span>" +
+        '<span class="st">' + s.title + "</span>" +
+        '<span class="pct">' + Math.round(s.pct) + "% · " + s.desc + "</span>" +
+        '<span class="pbar"><i style="width:' + s.pct.toFixed(1) + '%"></i></span>' +
+      "</button>";
+    }).join("");
+  }
+
+  /* ================= render: agents ================= */
+  function agentTally(aid){
+    var total = itemList().length, reviewed = 0, ok = 0, hold = 0, fix = 0;
+    itemList().forEach(function(it){
+      var v = itemById(it.id).reviews[aid];
+      if(v !== "none"){ reviewed++; if(v === "ok") ok++; else if(v === "hold") hold++; else if(v === "fix") fix++; }
+    });
+    return { total: total, reviewed: reviewed, ok: ok, hold: hold, fix: fix };
+  }
+
+  function agentState(t){
+    if(!t.reviewed) return { label: "대기", cls: "b-none" };
+    if(t.hold || t.fix) return { label: "의견 있음", cls: "b-warn" };
+    if(t.reviewed >= t.total) return { label: "합의", cls: "b-ok" };
+    return { label: "검토중", cls: "b-info" };
+  }
+
+  function renderAgents(){
+    var host = $("agent-grid");
+    if(!host) return;
+    host.innerHTML = AGENTS.map(function(a){
+      var t = agentTally(a.id), st = agentState(t);
+      return '<article class="agent" data-agent="' + a.id + '">' +
+        '<div class="ah"><span class="ava">' + esc(a.name.replace("피클", "P")) + "</span>" +
+          '<span class="an"><b>' + esc(a.name) + "</b><small>" + esc(a.sub) + "</small></span>" +
+          '<span class="badge ' + st.cls + '">' + st.label + "</span></div>" +
+        '<p class="role">' + esc(a.role) + "</p>" +
+        '<ul class="cps">' + a.cps.map(function(c){ return "<li>" + esc(c) + "</li>"; }).join("") + "</ul>" +
+        '<div class="astats"><span class="m ok">✓ ' + t.ok + "</span>" +
+          '<span class="m">' + t.reviewed + "/" + t.total + " 검토</span>" +
+          (t.hold ? '<span class="m" style="color:#fcd34d">! ' + t.hold + "</span>" : "") +
+          (t.fix ? '<span class="m" style="color:#fda4af">~ ' + t.fix + "</span>" : "") +
+          '<button class="btn mini ghost" type="button" data-act="go" data-target="matrix" style="margin-left:auto">검증 열기</button></div>' +
+        '<textarea class="amemo" rows="1" data-agent-note="' + a.id + '" placeholder="' + esc(a.name) + ' 메모 (역할별 확인 사항)" aria-label="' + esc(a.name) + ' 메모">' + esc(state.agentNotes[a.id] || "") + "</textarea>" +
+      "</article>";
+    }).join("");
+  }
+
+  /* ================= render: matrix ================= */
+  function renderConsensus(){
+    var m = metrics();
+    var pct = m.consensus === null ? "–" : Math.round(m.consensus) + "%";
+    [["cons-pct", "cons-cov", "cons-cells"], ["cons-pct2", "cons-cov2", "cons-cells2"]].forEach(function(ids){
+      var a = $(ids[0]), b = $(ids[1]), c = $(ids[2]);
+      if(a) a.textContent = pct;
+      if(b) b.textContent = Math.round(m.coverage) + "%";
+      if(c) c.textContent = m.approved + "/" + m.cells;
+    });
+  }
+
+  function renderMatrix(){
+    var host = $("matrix-host");
+    if(!host) return;
+    var items = itemList();
+    var head = '<table class="matrix"><thead><tr><th class="rowh">검증 항목</th>' +
+      AGENTS.map(function(a){
+        return '<th class="ag">' + esc(a.name) + "<small>" + esc(a.sub.split("/")[0]) + "</small></th>";
+      }).join("") + "</tr></thead><tbody>";
+    var body = items.map(function(it){
+      var o = itemById(it.id);
+      var cells = AGENTS.map(function(a){
+        var v = o.reviews[a.id] || "none";
+        var r = REVIEW[v];
+        return '<td><button class="v ' + r.cls + '" type="button" data-act="review" data-item="' + esc(it.id) + '" data-agent="' + a.id + '" ' +
+          'title="' + esc(a.name + " · " + r.label) + '" aria-label="' + esc(it.id + " " + a.name + " " + r.label) + '">' + r.mark + "</button></td>";
+      }).join("");
+      return '<tr><th class="rowh' + (selectedReview === it.id ? " sel" : "") + '"><button type="button" data-act="select-review" data-item="' + esc(it.id) + '">' +
+        '<span class="rid">' + esc(it.id) + '</span><span class="rt">' + esc(it.title) + '</span><span class="rk">' + esc(it.kind) + "</span></button></th>" +
+        cells + "</tr>";
+    }).join("");
+    host.innerHTML = head + body + "</tbody></table>";
+
+    var sel = itemById(selectedReview) || itemById(items[0].id);
+    if(sel && !itemById(selectedReview)) selectedReview = items[0].id;
+    var info = items.filter(function(i){ return i.id === selectedReview; })[0] || items[0];
+    var chips = AGENTS.map(function(a){
+      var v = (itemById(info.id).reviews[a.id]) || "none";
+      return '<span class="vc ' + v + '">' + esc(a.name) + " " + REVIEW[v].label + "</span>";
+    }).join("");
+    $("review-panel").innerHTML =
+      '<div class="rp-head"><span>선택 항목</span><b>' + esc(info.id) + " · " + esc(info.title) + '</b>' +
+      '<span class="pill">' + esc(info.kind) + "</span>" +
+      '<div class="rp-chips">' + chips + "</div></div>" +
+      '<textarea class="rnote" rows="2" data-review-note="' + esc(info.id) + '" placeholder="' + esc(info.kind) + ' 검증 코멘트 — 예) q2는 레메디가 이미 선점, 원고 우선순위 상향" aria-label="검증 코멘트">' +
+      esc(itemById(info.id).reviewNote || "") + "</textarea>" +
+      '<p class="hint">코멘트는 이 항목의 6인 검증에 함께 저장됩니다. 셀 판정은 미검토 → 승인 → 보류 → 수정요청 순환.</p>';
+  }
+
+  /* ================= render: questions ================= */
+  function reviewDots(id){
+    var o = itemById(id);
+    if(!o) return "";
+    return '<span class="qagents" title="6인 검증 상태">' + AGENTS.map(function(a){
+      var v = o.reviews[a.id] || "none";
+      return '<span class="ad ' + v + '" data-act="select-review" data-item="' + esc(id) + '" title="' + esc(a.name + " " + REVIEW[v].label) + '"></span>';
+    }).join("") + "</span>";
+  }
+
   function renderQuestions(){
     var host = $("question-list");
     if(!state.questions.length){
-      host.innerHTML = '<div class="card"><p class="hint" style="margin:0">질문이 없습니다. 아래에서 추가하세요.</p></div>';
+      host.innerHTML = '<div class="card"><p class="hint" style="margin:0">질문이 없습니다. 위에서 추가하세요.</p></div>';
       return;
     }
     host.innerHTML = state.questions.map(function(q){
       var w = q.web;
       var links = (w.urls || []).map(function(u){
-        return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) +
-          '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
+        return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
       }).join("");
-      var chRows = CHANNELS.map(function(c){
+      var rows = CHANNELS.map(function(c){
         var cell = q.channels[c];
-        return '<div class="chrow">' +
+        var st = STATUS[cell.status] || STATUS.unmeasured;
+        return '<div class="runrow">' +
           '<span class="chname">' + CH_NAME[c] + "</span>" +
-          '<select class="sel" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="status" aria-label="' + CH_NAME[c] + ' 상태">' +
-            statusOptions(cell.status) + "</select>" +
-          '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="url" ' +
-            'placeholder="인용 URL (선택)" value="' + esc(cell.url) + '" aria-label="' + CH_NAME[c] + ' 인용 URL">' +
-          "</div>";
+          '<button class="stbtn ' + st.cls + '" type="button" data-act="ai-status" data-id="' + esc(q.id) + '" data-ch="' + c + '" title="클릭할 때마다 상태가 바뀝니다">' + st.short + "</button>" +
+          '<select class="sel" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="status" aria-label="' + CH_NAME[c] + ' 상태">' + statusOptions(cell.status) + "</select>" +
+          '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="url" placeholder="인용 URL (선택)" value="' + esc(cell.url) + '" aria-label="' + CH_NAME[c] + ' 인용 URL">' +
+        "</div>";
       }).join("");
       var aiLinks = CHANNELS.map(function(c){
-        return '<a class="ai-link" href="' + CH_LINK[c](q.q) + '" target="_blank" rel="noopener" ' +
-          'data-copy-q="' + esc(q.id) + '" title="질문을 복사하고 ' + CH_NAME[c] + ' 열기">' + CH_NAME[c] + "</a>";
+        return '<a class="ai-link" href="' + CH_LINK[c](q.q) + '" target="_blank" rel="noopener" data-copy-ai="' + esc(q.id) + '">' + CH_NAME[c] + " ↗</a>";
       }).join("");
-
-      return '<article class="card" data-card="' + esc(q.id) + '">' +
-        '<div class="rowhead">' +
-          '<div style="min-width:0">' +
-            '<p class="qtext">' + esc(q.q) + "</p>" +
-            '<div style="margin-top:6px;display:flex;gap:6px;flex-wrap:wrap;align-items:center">' +
-              '<span class="idchip">' + esc(q.id) + "</span>" +
-              (q.intent ? '<span class="idchip">' + esc(q.intent) + "</span>" : "") +
-              statusBadge(w.status) +
-              '<span class="idchip">실측 ' + esc(w.date || "미기록") + "</span>" +
-            "</div>" +
+      return '<article class="card qcard" data-card="' + esc(q.id) + '">' +
+        '<div class="qhead"><span class="qid">' + esc(q.id) + "</span>" +
+          '<div class="qmain"><h3>' + esc(q.q) + "</h3>" +
+            '<div class="qmeta">' + statusBadge(w.status) +
+              '<span class="tag">' + esc(q.intent || "미분류") + "</span>" +
+              '<span class="tag">실측 ' + esc(w.date || "미기록") + "</span>" +
+              (q.comp && q.comp.level !== "none" ? '<span class="tag" style="color:#fcd34d">경쟁 압력 ' + COMP[q.comp.level].idx + "</span>" : "") +
+            "</div></div>" +
+          reviewDots(q.id) +
+          '<button class="del" type="button" data-act="del-q" data-id="' + esc(q.id) + '">삭제</button>' +
+        "</div>" +
+        '<div class="qbody">' +
+          '<div class="webbox"><div class="wt">웹 검색 실측 · ' + esc(w.date || MEASURED_DATE) +
+            '<select class="sel" style="width:auto;margin-left:auto" data-web="' + esc(q.id) + '" aria-label="웹 실측 상태">' + statusOptions(w.status, WEB_KEYS) + "</select></div>" +
+            '<p>' + esc(w.note || "기록 없음") + "</p>" +
+            (links ? '<div class="srclinks">' + links + "</div>" : "") +
           "</div>" +
-          '<button class="danger-link" type="button" data-del="' + esc(q.id) + '">삭제</button>' +
-        "</div>" +
-
-        '<div class="measured">' +
-          '<div class="mtitle">1차 웹 검색 실측 (2026-11-27 · 일반 검색 결과 기준)</div>' +
-          '<p class="mnote">' + esc(w.note || "기록 없음") + "</p>" +
-          (links ? '<div class="srclinks">' + links + "</div>" : "") +
-        "</div>" +
-
-        '<div class="chtable">' + chRows + "</div>" +
-
-        '<div class="memo"><label>메모 (재측정 날짜·조건·특이사항)</label>' +
-          '<textarea rows="2" data-memo="' + esc(q.id) + '" placeholder="예) 2026-11-29 시크릿창에서 재측정 — ChatGPT는 병원 미언급">' + esc(q.memo) + "</textarea>" +
-        "</div>" +
-
-        '<div class="qfoot">' +
-          '<div class="airow">' + aiLinks + "</div>" +
-          '<button class="btn mini" type="button" data-copy-prompt="' + esc(q.id) + '">질문 복사</button>' +
+          '<div class="runner">' + rows +
+            '<div class="qfoot"><div class="airow">' + aiLinks + "</div>" +
+              '<span style="display:flex;gap:6px">' +
+                '<button class="btn mini" type="button" data-act="copy-prompt" data-id="' + esc(q.id) + '">프롬프트 복사</button>' +
+                '<button class="btn mini ghost" type="button" data-act="copy-q" data-id="' + esc(q.id) + '">질문 복사</button>' +
+              "</span></div>" +
+          "</div>" +
+          '<div class="memo"><textarea rows="2" data-memo="' + esc(q.id) + '" placeholder="재측정 날짜·조건·특이사항 — 예) 2026-11-29 시크릿창 재측정, ChatGPT 병원 미언급" aria-label="메모">' + esc(q.memo) + "</textarea></div>" +
         "</div>" +
       "</article>";
     }).join("");
   }
 
-  /* ---------- render: drafts ---------- */
-  function scanBanned(text){
-    var hits = [];
+  /* ================= render: drafts ================= */
+  function highlightHtml(text){
+    var ranges = [];
     BANNED.forEach(function(b){
-      var idx = text.indexOf(b.w);
-      if(idx >= 0) hits.push(b);
+      var from = 0, idx;
+      while((idx = text.indexOf(b.w, from)) >= 0){
+        ranges.push({ s: idx, e: idx + b.w.length, level: b.level });
+        from = idx + b.w.length;
+      }
     });
-    return hits;
+    ranges.sort(function(a, b){ return a.s - b.s || (b.e - b.s) - (a.e - a.s); });
+    var picked = [], last = -1;
+    ranges.forEach(function(r){
+      if(r.s >= last){ picked.push(r); last = r.e; }
+    });
+    if(!picked.length) return esc(text);
+    var out = "", pos = 0;
+    picked.forEach(function(r){
+      out += esc(text.slice(pos, r.s));
+      out += '<mark class="' + (r.level === "high" ? "hl-h" : "hl-c") + '">' + esc(text.slice(r.s, r.e)) + "</mark>";
+      pos = r.e;
+    });
+    out += esc(text.slice(pos));
+    return out;
+  }
+
+  function safetyColor(s){
+    if(s >= 90) return "#34d399";
+    if(s >= 60) return "#fbbf24";
+    return "#fb7185";
   }
 
   function renderCheckResult(draftId, text){
     var host = document.querySelector('[data-check="' + draftId + '"]');
     if(!host) return;
     var hits = scanBanned(text);
+    var high = hits.filter(function(h){ return h.level === "high"; });
+    var s = draftSafety({ body: text });
     if(!hits.length){
       host.className = "check pass";
-      host.innerHTML = "금지어 검사 통과 · 감지된 표현 없음";
-      return;
+      host.innerHTML = "✓ 금지어 검사 통과 · 감지된 표현 없음";
+    } else {
+      host.className = "check " + (high.length ? "fail" : "warn");
+      host.innerHTML = (high.length ? "✕ 금지 표현 " + high.length + "건" : "! 주의 표현 " + hits.length + "건") +
+        '<span class="chips">' + hits.map(function(h){
+          return '<span class="chip-h" title="' + esc(h.why) + '">' + esc(h.w) + " · " + esc(h.why) + "</span>";
+        }).join("") + "</span>";
     }
-    var high = hits.filter(function(h){ return h.level === "high"; });
-    host.className = "check " + (high.length ? "fail" : "warn");
-    host.innerHTML = (high.length ? "주의 — 금지 표현 " + high.length + "건" : "확인 필요 — 주의 표현 " + hits.length + "건") +
-      '<div class="chips">' + hits.map(function(h){
-        return '<span class="chip" title="' + esc(h.why) + '">' + esc(h.w) + " · " + esc(h.why) + "</span>";
-      }).join("") + "</div>";
+    var meter = document.querySelector('[data-safe-bar="' + draftId + '"] i');
+    var num = document.querySelector('[data-safe-num="' + draftId + '"]');
+    if(meter) meter.style.width = s + "%";
+    if(meter) meter.style.background = safetyColor(s);
+    if(num) num.textContent = "안전도 " + s;
+    var hl = document.querySelector('[data-hl="' + draftId + '"]');
+    if(hl) hl.innerHTML = highlightHtml(text || "");
   }
 
   function renderDrafts(){
     var host = $("draft-list");
     host.innerHTML = state.drafts.map(function(d){
-      var chips = d.targets.map(function(t){
-        return '<span class="idchip">' + esc(t) + " " + esc(qTextById(t)) + "</span>";
+      var chips = (d.targets || []).map(function(t){
+        return '<span class="tag">' + esc(t) + " " + esc(qTextById(t)) + "</span>";
       }).join(" ");
       var ev = (d.evidence || []).map(function(e){ return "<li>" + esc(e) + "</li>"; }).join("");
-      return '<article class="card draft" data-draft-card="' + esc(d.id) + '">' +
-        "<h4>" + esc(d.title) + "</h4>" +
+      var s = draftSafety(d);
+      return '<article class="card dcard" data-draft-card="' + esc(d.id) + '">' +
+        '<div class="dhead"><h3>' + esc(d.title) + "</h3>" +
+          '<div class="safe" style="min-width:200px"><span class="meter" data-safe-bar="' + esc(d.id) + '"><i style="width:' + s + "%;background:" + safetyColor(s) + '"></i></span>' +
+          '<b data-safe-num="' + esc(d.id) + '" style="color:' + safetyColor(s) + '">안전도 ' + s + "</b></div></div>" +
         '<p class="dq">질문: ' + esc(d.question) + "</p>" +
         (chips ? '<div style="margin-top:8px;display:flex;gap:5px;flex-wrap:wrap">' + chips + "</div>" : "") +
-        '<textarea rows="9" data-draft="' + esc(d.id) + '" aria-label="' + esc(d.title) + ' 원고 본문">' + esc(d.body) + "</textarea>" +
-        '<div class="check" data-check="' + esc(d.id) + '"></div>' +
-        '<div class="draft-tools">' +
-          '<button class="btn mini" type="button" data-copy-draft="' + esc(d.id) + '">원고 복사</button>' +
-          '<button class="btn mini ghost" type="button" data-copy-q="' + esc(d.id) + '">질문 복사</button>' +
-          '<span class="hint" style="margin:0" data-count="' + esc(d.id) + '">' + (d.body || "").length + "자</span>" +
+        '<div class="dgrid">' +
+          '<div class="dcol"><label>원고 본문 · 실시간 검사</label>' +
+            '<textarea rows="9" data-draft="' + esc(d.id) + '" aria-label="' + esc(d.title) + ' 원고 본문">' + esc(d.body) + "</textarea>" +
+            '<div class="dtools"><button class="btn mini" type="button" data-act="copy-draft" data-id="' + esc(d.id) + '">원고 복사</button>' +
+              '<button class="btn mini ghost" type="button" data-act="copy-q" data-id="' + esc(d.id) + '">질문 복사</button>' +
+              '<span class="cnt" data-count="' + esc(d.id) + '">' + (d.body || "").length + "자</span></div></div>" +
+          '<div class="dcol"><label>검사 결과 · 하이라이트</label>' +
+            '<div class="check" data-check="' + esc(d.id) + '"></div>' +
+            '<div class="hlbox"><span class="etitle">금지어 하이라이트</span><div class="hl" data-hl="' + esc(d.id) + '"></div></div>' +
+          "</div>" +
         "</div>" +
         (ev ? '<div class="evidence"><span class="etitle">근거로 쓴 확인 사실</span><ul>' + ev + "</ul></div>" : "") +
-        (d.publishNote ? '<p class="hint">발행 메모: ' + esc(d.publishNote) + "</p>" : "") +
+        (d.publishNote ? '<p class="pnote">발행 메모: ' + esc(d.publishNote) + "</p>" : "") +
+        '<div class="dreview">6인 검증 ' + reviewDots(d.id) + "</div>" +
       "</article>";
     }).join("");
 
     state.drafts.forEach(function(d){ renderCheckResult(d.id, d.body || ""); });
 
     $("no-draft-card").innerHTML =
-      "<h3>원고를 만들지 않은 미노출 질문</h3>" +
-      '<p class="hint" style="margin:8px 0 0;white-space:pre-line">' +
+      '<div class="card-head"><h2>원고를 만들지 않은 미노출 질문</h2><span class="pill am">사실 확인 전 보류</span></div>' +
+      '<p class="hint" style="white-space:pre-line">' +
       "· q6 아산 한방병원 1인실 호텔식 입원실 — 본한방병원의 1인실·병실 등급 정보가 공개 자료에 없어, 확인 없이 원고를 쓰면 사실과 다를 수 있습니다. 병원에 병실 구성·추가 비용을 확인한 뒤 원고를 추가하세요.\n" +
       "· q9 천안 아산 암환자 회복기 한방병원 — 본한방병원이 암 회복기 진료를 한다는 확인된 사실이 없습니다. 진료 여부를 먼저 확인해야 하며, 확인 없이 발행하면 의료광고 문제가 될 수 있습니다." +
       "</p>";
 
-    var legend = $("banned-legend");
-    legend.innerHTML = BANNED.map(function(b){
-      var cls = b.level === "high" ? "b-absent" : "b-warn";
-      return '<span class="badge ' + cls + '" title="' + esc(b.why) + '">' + esc(b.w) + "</span>";
+    $("banned-legend").innerHTML = BANNED.map(function(b){
+      return '<span class="bdg ' + (b.level === "high" ? "h" : "c") + '" title="' + esc(b.why) + '">' + esc(b.w) + "</span>";
     }).join("");
   }
 
-  /* ---------- render: checklist ---------- */
+  /* ================= render: checklist / history ================= */
   function renderChecklist(){
-    var host = $("checklist");
-    host.innerHTML = state.checklist.map(function(c){
+    var done = state.checklist.filter(function(c){ return c.done; }).length;
+    var total = state.checklist.length;
+    $("checklist").innerHTML = state.checklist.map(function(c){
       return '<label class="chk' + (c.done ? " done" : "") + '" data-chk-row="' + esc(c.id) + '">' +
         '<input type="checkbox" data-chk="' + esc(c.id) + '"' + (c.done ? " checked" : "") + ">" +
-        "<span>" +
-          '<span class="ct">' + esc(c.text) + "</span>" +
-          (c.note ? '<span class="cn">' + esc(c.note) + "</span>" : "") +
-        "</span>" +
-      "</label>";
+        "<span><span class=\"ct\">" + esc(c.text) + "</span>" +
+        (c.note ? '<span class="cn">' + esc(c.note) + "</span>" : "") + "</span></label>";
     }).join("");
+    $("check-progress").innerHTML = '<span class="bar"><i style="width:' + (total ? done / total * 100 : 0) + '%"></i></span><b>' + done + "/" + total + "</b>";
   }
 
-  /* ---------- render: history ---------- */
   function renderHistory(){
     var host = $("history-list");
     $("hist-count").textContent = "기록 " + state.history.length + "건";
     if(!state.history.length){
-      host.innerHTML = '<li class="empty">아직 기록이 없습니다. 상태·메모·원고를 바꾸면 여기에 남습니다.</li>';
+      host.innerHTML = '<li class="empty">아직 기록이 없습니다. 상태·검증·메모·원고를 바꾸면 여기에 남습니다.</li>';
       return;
     }
-    host.innerHTML = state.history.slice(0, 60).map(function(h){
-      return "<li><time>" + esc(fmtTime(h.ts)) + "</time><span>" + esc(h.text) + "</span></li>";
+    host.innerHTML = state.history.slice(0, 120).map(function(h){
+      return "<li><time>" + esc(fmtTime(h.ts)) + "</time>" +
+        '<span class="k">' + esc(KIND_LABEL[h.kind] || h.kind) + "</span>" +
+        '<span class="t">' + esc(h.text) + "</span></li>";
     }).join("");
   }
 
+  function renderDashboard(){
+    renderStats();
+    renderGauge();
+    renderRadar();
+    renderOcc();
+    renderFeed();
+    renderPipeline();
+  }
+
   function renderAll(){
-    renderKpi();
+    renderDashboard();
+    renderAgents();
+    renderMatrix();
+    renderConsensus();
     renderQuestions();
     renderDrafts();
     renderChecklist();
     renderHistory();
   }
 
-  /* ---------- events ---------- */
-  // tabs
-  var tabs = [["tab-analysis", "panel-analysis"], ["tab-execution", "panel-execution"], ["tab-publish", "panel-publish"]];
-  tabs.forEach(function(pair){
-    var btn = $(pair[0]);
-    btn.addEventListener("click", function(){
-      tabs.forEach(function(p){
-        var isOn = p[0] === pair[0];
-        $(p[0]).setAttribute("aria-selected", isOn ? "true" : "false");
-        $(p[1]).hidden = !isOn;
-      });
-      window.scrollTo({ top: 0, behavior: "smooth" });
+  /* ================= actions ================= */
+  function go(target){
+    var el = $(target);
+    document.querySelectorAll(".secnav a").forEach(function(a){
+      a.className = a.getAttribute("data-target") === target ? "on" : "";
     });
-  });
+    if(el && typeof el.scrollIntoView === "function"){
+      try { el.scrollIntoView({ behavior: "smooth", block: "start" }); } catch(e){ /* ignore */ }
+    }
+  }
 
-  // question list events
-  var qList = $("question-list");
+  function setStatus(id, chId, st, silent){
+    var q = itemById(id);
+    if(!q || !q.channels || CHANNELS.indexOf(chId) < 0) return false;
+    if(STATUS_KEYS.indexOf(st) < 0) return false;
+    var prev = q.channels[chId].status;
+    if(prev === st) return false;
+    q.channels[chId].status = st;
+    if(!silent) log("measure", "[" + id + "] " + CH_NAME[chId] + " 상태: " + STATUS[prev].label + " → " + STATUS[st].label);
+    save();
+    return true;
+  }
 
-  qList.addEventListener("change", function(e){
-    var t = e.target;
-    if(t.matches("select[data-ch]")){
-      var i = qIndex(t.getAttribute("data-q"));
-      var c = t.getAttribute("data-ch");
-      if(i < 0 || CHANNELS.indexOf(c) < 0) return;
-      var prev = state.questions[i].channels[c].status;
-      if(prev === t.value) return;
-      state.questions[i].channels[c].status = t.value;
-      log("measure", "[" + state.questions[i].id + "] " + CH_NAME[c] + " 상태: " + STATUS[prev].label + " → " + STATUS[t.value].label);
-      save(); renderKpi(); renderQuestions(); renderHistory();
-      toast(CH_NAME[c] + " 상태를 저장했습니다");
-      return;
-    }
-    if(t.matches("input[data-ch][data-field='url']")){
-      var j = qIndex(t.getAttribute("data-q"));
-      var cc = t.getAttribute("data-ch");
-      if(j < 0) return;
-      state.questions[j].channels[cc].url = t.value.trim();
-      save();
-      return;
-    }
-    if(t.matches("textarea[data-memo]")){
-      var k = qIndex(t.getAttribute("data-memo"));
-      if(k < 0) return;
-      state.questions[k].memo = t.value;
-      log("memo", "[" + state.questions[k].id + "] 메모 수정");
-      save(); renderHistory();
-    }
-  });
+  function setWebStatus(id, st){
+    var q = itemById(id);
+    if(!q || WEB_KEYS.indexOf(st) < 0) return false;
+    var prev = q.web.status;
+    if(prev === st) return false;
+    q.web.status = st;
+    q.web.date = new Date().toISOString().slice(0, 10);
+    log("measure", "[" + id + "] 웹 실측 상태: " + STATUS[prev].label + " → " + STATUS[st].label);
+    save();
+    return true;
+  }
 
-  qList.addEventListener("input", function(e){
-    var t = e.target;
-    if(t.matches("input[data-ch][data-field='url']")){
-      var j = qIndex(t.getAttribute("data-q"));
-      var cc = t.getAttribute("data-ch");
-      if(j < 0) return;
-      state.questions[j].channels[cc].url = t.value.trim();
-      window.clearTimeout(saveTimer);
-      saveTimer = window.setTimeout(save, 500);
-    }
-  });
+  function setReview(itemId, agentId, v){
+    var o = itemById(itemId);
+    if(!o || AGENT_IDS.indexOf(agentId) < 0) return false;
+    if(REVIEW_CYCLE.indexOf(v) < 0) return false;
+    var prev = o.reviews[agentId];
+    if(prev === v) return false;
+    o.reviews[agentId] = v;
+    var a = AGENTS.filter(function(x){ return x.id === agentId; })[0];
+    log("review", "[" + itemId + "] " + a.name + " 검증: " + REVIEW[prev].label + " → " + REVIEW[v].label);
+    save();
+    return true;
+  }
 
-  qList.addEventListener("click", function(e){
-    var copyQ = e.target.closest("[data-copy-q]");
-    if(copyQ){
-      var qi = qIndex(copyQ.getAttribute("data-copy-q"));
-      if(qi >= 0) copyText(state.questions[qi].q).then(function(){ toast("질문을 복사했습니다 — AI 창에 붙여넣으세요"); });
-      return;
+  function cycleStatus(id, chId){
+    var q = itemById(id);
+    if(!q || !q.channels) return;
+    var cur = q.channels[chId].status;
+    var next = CYCLE[(CYCLE.indexOf(cur) + 1) % CYCLE.length];
+    if(setStatus(id, chId, next)){
+      renderAll();
+      toast(CH_NAME[chId] + " → " + STATUS[next].label);
     }
-    var copyP = e.target.closest("[data-copy-prompt]");
-    if(copyP){
-      var pi = qIndex(copyP.getAttribute("data-copy-prompt"));
-      if(pi >= 0){
-        var prompt = state.questions[pi].q + " — 아산 탕정 지역 기준으로 실제로 진료 가능한 한방병원을 알려줘. 병원 이름과 진료시간, 주차, 예약 방법을 함께 알려줘.";
-        copyText(prompt).then(function(){ toast("복사했습니다. AI에 붙여넣으면 같은 조건으로 측정됩니다"); });
-      }
-      return;
-    }
-    var del = e.target.closest("[data-del]");
-    if(del){
-      var id = del.getAttribute("data-del");
-      var di = qIndex(id);
-      if(di < 0) return;
-      if(!window.confirm("질문을 삭제할까요?\n\n" + state.questions[di].q + "\n\n측정값과 메모도 함께 지워집니다.")) return;
-      var removed = state.questions[di];
-      state.questions.splice(di, 1);
-      log("question", "질문 삭제: " + removed.q);
-      save(); renderAll();
-      toast("질문을 삭제했습니다");
-    }
-  });
-
-  // add question
-  $("add-form").addEventListener("submit", function(e){
-    e.preventDefault();
-    var input = $("add-question");
-    var v = input.value.trim();
-    if(!v) return;
-    var newId = "q" + (state.questions.length + 1);
-    var n = 1;
-    while(qIndex(newId) >= 0){ n++; newId = "q" + (state.questions.length + n); }
-    state.questions.push({
-      id: newId, q: v, intent: "직접 추가",
-      web: { status: "unmeasured", date: "", note: "직접 추가한 질문 — 아직 실측하지 않았습니다.", urls: [] },
-      channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
-      memo: ""
-    });
-    log("question", "질문 추가: " + v);
-    input.value = "";
-    save(); renderAll();
-    toast("질문을 추가했습니다");
-  });
-
-  // drafts
-  var dList = $("draft-list");
-  var draftTimers = {};
-
-  dList.addEventListener("input", function(e){
-    var t = e.target;
-    if(!t.matches("textarea[data-draft]")) return;
-    var id = t.getAttribute("data-draft");
-    var d = null;
-    state.drafts.forEach(function(x){ if(x.id === id) d = x; });
-    if(!d) return;
-    d.body = t.value;
-    var counter = document.querySelector('[data-count="' + id + '"]');
-    if(counter) counter.textContent = t.value.length + "자";
-    renderCheckResult(id, t.value);
-    window.clearTimeout(draftTimers[id]);
-    draftTimers[id] = window.setTimeout(function(){
-      log("draft", "원고 수정: " + d.title + " (" + d.body.length + "자, 금지어 " + scanBanned(d.body).length + "건)");
-      save(); renderHistory();
-    }, 900);
-  });
-
-  dList.addEventListener("click", function(e){
-    var cd = e.target.closest("[data-copy-draft]");
-    if(cd){
-      var id = cd.getAttribute("data-copy-draft");
-      var d = null;
-      state.drafts.forEach(function(x){ if(x.id === id) d = x; });
-      if(d) copyText(d.body).then(function(){ toast("원고를 복사했습니다"); });
-      return;
-    }
-    var cq = e.target.closest("[data-copy-q]");
-    if(cq){
-      var id2 = cq.getAttribute("data-copy-q");
-      var d2 = null;
-      state.drafts.forEach(function(x){ if(x.id === id2) d2 = x; });
-      if(d2) copyText(d2.question).then(function(){ toast("질문을 복사했습니다"); });
-    }
-  });
+  }
 
   function buildJsonLd(){
     var items = state.drafts.filter(function(d){ return d.question && d.body && d.body.trim(); }).map(function(d){
@@ -1069,47 +1834,270 @@
     }, null, 2);
   }
 
-  $("btn-copy-jsonld").addEventListener("click", function(){
-    copyText(buildJsonLd()).then(function(){ toast("JSON-LD를 복사했습니다"); });
-  });
-  $("btn-view-jsonld").addEventListener("click", function(){
-    var pre = $("jsonld-preview");
-    if(pre.hidden){
-      pre.textContent = buildJsonLd();
-      pre.hidden = false;
-      this.textContent = "미리보기 닫기";
-    } else {
-      pre.hidden = true;
-      this.textContent = "미리보기";
+  function parseJSON(text){
+    try {
+      var parsed = normalize(JSON.parse(String(text)));
+      if(!parsed || !parsed.questions.length) return null;
+      return parsed;
+    } catch(e){ return null; }
+  }
+
+  function importJSON(text){
+    var parsed = parseJSON(text);
+    if(!parsed) return false;
+    var before = state.questions.length;
+    state = parsed;
+    selectedReview = state.questions.length ? state.questions[0].id : "";
+    log("import", "JSON 가져오기: 질문 " + before + " → " + state.questions.length + "개");
+    save(); renderAll();
+    return true;
+  }
+
+  /* ================= events ================= */
+  document.addEventListener("click", function(e){
+    var el = e.target.closest("[data-act]");
+    if(!el) return;
+    var act = el.getAttribute("data-act");
+
+    if(act === "go"){ e.preventDefault(); go(el.getAttribute("data-target")); return; }
+
+    if(act === "ai-status"){
+      cycleStatus(el.getAttribute("data-id"), el.getAttribute("data-ch"));
+      return;
+    }
+
+    if(act === "review"){
+      var id = el.getAttribute("data-item"), ag = el.getAttribute("data-agent");
+      var o = itemById(id);
+      if(!o) return;
+      var cur = o.reviews[ag] || "none";
+      setReview(id, ag, REVIEW_CYCLE[(REVIEW_CYCLE.indexOf(cur) + 1) % REVIEW_CYCLE.length]);
+      renderAll();
+      return;
+    }
+
+    if(act === "select-review"){
+      selectedReview = el.getAttribute("data-item");
+      renderMatrix();
+      go("matrix");
+      return;
+    }
+
+    if(act === "copy-q"){
+      var qq = itemById(el.getAttribute("data-id"));
+      if(!qq) return;
+      var qt = qq.q || qq.question || "";
+      log("copy", (qq.q ? "질문" : "원고 질문") + " 복사: " + qt.slice(0, 40));
+      save(); renderFeed(); renderHistory();
+      copyText(qt).then(function(ok){
+        toast(ok === false ? "복사 권한이 없습니다 — 직접 선택해 복사하세요" : "질문을 복사했습니다 — AI 창에 붙여넣으세요");
+      });
+      return;
+    }
+
+    if(act === "copy-prompt"){
+      var pq = itemById(el.getAttribute("data-id"));
+      if(!pq) return;
+      var prompt = pq.q + " — 아산 탕정 지역 기준으로 실제로 진료 가능한 한방병원을 알려줘. 병원 이름과 진료시간, 주차, 예약 방법을 함께 알려줘.";
+      log("prompt", "[" + pq.id + "] AI 질의 프롬프트 복사");
+      save(); renderFeed(); renderHistory();
+      copyText(prompt).then(function(ok){
+        toast(ok === false ? "복사 권한이 없습니다" : "프롬프트를 복사했습니다 — 같은 조건으로 측정됩니다");
+      });
+      return;
+    }
+
+    if(act === "copy-draft"){
+      var dd = itemById(el.getAttribute("data-id"));
+      if(!dd) return;
+      log("copy", "원고 복사: " + dd.title);
+      save(); renderFeed(); renderHistory();
+      copyText(dd.body).then(function(ok){
+        toast(ok === false ? "복사 권한이 없습니다" : "원고를 복사했습니다");
+      });
+      return;
+    }
+
+    if(act === "del-q"){
+      var did = el.getAttribute("data-id");
+      var di = qIndex(did);
+      if(di < 0) return;
+      if(!window.confirm("질문을 삭제할까요?\n\n" + state.questions[di].q + "\n\n측정값과 검증 기록도 함께 지워집니다.")) return;
+      var removed = state.questions[di];
+      state.questions.splice(di, 1);
+      log("question", "질문 삭제: " + removed.q);
+      save(); renderAll();
+      toast("질문을 삭제했습니다");
+      return;
+    }
+
+    if(act === "copy-jsonld"){
+      log("schema", "FAQPage JSON-LD 복사 (" + state.drafts.length + "건)");
+      save(); renderFeed(); renderHistory();
+      copyText(buildJsonLd()).then(function(ok){
+        toast(ok === false ? "복사 권한이 없습니다" : "JSON-LD를 복사했습니다");
+      });
+      return;
+    }
+
+    if(act === "view-jsonld"){
+      var pre = $("jsonld-preview");
+      if(pre.hidden){
+        pre.textContent = buildJsonLd();
+        pre.hidden = false;
+        el.textContent = "미리보기 닫기";
+      } else {
+        pre.hidden = true;
+        el.textContent = "스키마 미리보기";
+      }
+      return;
+    }
+
+    if(act === "export"){ exportJson(); return; }
+    if(act === "export-hist"){ exportHistoryCsv(); return; }
+    if(act === "reset"){
+      if(!window.confirm("초기 실측 데이터(2026-11-27)로 되돌립니다.\n입력한 측정값·검증·메모·원고 수정이 모두 사라집니다.\n\n계속할까요?")) return;
+      state = normalize(INITIAL());
+      selectedReview = "q1";
+      log("reset", "초기 실측 데이터 복원 (AI 4종 40칸 미측정 유지)");
+      save(); renderAll();
+      toast("초기 실측 데이터로 복원했습니다");
+      return;
     }
   });
 
-  // checklist
-  $("checklist").addEventListener("change", function(e){
+  document.addEventListener("change", function(e){
     var t = e.target;
-    if(!t.matches("input[data-chk]")) return;
-    var id = t.getAttribute("data-chk");
-    state.checklist.forEach(function(c){
-      if(c.id === id){
-        c.done = t.checked;
-        log("check", "점검 " + (t.checked ? "완료" : "해제") + ": " + c.text);
+
+    if(t.matches("select[data-q][data-ch]")){
+      var i = qIndex(t.getAttribute("data-q"));
+      var c = t.getAttribute("data-ch");
+      if(i < 0 || CHANNELS.indexOf(c) < 0) return;
+      if(setStatus(t.getAttribute("data-q"), c, t.value)){
+        renderAll();
+        toast(CH_NAME[c] + " 상태를 저장했습니다");
       }
-    });
-    save(); renderChecklist(); renderHistory();
+      return;
+    }
+
+    if(t.matches("select[data-web]")){
+      if(setWebStatus(t.getAttribute("data-web"), t.value)){
+        renderAll();
+        toast("웹 실측 상태를 갱신했습니다");
+      }
+      return;
+    }
+
+    if(t.matches("input[data-ch][data-field='url']")){
+      var j = qIndex(t.getAttribute("data-q"));
+      if(j < 0) return;
+      state.questions[j].channels[t.getAttribute("data-ch")].url = t.value.trim();
+      save();
+      return;
+    }
+
+    if(t.matches("textarea[data-memo]")){
+      var k = qIndex(t.getAttribute("data-memo"));
+      if(k < 0) return;
+      state.questions[k].memo = t.value;
+      log("memo", "[" + state.questions[k].id + "] 메모 수정");
+      save(); renderFeed(); renderHistory();
+      return;
+    }
+
+    if(t.matches("input[data-chk]")){
+      var cid = t.getAttribute("data-chk");
+      state.checklist.forEach(function(c){
+        if(c.id === cid){
+          c.done = t.checked;
+          log("check", "점검 " + (t.checked ? "완료" : "해제") + ": " + c.text);
+        }
+      });
+      save(); renderAll();
+      return;
+    }
+
+    if(t.matches("textarea[data-agent-note]")){
+      state.agentNotes[t.getAttribute("data-agent-note")] = t.value;
+      log("agent", "에이전트 메모 수정: " + t.getAttribute("data-agent-note"));
+      save(); renderFeed(); renderHistory();
+      return;
+    }
+
+    if(t.matches("textarea[data-review-note]")){
+      var it = itemById(t.getAttribute("data-review-note"));
+      if(!it) return;
+      it.reviewNote = t.value;
+      log("review", "[" + t.getAttribute("data-review-note") + "] 검증 코멘트 저장");
+      save(); renderFeed(); renderHistory();
+      return;
+    }
   });
 
-  // header actions
-  $("btn-export").addEventListener("click", function(){
-    var d = new Date();
-    var pad = function(n){ return String(n).padStart(2, "0"); };
-    var name = "bonhan-geo-" + d.getFullYear() + pad(d.getMonth() + 1) + pad(d.getDate()) + "-" + pad(d.getHours()) + pad(d.getMinutes()) + ".json";
-    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url; a.download = name;
-    document.body.appendChild(a); a.click(); document.body.removeChild(a);
-    window.setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
-    toast("내보냈습니다: " + name);
+  document.addEventListener("input", function(e){
+    var t = e.target;
+
+    if(t.matches("input[data-ch][data-field='url']")){
+      var j = qIndex(t.getAttribute("data-q"));
+      if(j < 0) return;
+      state.questions[j].channels[t.getAttribute("data-ch")].url = t.value.trim();
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(save, 500);
+      return;
+    }
+
+    if(t.matches("textarea[data-draft]")){
+      var id = t.getAttribute("data-draft");
+      var d = itemById(id);
+      if(!d) return;
+      d.body = t.value;
+      var counter = document.querySelector('[data-count="' + id + '"]');
+      if(counter) counter.textContent = t.value.length + "자";
+      renderCheckResult(id, t.value);
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(function(){
+        log("draft", "원고 수정: " + d.title + " (" + d.body.length + "자, 금지어 " + scanBanned(d.body).length + "건)");
+        save(); renderDashboard(); renderConsensus(); renderHistory();
+      }, 900);
+      return;
+    }
+
+    if(t.matches("textarea[data-review-note]")){
+      var it = itemById(t.getAttribute("data-review-note"));
+      if(!it) return;
+      it.reviewNote = t.value;
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(save, 500);
+      return;
+    }
+
+    if(t.matches("textarea[data-agent-note]")){
+      state.agentNotes[t.getAttribute("data-agent-note")] = t.value;
+      window.clearTimeout(saveTimer);
+      saveTimer = window.setTimeout(save, 500);
+      return;
+    }
+  });
+
+  $("add-form").addEventListener("submit", function(e){
+    e.preventDefault();
+    var input = $("add-question");
+    var v = input.value.trim();
+    if(!v) return;
+    var n = state.questions.length + 1;
+    var newId = "q" + n;
+    while(qIndex(newId) >= 0){ n++; newId = "q" + n; }
+    state.questions.push({
+      id: newId, q: v, intent: "직접 추가",
+      web: { status: "unmeasured", date: "", note: "직접 추가한 질문 — 아직 실측하지 않았습니다.", urls: [] },
+      channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
+      reviews: rv(), reviewNote: "", memo: "",
+      comp: { level: "none", note: "" }
+    });
+    log("question", "질문 추가: " + v);
+    input.value = "";
+    save(); renderAll();
+    toast("질문을 추가했습니다");
   });
 
   $("file-import").addEventListener("change", function(e){
@@ -1117,8 +2105,7 @@
     if(!file) return;
     var reader = new FileReader();
     reader.onload = function(){
-      var parsed = null;
-      try { parsed = normalize(JSON.parse(String(reader.result))); } catch(err){ parsed = null; }
+      var parsed = parseJSON(reader.result);
       if(!parsed){
         toast("가져올 수 없는 파일입니다 (JSON 형식 확인)");
         e.target.value = "";
@@ -1128,44 +2115,62 @@
         e.target.value = "";
         return;
       }
-      var before = state.questions.length;
-      state = parsed;
-      log("import", "JSON 가져오기: 질문 " + before + " → " + parsed.questions.length + "개");
-      save(); renderAll();
+      importJSON(reader.result);
       toast("가져왔습니다");
       e.target.value = "";
     };
     reader.readAsText(file, "utf-8");
   });
 
-  $("btn-reset").addEventListener("click", function(){
-    if(!window.confirm("초기 실측 데이터(2026-11-27)로 되돌립니다.\n입력한 측정값·메모·원고 수정이 모두 사라집니다.\n\n계속할까요?")) return;
-    state = normalize(INITIAL());
-    log("reset", "초기 실측 데이터 복원");
-    save(); renderAll();
-    toast("초기 실측 데이터로 복원했습니다");
-  });
+  function exportJson(){
+    var d = new Date();
+    var name = "bonhan-geo-v2-" + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + "-" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".json";
+    var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = name;
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    window.setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
+    log("export", "JSON 내보내기: " + name);
+    save(); renderFeed(); renderHistory();
+    toast("내보냈습니다: " + name);
+  }
 
-  $("btn-export-hist").addEventListener("click", function(){
+  function exportHistoryCsv(){
     if(!state.history.length){ toast("내보낼 이력이 없습니다"); return; }
     var rows = [["시각(Asia/Seoul)", "구분", "내용"]].concat(state.history.map(function(h){
-      return [fmtTime(h.ts), h.kind, h.text.replace(/"/g, '""')];
+      return [fmtTime(h.ts), KIND_LABEL[h.kind] || h.kind, h.text.replace(/"/g, '""')];
     }));
     var csv = rows.map(function(r){ return '"' + r.join('","') + '"'; }).join("\r\n");
     var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
-    a.href = url; a.download = "bonhan-geo-history.csv";
+    a.href = url; a.download = "bonhan-geo-v2-history.csv";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     window.setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
     toast("이력을 내보냈습니다");
+  }
+
+  /* AI 링크를 누르면 프롬프트를 복사해 두어 바로 붙여넣을 수 있게 */
+  document.addEventListener("click", function(e){
+    var a = e.target.closest("[data-copy-ai]");
+    if(!a) return;
+    var q = itemById(a.getAttribute("data-copy-ai"));
+    if(!q) return;
+    log("copy", "[" + q.id + "] AI 바로 열기 · 질문 복사");
+    save(); renderFeed(); renderHistory();
+    copyText(q.q).then(function(ok){
+      if(ok === false) toast("질문 복사 권한이 없습니다 — AI 창에 직접 붙여넣으세요");
+    });
   });
 
-  /* ---------- boot ---------- */
+  /* ================= boot ================= */
   state = load();
+  selectedReview = state.questions.length ? state.questions[0].id : "";
+
+  /* consult a stale V1 score check: nothing to migrate further */
   renderAll();
 
-  // verification hooks for automated checks
   window.GEO_OK = true;
   window.GEO_STATE = function(){ return state; };
   window.GEO_KPI = function(){
@@ -1179,6 +2184,21 @@
     return o;
   };
   window.GEO_JSONLD = buildJsonLd;
+  window.GEO_V2 = {
+    metrics: metrics,
+    score: function(){ return metrics().score; },
+    scoreLabel: function(){ return scoreLabel(metrics().score); },
+    consensus: function(){ var m = metrics(); return { consensus: m.consensus, coverage: m.coverage, approved: m.approved, reviewed: m.reviewed, cells: m.cells }; },
+    pipeline: function(){ return pipelineData(metrics()); },
+    scanBanned: scanBanned,
+    safety: draftSafety,
+    setStatus: function(id, chId, st){ var ok = setStatus(id, chId, st); if(ok) renderAll(); return ok; },
+    setWebStatus: function(id, st){ var ok = setWebStatus(id, st); if(ok) renderAll(); return ok; },
+    setReview: function(id, ag, v){ var ok = setReview(id, ag, v); if(ok) renderAll(); return ok; },
+    importJSON: importJSON,
+    buildJsonLd: buildJsonLd,
+    go: go
+  };
 })();
 </script>
 </body>
