@@ -1,0 +1,417 @@
+{
+  "version": 1,
+  "scope": "본한방병원 GEO 컨트롤타워 V3 — 공개 가능한 작업 상태만 담습니다(개인정보·비공개 경로 없음)",
+  "updatedAt": "2026-11-27T18:18:05.486+09:00",
+  "note": "피클1~5·탑똘마니가 작업을 시작하면 status를 working으로, 끝나면 done으로 바꿔 이 파일을 커밋하세요. 열려 있는 화면이 60초 안에 받아갑니다.",
+  "agents": [
+    {
+      "id": "gpt",
+      "name": "탑똘마니",
+      "role": "총괄 검증·최종 취합",
+      "status": "waiting",
+      "currentTask": "최종 검수 대기 — 15항목 미검토",
+      "lastActiveAt": "2026-11-27T18:01:00+09:00",
+      "doneCount": 0,
+      "totalCount": 15
+    },
+    {
+      "id": "p1",
+      "name": "피클1",
+      "role": "현장 사실·인스타",
+      "status": "done",
+      "currentTask": "q6 1인실 운영 확인(병실 수·차액 미공개) · q9 암 회복기 공식 안내 없음 · 체외충격파 2,000타 7만/3,000타 10만/4,000타 12만",
+      "lastActiveAt": "2026-11-27T17:57:00+09:00",
+      "doneCount": 15,
+      "totalCount": 15
+    },
+    {
+      "id": "p2",
+      "name": "피클2",
+      "role": "블로그·SEO",
+      "status": "done",
+      "currentTask": "레메디 블로그(11-18)·geo 게시판 132건 분석, q2·q4 제목·H1 전략, 키워드 축 제안",
+      "lastActiveAt": "2026-11-27T17:58:00+09:00",
+      "doneCount": 15,
+      "totalCount": 15
+    },
+    {
+      "id": "p3",
+      "name": "피클3",
+      "role": "유입·측정",
+      "status": "done",
+      "currentTask": "10문항 웹 실측(18:00 KST) — 공식 7(1위 5·2위 2)·미노출 3, 유입 끊김 4건 진단",
+      "lastActiveAt": "2026-11-27T18:00:00+09:00",
+      "doneCount": 13,
+      "totalCount": 15
+    },
+    {
+      "id": "p4",
+      "name": "피클4",
+      "role": "콘텐츠·UX",
+      "status": "done",
+      "currentTask": "13항목 판정 + d1~d3 보완, d4(주말·공휴일)·d5(수술 후 재활) 신규 원고",
+      "lastActiveAt": "2026-11-27T18:00:30+09:00",
+      "doneCount": 13,
+      "totalCount": 15
+    },
+    {
+      "id": "p5",
+      "name": "피클5",
+      "role": "실측·GEO엔진",
+      "status": "working",
+      "currentTask": "V3 취합·웹 배포·메일 발송 진행 중",
+      "lastActiveAt": "2026-11-27T18:18:05.486+09:00",
+      "doneCount": 5,
+      "totalCount": 15
+    }
+  ],
+  "events": [
+    {
+      "at": "2026-11-27T18:01:00+09:00",
+      "who": "피클5",
+      "text": "d1~d5 금지어 22종 0건 · MedicalClinic+FAQPage JSON-LD 검증 통과, V3 취합 시작"
+    },
+    {
+      "at": "2026-11-27T18:00:30+09:00",
+      "who": "피클4",
+      "text": "d1~d3 보완본 반영, d4(q2 주말·공휴일)·d5(q4 수술 후 재활) 신규 원고 작성 완료"
+    },
+    {
+      "at": "2026-11-27T18:00:00+09:00",
+      "who": "피클3",
+      "text": "10문항 웹 실측: 공식 7(1위 5 + 2위 2) · 미노출 3(q5·q6·q9). q4 2위·q5 미노출로 정정"
+    },
+    {
+      "at": "2026-11-27T17:59:00+09:00",
+      "who": "피클3",
+      "text": "유입 끊김 4건 확인: 예약 링크 0건(mn08_02.php 게시판) · 시안 noindex · UTM 0건 · 인스타 양방향 링크 끊김"
+    },
+    {
+      "at": "2026-11-27T17:58:00+09:00",
+      "who": "피클2",
+      "text": "레메디 블로그(11-18 질문형)·GEO 게시판 132건 분석, 키워드 축 ‘탕정역·1번 출구·주말 4시까지’ 제안"
+    },
+    {
+      "at": "2026-11-27T17:57:00+09:00",
+      "who": "피클1",
+      "text": "q6 1인실 운영 확인(인스타 11-21·11-23), 병실 수·차액 미공개로 원고 보류 판정"
+    },
+    {
+      "at": "2026-11-27T17:56:00+09:00",
+      "who": "피클1",
+      "text": "q9 암 회복기 공식 안내 없음 · 체외충격파 2,000타 7만/3,000타 10만/4,000타 12만(심평원 5만과 충돌) · 인스타 링크 미연결"
+    },
+    {
+      "at": "2026-11-27T17:55:00+09:00",
+      "who": "피클1",
+      "text": "13:30 회차 승인 맞답글 2건 등록(17:53~17:55), 17:30 피드·댓글 4건 등록(17:51)"
+    }
+  ],
+  "judgments": [
+    {
+      "item": "q1",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q1",
+      "agent": "p2",
+      "verdict": "ok"
+    },
+    {
+      "item": "q1",
+      "agent": "p3",
+      "verdict": "ok"
+    },
+    {
+      "item": "q1",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q2",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q2",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "q2",
+      "agent": "p3",
+      "verdict": "fix"
+    },
+    {
+      "item": "q2",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q3",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q3",
+      "agent": "p2",
+      "verdict": "ok"
+    },
+    {
+      "item": "q3",
+      "agent": "p3",
+      "verdict": "fix"
+    },
+    {
+      "item": "q3",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q4",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q4",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "q4",
+      "agent": "p3",
+      "verdict": "fix"
+    },
+    {
+      "item": "q4",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q5",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q5",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "q5",
+      "agent": "p3",
+      "verdict": "hold"
+    },
+    {
+      "item": "q5",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q6",
+      "agent": "p1",
+      "verdict": "hold"
+    },
+    {
+      "item": "q6",
+      "agent": "p2",
+      "verdict": "hold"
+    },
+    {
+      "item": "q6",
+      "agent": "p3",
+      "verdict": "hold"
+    },
+    {
+      "item": "q6",
+      "agent": "p4",
+      "verdict": "hold"
+    },
+    {
+      "item": "q7",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q7",
+      "agent": "p2",
+      "verdict": "ok"
+    },
+    {
+      "item": "q7",
+      "agent": "p3",
+      "verdict": "ok"
+    },
+    {
+      "item": "q7",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q8",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q8",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "q8",
+      "agent": "p3",
+      "verdict": "fix"
+    },
+    {
+      "item": "q8",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "q9",
+      "agent": "p1",
+      "verdict": "hold"
+    },
+    {
+      "item": "q9",
+      "agent": "p2",
+      "verdict": "hold"
+    },
+    {
+      "item": "q9",
+      "agent": "p3",
+      "verdict": "hold"
+    },
+    {
+      "item": "q9",
+      "agent": "p4",
+      "verdict": "hold"
+    },
+    {
+      "item": "q10",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "q10",
+      "agent": "p2",
+      "verdict": "ok"
+    },
+    {
+      "item": "q10",
+      "agent": "p3",
+      "verdict": "ok"
+    },
+    {
+      "item": "q10",
+      "agent": "p4",
+      "verdict": "ok"
+    },
+    {
+      "item": "d1",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "d1",
+      "agent": "p2",
+      "verdict": "ok"
+    },
+    {
+      "item": "d1",
+      "agent": "p3",
+      "verdict": "fix"
+    },
+    {
+      "item": "d1",
+      "agent": "p4",
+      "verdict": "fix"
+    },
+    {
+      "item": "d1",
+      "agent": "p5",
+      "verdict": "ok"
+    },
+    {
+      "item": "d2",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "d2",
+      "agent": "p2",
+      "verdict": "ok"
+    },
+    {
+      "item": "d2",
+      "agent": "p3",
+      "verdict": "fix"
+    },
+    {
+      "item": "d2",
+      "agent": "p4",
+      "verdict": "fix"
+    },
+    {
+      "item": "d2",
+      "agent": "p5",
+      "verdict": "ok"
+    },
+    {
+      "item": "d3",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "d3",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "d3",
+      "agent": "p3",
+      "verdict": "ok"
+    },
+    {
+      "item": "d3",
+      "agent": "p4",
+      "verdict": "fix"
+    },
+    {
+      "item": "d3",
+      "agent": "p5",
+      "verdict": "ok"
+    },
+    {
+      "item": "d4",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "d4",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "d4",
+      "agent": "p5",
+      "verdict": "ok"
+    },
+    {
+      "item": "d5",
+      "agent": "p1",
+      "verdict": "ok"
+    },
+    {
+      "item": "d5",
+      "agent": "p2",
+      "verdict": "fix"
+    },
+    {
+      "item": "d5",
+      "agent": "p5",
+      "verdict": "ok"
+    }
+  ]
+}

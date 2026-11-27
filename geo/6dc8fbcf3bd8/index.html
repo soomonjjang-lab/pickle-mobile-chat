@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>본한방병원 GEO 컨트롤타워 V2</title>
-<meta name="description" content="본한방병원 AI 검색 노출 실측·6인 교차 검증·원고 검수·발행 추적을 한 화면에서 굴리는 GEO 컨트롤타워 V2 (단일 HTML, 외부 리소스 없음)">
+<title>본한방병원 GEO 컨트롤타워 V3</title>
+<meta name="description" content="본한방병원 AI 검색 노출 실측·6인 교차 검증·원고 검수·발행 추적을 한 화면에서 굴리는 GEO 컨트롤타워 V3 (단일 HTML · 팀 라이브 상태만 공개 파일에서 동기화)">
 <style>
   :root{
     --bg:#05080f;
@@ -433,6 +433,75 @@
   .banned .bdg.h{color:#fda4af;border-color:rgba(251,113,133,.35);background:rgba(251,113,133,.08)}
   .banned .bdg.c{color:#fcd34d;border-color:rgba(251,191,36,.32);background:rgba(251,191,36,.07)}
 
+  /* ============ live bar (V3) ============ */
+  .livebar{margin-top:20px;padding:14px 16px;border-radius:16px;border:1px solid rgba(52,211,153,.26);
+    background:linear-gradient(120deg, rgba(52,211,153,.10), rgba(56,189,248,.05) 45%, rgba(167,139,250,.06));
+    box-shadow:var(--inset), 0 24px 50px -34px rgba(16,185,129,.6);scroll-margin-top:112px}
+  .lb-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap}
+  .lb-src{margin-left:auto;font-size:10.5px;color:var(--dim);font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .lb-agents{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:12px}
+  .lb-agent{padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:rgba(2,6,23,.45)}
+  .lb-agent.working{border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.08)}
+  .lb-agent.done{border-color:rgba(56,189,248,.32)}
+  .lb-a-head{display:flex;align-items:center;gap:7px}
+  .lb-a-head b{font-size:12.5px;font-weight:900}
+  .lb-dot{width:8px;height:8px;border-radius:50%;background:#64748b;flex:0 0 auto}
+  .lb-agent.working .lb-dot{background:var(--em);box-shadow:0 0 0 0 rgba(52,211,153,.6);animation:pulse 1.6s infinite}
+  .lb-agent.done .lb-dot{background:var(--cy)}
+  .lb-agent.waiting .lb-dot{background:#64748b}
+  .lb-st{margin-left:auto;font-size:9.5px;font-weight:900;letter-spacing:.02em;border-radius:99px;padding:1px 7px;border:1px solid var(--line);color:var(--muted)}
+  .lb-agent.working .lb-st{color:#6ee7b7;border-color:rgba(52,211,153,.45);background:rgba(52,211,153,.12)}
+  .lb-agent.done .lb-st{color:#7dd3fc;border-color:rgba(56,189,248,.4);background:rgba(56,189,248,.1)}
+  .lb-task{font-size:11.5px;color:#cbd5e1;margin-top:7px;line-height:1.55;min-height:34px}
+  .lb-meta{display:flex;gap:8px;font-size:10px;color:var(--dim);margin-top:6px;font-variant-numeric:tabular-nums}
+  .lb-foot{margin-top:12px;display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;border-top:1px solid var(--line);padding-top:10px}
+  .lb-foot > span{font-size:10.5px;color:var(--muted);font-weight:800;white-space:nowrap}
+  .lb-events{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:132px;overflow:auto}
+  .lb-events li{display:grid;grid-template-columns:40px 62px 1fr;gap:7px;font-size:11px;color:#cbd5e1;align-items:baseline}
+  .lb-events time{color:var(--dim);font-size:9.5px;font-variant-numeric:tabular-nums}
+  .lb-events b{color:#7dd3fc;font-size:10px;font-weight:800}
+  .lb-note{font-size:10.5px;color:var(--dim);margin-top:10px;line-height:1.6}
+  .lb-empty{grid-column:1/-1;font-size:11.5px;color:var(--muted);padding:8px 2px;line-height:1.65}
+  .lb-empty b{color:#6ee7b7}
+
+  /* ============ rank badge / ai lane ============ */
+  .rankb{font-size:10px;font-weight:900;border-radius:6px;padding:1px 7px;border:1px solid var(--line);white-space:nowrap}
+  .rankb.r1{color:#04140e;background:linear-gradient(180deg,#5eead4,#34d399);border-color:#34d399}
+  .rankb.r2{color:#7dd3fc;border-color:rgba(56,189,248,.5);background:rgba(56,189,248,.12)}
+  .rankb.r3{color:var(--muted)}
+  .rankb.r0{color:#fda4af;border-color:rgba(251,113,133,.4);background:rgba(251,113,133,.1)}
+  .wby{font-size:10px;color:var(--dim);margin-top:8px;line-height:1.5}
+  .ailane-note{font-size:10.5px;color:var(--dim);line-height:1.5;margin:2px 0 0}
+
+  /* ============ 측정 대장 ============ */
+  table.ledger th.lg-q{white-space:normal;max-width:250px}
+  table.ledger .lg-q .rid{display:inline-block;margin-right:6px}
+  table.ledger td{font-size:11px;color:#cbd5e1;vertical-align:top;text-align:left}
+  table.ledger td b{display:block;font-size:11px;color:#e2e8f0}
+  table.ledger td small{display:block;font-size:9.5px;color:var(--dim)}
+  table.ledger td.lg-src{max-width:280px}
+  table.ledger td.lg-src .srclink{margin:0 3px 3px 0;display:inline-block}
+  .dim{color:var(--dim)}
+
+  /* ============ 유입 끊김 ============ */
+  .leaks{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .leak{padding:14px 15px;border-radius:14px;border:1px solid var(--line);background:linear-gradient(165deg, rgba(255,255,255,.05), rgba(255,255,255,.012)), var(--panel)}
+  .leak.lv-high{border-color:rgba(251,113,133,.35);background:linear-gradient(165deg, rgba(251,113,133,.08), rgba(255,255,255,.01)), var(--panel)}
+  .leak.lv-mid{border-color:rgba(251,191,36,.3)}
+  .leak.done{opacity:.55}
+  .lk-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .lk-head b{font-size:13px;font-weight:900;letter-spacing:-.2px}
+  .lk-lv{font-size:9.5px;font-weight:900;border-radius:99px;padding:1px 7px;border:1px solid}
+  .lv-high .lk-lv{color:#fda4af;border-color:rgba(251,113,133,.5);background:rgba(251,113,133,.14)}
+  .lv-mid .lk-lv{color:#fcd34d;border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.12)}
+  .lv-low .lk-lv{color:var(--muted);border-color:var(--line)}
+  .lk-chk{margin-left:auto;display:inline-flex;align-items:center;gap:5px;font-size:10.5px;color:var(--muted);cursor:pointer}
+  .lk-chk input{width:14px;height:14px;accent-color:var(--em)}
+  .lk-ev{font-size:11.5px;color:#cbd5e1;line-height:1.65;margin-top:8px}
+  .lk-act{font-size:11.5px;color:#dbe6f5;line-height:1.6;margin-top:8px;padding:7px 10px;border-radius:9px;background:rgba(2,6,23,.45);border:1px solid var(--line)}
+  .lk-act span{font-size:9.5px;font-weight:900;color:var(--em);margin-right:6px}
+  .lk-owner{font-size:10px;color:var(--dim);margin-top:6px}
+
   /* ============ checklist ============ */
   .prog{display:flex;align-items:center;gap:10px}
   .prog .bar{width:150px;height:7px;border-radius:99px;background:rgba(148,163,184,.14);overflow:hidden}
@@ -478,6 +547,9 @@
     .agents{grid-template-columns:repeat(2,1fr)}
   }
   @media (max-width:900px){
+    .lb-agents{grid-template-columns:repeat(2,1fr)}
+    .leaks{grid-template-columns:1fr}
+    .lb-foot{grid-template-columns:1fr}
     .stats{grid-template-columns:repeat(3,1fr)}
     .pipe{grid-template-columns:repeat(5,1fr)}
     .step .st{font-size:10px}
@@ -486,6 +558,9 @@
     .runrow{grid-template-columns:62px 96px 108px minmax(0,1fr)}
   }
   @media (max-width:680px){
+    .lb-agents{grid-template-columns:1fr}
+    .lb-src{display:none}
+    .lb-events li{grid-template-columns:38px 54px 1fr}
     body{font-size:14.5px}
     .wrap{padding:0 14px}
     .topbar-in{padding-top:10px;padding-bottom:10px}
@@ -523,13 +598,13 @@
         </svg>
       </span>
       <span class="brand-txt">
-        <strong>본한방병원 <em>GEO</em> 컨트롤타워 <span class="pill em" style="font-size:9px;vertical-align:2px">V2</span></strong>
-        <small>AI 검색 노출 실측 · 6인 교차 검증 · 원고 검수 · 발행 추적</small>
+        <strong>본한방병원 <em>GEO</em> 컨트롤타워 <span class="pill em" style="font-size:9px;vertical-align:2px">V3</span></strong>
+        <small>팀 실측 내장 · 라이브 동기화 · 6인 교차 검증 · 원고 5건 · 발행 추적</small>
       </span>
     </a>
     <div class="bar-right">
       <span class="live"><i></i>LIVE</span>
-      <span class="chip">실측 2026-11-27</span>
+      <span class="chip">실측 2026-11-27 18:00</span>
       <button class="btn" type="button" data-act="export">JSON 내보내기</button>
       <label class="btn" for="file-import" role="button" tabindex="0">JSON 가져오기</label>
       <input id="file-import" type="file" accept=".json,application/json" hidden>
@@ -541,7 +616,9 @@
     <a href="#pipeline" data-act="go" data-target="pipeline">파이프라인</a>
     <a href="#agents" data-act="go" data-target="agents">6인 검증</a>
     <a href="#matrix" data-act="go" data-target="matrix">검증 매트릭스</a>
-    <a href="#questions" data-act="go" data-target="questions">질문 실행</a>
+    <a href="#questions" data-act="go" data-target="questions">질문·측정</a>
+    <a href="#ledger" data-act="go" data-target="ledger">측정 대장</a>
+    <a href="#leaks" data-act="go" data-target="leaks">유입 진단</a>
     <a href="#drafts" data-act="go" data-target="drafts">원고·스키마</a>
     <a href="#publish" data-act="go" data-target="publish">발행</a>
     <a href="#history" data-act="go" data-target="history">활동 로그</a>
@@ -550,11 +627,27 @@
 
 <main class="wrap">
 
+  <section id="live" class="livebar" aria-label="실시간 라이브 동기화">
+    <div class="lb-top">
+      <span class="live"><i></i>LIVE 동기화</span>
+      <span class="pill em">자동 60초</span>
+      <span class="pill" id="live-status">동기화 대기</span>
+      <button class="btn mini" type="button" data-act="live-sync">지금 동기화</button>
+      <span class="lb-src">live-state.json · soomonjjang-lab/pickle-mobile-chat</span>
+    </div>
+    <div class="lb-agents" id="live-agents"></div>
+    <div class="lb-foot">
+      <span id="live-updated">팀 상태 갱신 –</span>
+      <ol id="live-events" class="lb-events"></ol>
+    </div>
+    <p class="lb-note">피클1~5·탑똘마니가 작업할 때마다 <b>live-state.json</b>만 커밋하면, 이 화면은 1분 안에 누가 들어와 무엇을 했는지 자동으로 받아옵니다. 파일은 공개 가능한 작업 상태만 담습니다(개인정보 없음).</p>
+  </section>
+
   <section class="notice" aria-label="데이터 신뢰 기준">
     <span class="ic" aria-hidden="true">GEO</span>
     <div>
-      <p><b>이 화면의 숫자는 전부 실제 측정값입니다.</b> 병원명을 뺀 환자 질문 10개를 <b>2026-11-27 일반 웹 검색</b>으로 실측해 공식 홈페이지 / 제3자 페이지 / 미노출을 기록했습니다. <b>AI 4종 40칸은 아직 ‘미측정’</b>이며, 직접 확인한 뒤 상태를 누르면 모든 차트와 점수가 즉시 다시 계산됩니다.</p>
-      <span class="mini-line">측정 기준일 2026-11-27 · 대상 본한방병원(충남 아산시 탕정면 한들물빛6로 14, 041-541-7581)</span>
+      <p><b>V3 — 팀원 1~5번이 실제로 실측·판정한 결과가 기본값으로 들어 있습니다.</b> 병원명을 뺀 환자 질문 10개를 <b>2026-11-27 18:00 KST 공개 웹 인덱스</b>로 조회해 <b>공식 7(1위 5·2위 2) · 미노출 3(q5·q6·q9)</b>으로 기록했고, 원고는 <b>d1~d5 5건</b>입니다. <b>탑똘마니(ChatGPT) 10칸은 아직 ‘미측정’</b>이며, 직접 확인한 뒤 상태를 누르면 모든 차트와 점수가 즉시 다시 계산됩니다.</p>
+      <span class="mini-line">측정 기준일 2026-11-27 18:00 KST · 대상 본한방병원(충남 아산시 탕정면 한들물빛6로 14, 041-541-7581)</span>
     </div>
   </section>
 
@@ -576,7 +669,7 @@
         </svg>
         <div class="ring-center"><b id="score-num">0</b><span>/ 100</span><small id="score-label">기반 구축</small></div>
       </div>
-      <p class="ring-note">웹 노출 35 · AI 측정 15 · AI 인용 15 · 6인 합의 15 · 발행·안전 20<br>상태를 바꾸면 링과 아래 지표가 함께 움직입니다.</p>
+      <p class="ring-note">웹 노출 35 · 측정 커버리지 15 · 탑똘마니 인용 15 · 6인 합의 15 · 발행·안전 20<br>상태를 바꾸면 링과 아래 지표가 함께 움직입니다.</p>
       <div id="score-breakdown" class="breakdown"></div>
     </div>
 
@@ -614,12 +707,12 @@
     <div class="sect-head">
       <div>
         <h2>6인 교차 검증 보드</h2>
-        <p>ChatGPT(탑똘마니)와 피클1~5가 같은 질문·원고를 서로 다른 관점에서 검증합니다. 아래 매트릭스에서 셀을 눌러 판정하면 각 카드의 진행률과 전체 합의율이 즉시 갱신됩니다.</p>
+        <p>탑똘마니(ChatGPT)와 피클1~5가 같은 질문·원고를 서로 다른 관점에서 검증합니다. 열자마자 1~5번이 오늘 실제로 낸 판정이 채워져 있고, 탑똘마니 열은 최종 검수 전이라 비어 있습니다.</p>
       </div>
       <div class="consensus" id="consensus-mini">
         <div><b id="cons-pct">–</b><small>합의율</small></div>
         <div><b id="cons-cov">0%</b><small>검토 커버리지</small></div>
-        <div><b id="cons-cells">0/78</b><small>승인 셀</small></div>
+        <div><b id="cons-cells">0/90</b><small>승인 셀</small></div>
       </div>
     </div>
     <div class="agents" id="agent-grid"></div>
@@ -629,12 +722,12 @@
     <div class="sect-head">
       <div>
         <h2>교차 검증 매트릭스</h2>
-        <p>셀을 누를 때마다 미검토 → 승인 → 보류 → 수정요청 순으로 바뀝니다. 항목 이름을 누르면 아래에 코멘트를 남길 수 있고, 변경은 이 기기에 자동 저장됩니다.</p>
+        <p>15항목(q1~q10 + d1~d5) × 6인 = <b>90칸</b>입니다. 셀을 누를 때마다 미검토 → 승인 → 보류 → 수정요청 순으로 바뀌고, 항목 이름을 누르면 코멘트를 남길 수 있습니다. 라이브 상태 파일이 내려주는 팀 판정도 이 표에 자동 반영됩니다(직접 누른 칸은 유지).</p>
       </div>
       <div class="consensus" id="consensus-big">
         <div><b id="cons-pct2">–</b><small>합의율</small></div>
         <div><b id="cons-cov2">0%</b><small>커버리지</small></div>
-        <div><b id="cons-cells2">0/78</b><small>승인 셀</small></div>
+        <div><b id="cons-cells2">0/90</b><small>승인 셀</small></div>
       </div>
     </div>
     <div class="card matrix-card">
@@ -653,8 +746,8 @@
   <section id="questions" class="sect" aria-label="질문 실행기">
     <div class="sect-head">
       <div>
-        <h2>질문 실행기 — AI 4종 교차 측정</h2>
-        <p>프롬프트를 복사해 4개 AI에 붙여넣고, 결과를 원클릭으로 기록하세요. 상태 pill을 누르면 미측정 → 공식 인용 → 제3자 인용 → 경쟁사 선점 → 미노출 순으로 순환합니다. 기본값은 전부 미측정입니다.</p>
+        <h2>질문 10개 — 웹 실측(피클3) + 탑똘마니(ChatGPT)</h2>
+        <p>외부 AI 바로 열기 버튼은 없앴습니다. 남긴 측정 레인은 <b>피클3의 웹 실측 10칸</b>과 <b>탑똘마니(ChatGPT) 10칸</b>뿐이고, ChatGPT 칸은 실제로 물어본 뒤에만 채웁니다(기본 미측정). 상태 pill을 누르면 미측정 → 공식 인용 → 제3자 인용 → 경쟁사 선점 → 미노출 순으로 순환합니다.</p>
       </div>
       <form class="addq" id="add-form">
         <input id="add-question" type="text" placeholder="예) 아산 탕정 한방병원 야간 접수 마감 시간" autocomplete="off" required aria-label="새 질문">
@@ -663,22 +756,51 @@
     </div>
     <div id="question-list" class="qlist"></div>
     <details class="method">
-      <summary>AI 4종 수동 측정 방법 (같은 조건으로 재측정할 때)</summary>
+      <summary>측정 방법 (같은 조건으로 재측정할 때)</summary>
       <ol>
-        <li>브라우저 시크릿 창에서 AI에 로그인하지 않은 상태로 엽니다.</li>
-        <li>질문 문장을 그대로 붙여넣고, 검색 기능이 있는 모델은 검색을 켭니다.</li>
-        <li>답변에 <b>본한방병원</b>이 나오면, 근거로 링크된 페이지가 공식(bonhanbang.com)인지 제3자인지 확인합니다.</li>
+        <li><b>웹 실측(피클3)</b> — 시크릿 창에서 질문 문장을 그대로 검색하고, 상위 8건에서 본한 공식/제3자/미노출을 기록합니다. 순위(1위·2위)와 조회 일시를 함께 남깁니다.</li>
+        <li><b>탑똘마니(ChatGPT)</b> — 대표님이 실제로 쓰는 ChatGPT 1종에 질문을 붙여넣고(검색 켬), 답변에 본한방병원이 나오면 인용 페이지가 공식인지 제3자인지 확인합니다.</li>
         <li>다른 병원만 추천되면 ‘경쟁사 선점’, 병원이 전혀 안 나오면 ‘미노출’로 기록합니다.</li>
-        <li>상태와 인용 URL을 입력하고, 재측정 날짜를 메모에 적습니다. 측정 시각·로그인 여부에 따라 결과가 달라지므로 여러 모델을 같은 날 한 번에 측정하세요.</li>
+        <li>측정 시각·로그인 여부에 따라 결과가 달라지므로, 같은 날 한 번에 측정하고 메모에 날짜를 적습니다.</li>
       </ol>
     </details>
+  </section>
+
+  <section id="ledger" class="sect" aria-label="측정 출처·일시 대장">
+    <div class="sect-head">
+      <div>
+        <h2>측정 대장 — 누가 · 언제 · 어떻게 쟀는지</h2>
+        <p>숫자마다 출처가 붙어야 가짜 수치가 섞이지 않습니다. 웹 실측은 피클3이 2026-11-27 18:00 KST에 공개 웹 인덱스로 조회한 값이고, 탑똘마니(ChatGPT) 10칸은 아직 미측정입니다.</p>
+      </div>
+      <span class="pill">피클3 실측 10칸 · 탑똘마니 0/10</span>
+    </div>
+    <div class="card matrix-card">
+      <div class="matrix-scroll">
+        <table class="matrix ledger">
+          <thead><tr><th class="rowh">질문</th><th>측정자</th><th>웹 결과</th><th>출처 페이지</th><th>측정자</th><th>ChatGPT</th></tr></thead>
+          <tbody id="ledger-body"></tbody>
+        </table>
+      </div>
+      <p class="hint" style="margin:10px 2px 0">웹 실측은 네이버·구글 SERP 직접 캡처가 아니라 공개 웹 인덱스 조회 값입니다 — 엔진·시점에 따라 순위가 달라질 수 있고, 못 본 칸은 비워 뒀습니다(추정 없음).</p>
+    </div>
+  </section>
+
+  <section id="leaks" class="sect" aria-label="유입 끊김 진단">
+    <div class="sect-head">
+      <div>
+        <h2>유입 끊김 4곳 — 검색 1위가 예약으로 이어지지 않는 이유</h2>
+        <p>피클3이 공식 홈페이지·시안의 링크를 전수 확인한 결과입니다. 검색에서 이기는 것과 예약으로 이어지는 것은 별개인데, 지금은 후자가 끊겨 있습니다.</p>
+      </div>
+      <span class="pill am" id="leak-count">0건</span>
+    </div>
+    <div class="leaks" id="leak-cards"></div>
   </section>
 
   <section id="drafts" class="sect" aria-label="원고 검수기">
     <div class="sect-head">
       <div>
-        <h2>원고 검수기 — 금지어·스키마</h2>
-        <p>공식 확인 사실만으로 쓴 초안 3건입니다. 입력하면 금지어가 하이라이트되고 안전도가 실시간으로 움직입니다. 수정은 자동 저장됩니다.</p>
+        <h2>원고 검수기 — 팀 원고 5건(d1~d5)</h2>
+        <p>공식 확인 사실만으로 쓴 원고 5건입니다. d1~d3은 피클4 보완본, d4(q2 주말·공휴일)·d5(q4 수술 후 재활)는 신규입니다. 입력하면 금지어가 하이라이트되고 안전도가 실시간으로 움직이며, 수정은 자동 저장됩니다.</p>
       </div>
       <div class="tools">
         <button class="btn mini" type="button" data-act="copy-jsonld">JSON-LD 복사</button>
@@ -699,7 +821,7 @@
     <div class="sect-head">
       <div>
         <h2>발행 전 점검 · 1~4주 추적</h2>
-        <p>2026-11-27 실측으로 확인된 항목은 근거를 함께 적었습니다. 체크 상태도 이 기기에 저장되고 게이지·파이프라인에 반영됩니다.</p>
+        <p>2026-11-27 실측으로 확인된 항목은 근거를 함께 적었습니다. 예약 링크·noindex·UTM·인스타 링크 4건은 아직 미해결입니다. 체크 상태도 이 기기에 저장되고 게이지·파이프라인에 반영됩니다.</p>
       </div>
       <div class="prog" id="check-progress"></div>
     </div>
@@ -736,8 +858,9 @@
       <a href="https://m.booking.naver.com/booking/13/bizes/1422662" target="_blank" rel="noopener">네이버 예약</a>
       <a href="https://www.instagram.com/bonhan_7581/" target="_blank" rel="noopener">인스타그램 @bonhan_7581</a>
     </div>
-    <div>본한방병원 GEO 컨트롤타워 V2 · 단일 HTML · 외부 CDN·서버·추적 없음 · 기록은 이 브라우저의 localStorage에만 저장됩니다.</div>
-    <div>실측 2026-11-27 · AI 4종 칸은 실제 측정 전까지 ‘미측정’으로 유지됩니다.</div>
+    <div>본한방병원 GEO 컨트롤타워 V3 · 단일 HTML · 외부 CDN·광고·추적 없음 · 기록은 이 브라우저의 localStorage에만 저장됩니다.</div>
+    <div>실측 2026-11-27 18:00 KST · 탑똘마니(ChatGPT) 10칸은 실제 측정 전까지 ‘미측정’으로 유지됩니다.</div>
+    <div>라이브 동기화는 공개 저장소의 <code>geo/6dc8fbcf3bd8/live-state.json</code> 한 파일만 읽습니다(60초 간격, 개인정보 없음).</div>
   </footer>
 
 </main>
@@ -748,10 +871,19 @@
 (function(){
   "use strict";
 
-  var STORE_KEY = "bonhan-geo-v2";
-  var LEGACY_KEY = "bonhan-geo-v1";
+  var STORE_KEY = "bonhan-geo-v3";
+  var LEGACY_KEY = "bonhan-geo-v2";      /* 이전 화면의 저장분 — 자동 이관하지 않고, 가져오기(JSON)만 호환 */
+  var LEGACY_KEY_V1 = "bonhan-geo-v1";
+  var VERSION = 3;
   var MEASURED_DATE = "2026-11-27";
+  var MEASURED_AT = "2026-11-27T18:00:00+09:00";
+  var MEASURED_LABEL = "2026-11-27 18:00 KST";
   var CLINIC = "본한방병원";
+
+  /* 실시간 라이브 동기화 — 공개 저장소의 상태 파일만 읽습니다(개인정보 없음) */
+  var LIVE_API_URL = "https://api.github.com/repos/soomonjjang-lab/pickle-mobile-chat/contents/geo/6dc8fbcf3bd8/live-state.json";
+  var LIVE_RAW_URL = "https://raw.githubusercontent.com/soomonjjang-lab/pickle-mobile-chat/main/geo/6dc8fbcf3bd8/live-state.json";
+  var LIVE_POLL_MS = 60000;
 
   var STATUS = {
     unmeasured: { label: "미측정",     short: "미측정",   cls: "st-none", badge: "b-none", idx: 0 },
@@ -761,25 +893,25 @@
     absent:     { label: "미노출",     short: "미노출",   cls: "st-bad",  badge: "b-bad",  idx: 4 }
   };
   var STATUS_KEYS = ["unmeasured", "official", "third", "competitor", "absent"];
-  var WEB_KEYS = ["unmeasured", "official", "third", "absent"];
+  var WEB_KEYS = ["official", "third", "absent", "unmeasured"];
   var CYCLE = ["unmeasured", "official", "third", "competitor", "absent"];
 
-  var CHANNELS = ["chatgpt", "gemini", "perplexity", "claude"];
-  var CH_NAME = { chatgpt: "ChatGPT", gemini: "Gemini", perplexity: "Perplexity", claude: "Claude" };
-  var CH_LINK = {
-    chatgpt:    function(q){ return "https://chatgpt.com/?q=" + encodeURIComponent(q); },
-    gemini:     function(q){ return "https://gemini.google.com/app"; },
-    perplexity: function(q){ return "https://www.perplexity.ai/search?q=" + encodeURIComponent(q); },
-    claude:     function(q){ return "https://claude.ai/new?q=" + encodeURIComponent(q); }
-  };
+  /* V3: 외부 AI 바로 열기(ChatGPT·Gemini·Perplexity·Claude)는 화면에서 제거.
+     측정 레인은 웹 실측(피클3)과 탑똘마니(ChatGPT) 두 개만 남깁니다. */
+  var CHANNELS = ["gpt"];
+  var CH_NAME = { gpt: "탑똘마니 (ChatGPT)" };
+  var LANES = [
+    { id: "p3",  name: "피클3",    sub: "웹 실측 10칸" },
+    { id: "gpt", name: "탑똘마니", sub: "ChatGPT 10칸" }
+  ];
 
   var AGENTS = [
-    { id: "gpt", name: "탑똘마니", sub: "ChatGPT", role: "총괄 검증 · 최종 취합", cps: ["Issue #1 소통창 보고 형식", "5→1 순차 검증 결과 취합", "발행 전 최종 승인 판단"] },
-    { id: "p1",  name: "피클1",   sub: "본한방 현장/인스타", role: "현장 사실 · 인스타 콘텐츠", cps: ["진료시간·주소·전화 사실 확인", "@bonhan_7581 표기 일치", "원내 실사·콘텐츠 톤 검증"] },
-    { id: "p2",  name: "피클2",   sub: "블로그/SEO", role: "검색 스니펫 · 블로그 원고", cps: ["검색 스니펫·제목 검증", "블로그 원고 키워드 반영", "공식·제3자 인용 구조 점검"] },
-    { id: "p3",  name: "피클3",   sub: "유입/트래픽", role: "유입 경로 · 전환", cps: ["CTA·링크 도달 점검", "네이버 예약 링크 동작", "질문의 검색 의도 분류"] },
-    { id: "p4",  name: "피클4",   sub: "콘텐츠/UX", role: "원고 톤 · 화면 동선", cps: ["원고 톤·가독성 검수", "금지어·면책 문장 확인", "모바일 동선 점검"] },
-    { id: "p5",  name: "피클5",   sub: "실측/GEO엔진", role: "질문 실측 · 인용 근거", cps: ["10개 질문 웹 실측 기록", "AI 4종 상태·인용 URL 검증", "체외충격파 단가 충돌 확인"] }
+    { id: "gpt", name: "탑똘마니", sub: "ChatGPT", role: "총괄 검증 · 최종 취합", cps: ["15항목 최종 검수 — 아직 미검토", "피클1~5 검증 취합·발행 판단", "Issue #1 소통창 보고"] },
+    { id: "p1",  name: "피클1",   sub: "본한방 현장/인스타", role: "현장 사실 · 인스타 콘텐츠", cps: ["진료시간·주소·주차 사실 확인", "1인실·입원실 인스타 근거 확인", "체외충격파 타수별 단가 확인"] },
+    { id: "p2",  name: "피클2",   sub: "블로그/SEO", role: "검색 스니펫 · 블로그 원고", cps: ["레메디 블로그·GEO 게시판 벤치마크", "질문형 제목·한 줄 답변 구조", "키워드 축: 탕정역·1번 출구·주말"] },
+    { id: "p3",  name: "피클3",   sub: "유입/측정", role: "10문항 웹 실측 · 유입 진단", cps: ["10문항 웹 노출 실측 18:00 KST", "예약 링크·UTM 유입 손실 진단", "채널별 전환 추적 설계"] },
+    { id: "p4",  name: "피클4",   sub: "콘텐츠/UX", role: "환자 문안 · 화면 동선", cps: ["환자 문안·금지 표현 검수", "d1~d5 원고 작성·보완", "모바일 동선·시안 점검"] },
+    { id: "p5",  name: "피클5",   sub: "실측/GEO엔진", role: "기술 검수 · 취합·배포", cps: ["금지어 22종·JSON-LD 검증", "10문항 재측정 기준선 고정", "V3 취합·웹 배포"] }
   ];
   var AGENT_IDS = AGENTS.map(function(a){ return a.id; });
 
@@ -826,207 +958,333 @@
   var OFFICIAL_URL = "http://www.bonhanbang.com/";
   var PREVIEW_URL = "https://bonhanbang-premium-preview.netlify.app/";
   var BOOKING_URL = "https://m.booking.naver.com/booking/13/bizes/1422662";
+  var RIVAL_URL = "https://remedyhospital.co.kr/";
+  var RIVAL_BLOG_URL = "https://remedyhospital.co.kr/blog/";
+  var INSTA_URL = "https://www.instagram.com/bonhan_7581/";
 
   function src(url, type, label){ return { url: url, type: type, label: label }; }
-  function ch(){ return { status: "unmeasured", url: "", note: "" }; }
   function rv(){ return { gpt: "none", p1: "none", p2: "none", p3: "none", p4: "none", p5: "none" }; }
+  function aiLane(o){
+    o = o || {};
+    return { status: o.status || "unmeasured", url: o.url || "", note: o.note || "", date: o.date || "" };
+  }
+  function reviewSet(map){
+    var r = rv();
+    Object.keys(map || {}).forEach(function(k){ if(r.hasOwnProperty(k)) r[k] = map[k]; });
+    return r;
+  }
 
   function question(o){
-    o.channels = o.channels || { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() };
-    o.reviews = rv();
-    o.reviewNote = "";
+    o.web = o.web || { status: "unmeasured", date: "", note: "", urls: [] };
+    o.web.rank = (typeof o.web.rank === "number") ? o.web.rank : null;
+    o.web.by = o.web.by || "피클3";
+    o.web.engine = o.web.engine || "공개 웹 인덱스 조회";
+    o.web.at = o.web.at || MEASURED_AT;
+    o.web.urls = o.web.urls || [];
+    o.ai = aiLane(o.ai);
+    o.reviews = reviewSet(o.reviews);
+    o.reviewNote = o.reviewNote || "";
     o.memo = o.memo || "";
+    o.comp = o.comp || { level: "none", note: "" };
     return o;
   }
 
   function INITIAL(){
+    var WEB = {
+      by: "피클3",
+      engine: "공개 웹 인덱스 조회(네이버·구글 SERP 직접 캡처 아님)",
+      at: MEASURED_AT,
+      date: MEASURED_DATE
+    };
+    function web(o){
+      var w = { status: o.status, rank: (typeof o.rank === "number" ? o.rank : null), date: WEB.date, at: WEB.at, by: WEB.by, engine: WEB.engine, note: o.note, urls: o.urls || [] };
+      return w;
+    }
     return {
-      version: 2,
+      version: VERSION,
       measuredAt: MEASURED_DATE,
       questions: [
         question({
           id: "q1",
           q: "아산 탕정 야간 진료 한방병원",
           intent: "야간 진료",
-          web: {
-            status: "official",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지가 1번째 결과. 진료시간에 '평일 AM 9:00 ~ PM 8:00 (야간진료)' 표기 확인. 제3자(nowdoc·메드노트)도 함께 노출.",
-            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트") ]
-          },
-          comp: { level: "none", note: "" }
+          web: web({
+            status: "official", rank: 1,
+            note: "본한 공식 홈페이지가 1번째. 진료시간 표에 '평일 AM 9:00 ~ PM 8:00 (야간진료)' 확인. 2위 레메디 자사, 3위 레메디 블로그, nowdoc·탕정365한의원도 하위 노출.",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src(RIVAL_URL, "third", "레메디한방병원(2위)"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc") ]
+          }),
+          comp: { level: "mid", note: "레메디 자사 2위·블로그 3위, nowdoc·탕정365한의원 하위 노출" },
+          reviews: reviewSet({ p1: "ok", p2: "ok", p3: "ok", p4: "ok" }),
+          reviewNote: "1·2·3·4번 승인 — 1위, 진료시간 표기 일치. 3번: 페이지 안 예약 CTA만 보완하면 됨.",
+          ai: { note: "탑똘마니(ChatGPT) 10칸 중 1칸 — 아직 미측정" }
         }),
         question({
           id: "q2",
           q: "탕정역 주말 공휴일 한방병원",
           intent: "주말·공휴일 진료",
-          web: {
-            status: "official",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지 1번째. 같은 검색에서 경쟁 병원(레메디한방병원)이 '주말·공휴일 진료' 자사 블로그 글을 상위에 3건 이상 올려 이 질문을 선점 중 — 보완 우선순위 높음.",
-            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc") ]
-          },
-          comp: { level: "high", note: "레메디한방병원이 '주말·공휴일 진료' 자사 블로그 글을 상위에 3건 이상 노출" }
+          web: web({
+            status: "official", rank: 1,
+            note: "1번째. 레메디가 11-18 자사 블로그에 질문 제목 그대로의 글(한 줄 답변+진료시간 표+FAQ)을 올려 2위로 추격 중. 우리는 q2 전용 원고가 없어 d4를 신규 작성.",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src(RIVAL_BLOG_URL, "third", "레메디 블로그(2위·11-18)") ]
+          }),
+          comp: { level: "high", note: "레메디 질문형 블로그(11-18) 2위 + geo 게시판 병행" },
+          reviews: reviewSet({ p1: "ok", p2: "fix", p3: "fix", p4: "ok" }),
+          reviewNote: "1·4번 승인 / 2·3번 수정요청 — q2 전용 원고가 없어 레메디 질문형 글이 2위로 추격. d4를 신규 작성(첫 문단에 토·일·공휴일 09:00~16:00).",
+          ai: { note: "미측정 — 탑똘마니 몫" }
         }),
         question({
           id: "q3",
           q: "아산 교통사고 입원 한방병원",
           intent: "교통사고 입원",
-          web: {
-            status: "official",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지 1번째(교통사고후유증·입원 집중치료). 제3자로 메드노트 노출. 다만 '자보 대인접수 절차' 설명 글은 경쟁 병원 블로그가 상위 다수.",
-            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트") ]
-          },
-          comp: { level: "high", note: "자보 대인접수 절차 설명 글에서 경쟁 병원 블로그가 상위 다수" }
+          web: web({
+            status: "official", rank: 1,
+            note: "1번째(교통사고후유증·입원 집중치료). 레메디 2위, 도솔한방병원 3위, 레메디 geo 게시판 4위(자보 대인접수 절차).",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src(RIVAL_URL, "third", "레메디(2위·자보 절차 4위)") ]
+          }),
+          comp: { level: "high", note: "레메디 geo 게시판이 자보 대인접수 절차 문답 선점" },
+          reviews: reviewSet({ p1: "ok", p2: "ok", p3: "fix", p4: "ok" }),
+          reviewNote: "1·2·4번 승인(2번은 ‘대인접수 0원’ 비급여 예외 문장 유지 조건) / 3번 수정요청 — 자보 대인접수 절차를 레메디 geo가 선점. d2를 q3 1위 페이지 안 FAQ로 넣는 게 가장 빠름.",
+          ai: { note: "미측정 — 탑똘마니 몫" }
         }),
         question({
           id: "q4",
           q: "천안 아산 척추 수술 후 재활 한방병원",
           intent: "수술 후 재활",
-          web: {
-            status: "third",
-            date: MEASURED_DATE,
-            note: "상위 8건에 공식 홈페이지 없음. 메드노트(제3자)에 '수술 후 재활 특화' 소개로만 잡힘. 경쟁 병원 자사 블로그가 1~2위.",
-            urls: [ src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트"), src("https://www.m7.co.kr/hospital/%EC%B6%A9%EB%82%A8_%ED%95%9C%EB%B0%A9%EC%9E%AC%ED%99%9C%EC%9D%98%ED%95%99%EA%B3%BC_%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90_%EC%B0%BE%EA%B8%B0", "third", "m7 병원 목록") ]
-          },
-          comp: { level: "high", note: "경쟁 병원 자사 블로그가 1~2위" }
+          web: web({
+            status: "official", rank: 2,
+            note: "V2의 '제3자' 기록을 정정 — 이번 조회에서 본한 공식이 2번째. 1위는 레메디 블로그(11-18). 공식 페이지(s2/s2_02.php '수술 후 통증')는 있으나 제목·H1에 지역·질환이 없어 2위에 머묾.",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식(2위)"), src(RIVAL_BLOG_URL, "third", "레메디 블로그(1위·11-18)") ]
+          }),
+          comp: { level: "high", note: "레메디 블로그 1위 — 제목이 질문 그대로" },
+          reviews: reviewSet({ p1: "ok", p2: "fix", p3: "fix", p4: "ok" }),
+          reviewNote: "3번 실측 정정: 2위(1위는 레메디 블로그 11-18). 2번: 공식 페이지 제목·H1을 ‘아산·천안 척추 수술 후 재활’로 바꾸고 발행 1순위 → d5 신규 작성.",
+          ai: { note: "미측정 — 탑똘마니 몫. d5 원고와 함께 확인" }
         }),
         question({
           id: "q5",
           q: "탕정 도수치료 추나요법 병원",
           intent: "도수·추나",
-          web: {
-            status: "third",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지 없음. 오메디(제3자) 병원 정보 페이지에 도수치료 비급여가로만 노출. 검색 상위는 경쟁 한의원 자사 페이지·블로그.",
-            urls: [ src("https://www.5medi.com/%EB%B3%91%EC%9B%90/JDQ4MTYyMiM2MSMkMSMkMiMkMTMkMzgxMTkxIzExIyQxIyQzIyQxMyQzNjE0ODEjNTEjJDEjJDYjJDgz", "third", "오메디(5medi)") ]
-          },
-          comp: { level: "high", note: "경쟁 한의원 자사 페이지·블로그가 상위" }
+          web: web({
+            status: "absent",
+            note: "V2의 '제3자(오메디)' 기록을 정정 — 이번 상위 8건에 본한도 오메디도 없음. 1위 연결한의원 아산탕정 랜딩, 치유한방병원·네이버 블로그가 뒤따름. 본한에 도수·추나 주제 페이지 자체가 없음.",
+            urls: [ src(RIVAL_URL, "third", "레메디(참고)") ]
+          }),
+          comp: { level: "high", note: "연결한의원 지역×시술 랜딩이 1위" },
+          reviews: reviewSet({ p1: "ok", p2: "fix", p3: "hold", p4: "ok" }),
+          reviewNote: "1·4번 승인 / 2번 수정요청(도수 비급여 표 근거 보강) / 3번 보류 — 이번 실측은 미노출이고, 추나(급여)·도수(비급여) 혼동 문구 확정 전 발행 위험.",
+          ai: { note: "미측정 — 탑똘마니 몫" }
         }),
         question({
           id: "q6",
           q: "아산 한방병원 1인실 호텔식 입원실",
           intent: "입원실 등급",
-          web: {
+          web: web({
             status: "absent",
-            date: MEASURED_DATE,
-            note: "본한방병원이 전혀 잡히지 않음. 상위는 경쟁 병원(1인실 갤러리 페이지, 1인실 병실료 15만원 공개)과 입원실 안내 페이지. 본한은 1인실·병실 등급 정보를 담은 페이지가 검색에 없음 — 확인된 사실이 없어 원고는 만들지 않았습니다.",
-            urls: []
-          },
-          comp: { level: "high", note: "경쟁 병원 1인실 갤러리·병실료 공개 페이지가 상위" }
+            note: "본한 전혀 없음. 1위 레메디 입원실 페이지, 2위 아이본한의원(배방), 레메디 geo에 1인실·2인실 비용 글. 본한은 1인실 운영은 확인되나 병실 수·상급병실료가 공개 자료에 없어 원고 보류.",
+            urls: [ src(RIVAL_URL, "third", "레메디 입원실(1위)") ]
+          }),
+          comp: { level: "high", note: "레메디 1인실 15만 원 공개·아이본 전 병실 1·2인실" },
+          reviews: reviewSet({ p1: "hold", p2: "hold", p3: "hold", p4: "hold" }),
+          reviewNote: "4인 모두 보류 — 1인실 운영은 확인(인스타 VIP 1인실 11-21, 입원·식사 4장 11-23)이나 병실 수·상급병실료 차액이 공개 자료에 없음. ‘호텔식’은 시설 최상급 표현이라 문안 사용 불가.",
+          ai: { note: "미측정 — 보류 항목" }
         }),
         question({
           id: "q7",
           q: "탕정역 주차 가능한 한방병원",
           intent: "주차·접근성",
-          web: {
-            status: "official",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지 1번째(주차안내: 지하주차장 치료시간 내 무료, 탕정역 공영주차장). 지역 병원 목록(제3자)도 함께 노출.",
-            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트") ]
-          },
-          comp: { level: "none", note: "" }
+          web: web({
+            status: "official", rank: 1,
+            note: "1번째(주차안내: 지하주차장 치료시간 내 무료, 탕정역 공영주차장). 레메디 오시는길, nowdoc·클리닉맵도 노출.",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src(RIVAL_URL, "third", "레메디 오시는길") ]
+          }),
+          comp: { level: "mid", note: "레메디 오시는길·nowdoc·클리닉맵" },
+          reviews: reviewSet({ p1: "ok", p2: "ok", p3: "ok", p4: "ok" }),
+          reviewNote: "1·2·3·4번 승인 — 1위. d1의 예약 링크를 실제 URL+UTM으로 교체하는 조건.",
+          ai: { note: "미측정 — 탑똘마니 몫" }
         }),
         question({
           id: "q8",
           q: "아산 양한방 협진 비수술 통증 병원",
           intent: "양한방 협진",
-          web: {
-            status: "official",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지가 2번째. 1번째는 경쟁 병원(양·한방 협진·비수술 클리닉 페이지). 본한은 '양·한방 협진'을 상위에 걸 문장이 적어 1위를 내준 상태.",
-            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식") ]
-          },
-          comp: { level: "high", note: "경쟁 병원 양·한방 협진·비수술 클리닉 페이지가 1위" }
+          web: web({
+            status: "official", rank: 2,
+            note: "2번째. 1위는 레메디 양·한방 협진 페이지. 본한 공식 도메인에는 '양·한방' 문구가 없고 네이버 예약 소개문에만 있어 2위.",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식(2위)"), src(RIVAL_URL, "third", "레메디(1위)") ]
+          }),
+          comp: { level: "high", note: "레메디 양·한방 협진 페이지가 1위" },
+          reviews: reviewSet({ p1: "ok", p2: "fix", p3: "fix", p4: "ok" }),
+          reviewNote: "2번 수정요청 — 확인된 양방은 가정의학과 1명뿐이라 ‘정형외과 협진’ 표기는 금지, ‘가정의학과 협진’으로 한정. 3번: ‘양·한방’ 근거가 네이버 예약 소개문에만 있어 정리 후 상단 배치.",
+          ai: { note: "미측정 — 탑똘마니 몫" }
         }),
         question({
           id: "q9",
           q: "천안 아산 암환자 회복기 한방병원",
           intent: "암 회복기",
-          web: {
+          web: web({
             status: "absent",
-            date: MEASURED_DATE,
-            note: "본한방병원이 전혀 잡히지 않음. 상위는 대학한방병원 암센터·암 전문 병원. 본한방병원의 암 회복기 진료 여부는 확인된 사실이 없어 원고 작성 대상에서 제외했습니다.",
+            note: "본한 전혀 없음. 대전대 천안한방병원 동서암센터, 천안퍼스트힐, 도솔이 상위. 공식 진료과목에 암이 없고 암 회복기 안내도 확인되지 않아 원고 대상에서 제외.",
             urls: []
-          },
-          comp: { level: "mid", note: "대학한방병원 암센터·암 전문 병원이 상위" }
+          }),
+          comp: { level: "mid", note: "암 전문 병원 과점 — 35병상 규모로 정면 경쟁은 비효율" },
+          reviews: reviewSet({ p1: "hold", p2: "hold", p3: "hold", p4: "hold" }),
+          reviewNote: "4인 모두 보류 — 공식 진료과목에 암이 없고 의료법 제56조 리스크. 수요는 q4(수술 후 재활)·q3(교통사고)로 흡수. 인스타 암 회복기 시안은 대표님 승인 대기.",
+          ai: { note: "미측정 — 보류 항목" }
         }),
         question({
           id: "q10",
           q: "아산 탕정 초음파 약침 체외충격파",
           intent: "장비·시술",
-          web: {
-            status: "official",
-            date: MEASURED_DATE,
-            note: "공식 홈페이지 1번째. 비급여 진료비 표에 초음파 통증약침·초음파약침(도침)·체외충격파 단가가 공개되어 있어 인용 근거가 가장 단단한 질문.",
-            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src("https://mednote.kr/hospital/27635/%EB%B3%B8%ED%95%9C%EB%B0%A9%EB%B3%91%EC%9B%90/", "third", "메드노트"), src("https://nowdoc.co.kr/c/27701/", "third", "nowdoc") ]
-          },
-          comp: { level: "none", note: "" }
+          web: web({
+            status: "official", rank: 1,
+            note: "1번째. 비급여 표에 초음파 통증약침·초음파약침(도침)·체외충격파 단가가 공개돼 인용 근거가 가장 단단함. 연결한의원(초음파약침·체외충격파), 레메디 체외충격파도 노출.",
+            urls: [ src(OFFICIAL_URL, "official", "본한방병원 공식"), src(RIVAL_URL, "third", "레메디 체외충격파") ]
+          }),
+          comp: { level: "mid", note: "연결한의원·레메디 체외충격파 페이지" },
+          reviews: reviewSet({ p1: "ok", p2: "ok", p3: "ok", p4: "ok" }),
+          reviewNote: "1·2·3·4번 승인 — 1위, 비급여 표까지 인용됨. 금액은 ‘타수별 상이’로만 표기(홈페이지 7·10·12만 vs 심평원 5만 충돌 해소 전).",
+          ai: { note: "미측정 — 탑똘마니 몫" }
         })
       ],
       drafts: [
         {
           id: "d1",
-          title: "① 탕정역 주차·접수·야간진료 안내",
+          title: "① 탕정역 주차·접수·야간진료 안내 (수정본)",
           question: "탕정역 근처에서 주차되고 야간에도 진료하는 한방병원이 있나요?",
           targets: ["q7", "q1"],
-          body: "네, 있습니다. 본한방병원은 탕정역 1번 출구에서 약 204m, 충남 아산시 탕정면 한들물빛6로 14(원윤타워 5~7층)에 있습니다.\n\n병원 건물 지하주차장을 진료 시간 내 무료로 이용할 수 있고, 탕정역 공영주차장도 함께 이용할 수 있습니다. 진료는 평일 오전 9시부터 오후 8시까지(야간진료), 주말·공휴일은 오전 9시부터 오후 4시까지 점심시간 없이 365일 운영합니다.\n\n방문 전 041-541-7581로 주차와 대기 상황을 확인하시거나 네이버 예약(예약 링크)을 이용하시면 기다리는 시간을 줄일 수 있습니다.",
+          body: "네, 본한방병원은 탕정역 1번 출구에서 약 204m, 충남 아산시 탕정면 한들물빛6로 14(원윤타워 5~7층)에 있습니다.\n\n병원 건물 지하주차장을 진료 받는 동안 무료로 이용할 수 있고, 탕정역 공영주차장도 함께 이용할 수 있습니다. 진료는 평일 오전 9시부터 오후 8시까지 야간진료를 하고, 토요일·일요일·공휴일은 오전 9시부터 오후 4시까지 점심시간 없이 이어집니다.\n\n다만 의료진별 휴진일이 있을 수 있어, 방문 전에 041-541-7581로 진료 가능 여부와 주차 상황을 확인하시는 편이 안전합니다. 예약은 네이버 예약(https://m.booking.naver.com/booking/13/bizes/1422662)에서 하실 수 있습니다.",
           evidence: [
-            "공식 홈페이지 ‘주차안내’: 병원 내 지하주차장 이용(치료시간 내 무료), 탕정역 공영주차장 이용",
+            "공식 홈페이지 ‘주차안내’: 병원 내 지하주차장(치료시간 내 무료), 탕정역 공영주차장",
             "공식 홈페이지 ‘오시는 길’: 충남 아산시 탕정면 한들물빛6로 14, 5~7층, 탕정역 1번 출구에서 204m",
-            "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00(야간진료) / 주말·공휴일 09:00~16:00 / 점심시간 없이 진료 / 365일 연중무휴",
-            "네이버 예약 페이지 접속 확인(HTTP 200, 2026-11-27)"
+            "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00(야간진료) / 주말·공휴일 09:00~16:00 / 점심시간 없이",
+            "네이버 예약 페이지 접속 확인(HTTP 200, 2026-11-27)",
+            "피클4 수정 지시 반영: '365일 연중무휴' 단독 표기 삭제 → 주말·공휴일 진료 + 의료진 휴진 고지, 예약 링크 실제 URL, 지하주차장은 치료시간 내 무료"
           ],
-          publishNote: "‘네이버 예약(예약 링크)’ 자리에 실제 예약 URL을 넣어 발행하세요.",
-          reviews: rv(), reviewNote: ""
+          publishNote: "예약 링크에 UTM(utm_source=blog&utm_medium=post&utm_campaign=q7)을 붙여 발행하면 유입 측정이 됩니다.",
+          reviews: reviewSet({ p1: "ok", p2: "ok", p3: "fix", p4: "fix", p5: "ok" }),
+          reviewNote: "1번 승인 / 2번 승인 / 3번 수정요청(예약 링크 자리표시자 → 실제 URL+UTM) / 4번 수정요청(보완본 반영 완료) / 5번 기술 검수 통과"
         },
         {
           id: "d2",
-          title: "② 교통사고 대인접수·입원 문의 안내",
+          title: "② 교통사고 대인접수·입원 문의 안내 (수정본)",
           question: "아산에서 교통사고 후 입원 치료를 받을 수 있는 한방병원은 어디인가요?",
           targets: ["q3"],
-          body: "본한방병원은 교통사고 후유증과 수술 후 재활, 척추·관절 통증의 입원 치료를 다루는 한방병원입니다. 입원실은 공공데이터 기준 35병상 규모입니다.\n\n자동차보험 대인접수 진행에 필요한 서류와 절차는 방문 전 041-541-7581로 확인하실 수 있습니다. 대인접수 본인부담금은 0원으로 안내하고 있으나, 비급여 항목과 보험사 심사 기준에 따라 달라질 수 있으므로 방문 전 확인이 필요합니다.\n\n진료는 평일 오전 9시부터 오후 8시까지, 주말·공휴일은 오전 9시부터 오후 4시까지 점심시간 없이 이어집니다. 입원·통원 여부는 진찰 후 상태에 따라 결정되며, 상담은 041-541-7581로 받으실 수 있습니다.",
+          body: "본한방병원은 교통사고 후유증과 수술 후 재활, 척추·관절 통증의 입원·통원 치료를 함께 보고 있는 한방병원입니다.\n\n자동차보험 대인접수를 하시면 본인부담금은 0원으로 안내하고 있습니다. 다만 비급여 항목과 보험사 심사 기준에 따라 실제 부담이 달라질 수 있으므로, 사고 접수 전에 041-541-7581로 확인해 주세요. 대인접수에 필요한 서류와 절차도 같은 번호로 안내받으실 수 있습니다.\n\n입원이 가능한지는 진찰 후 상태와 병실 상황에 따라 정해집니다. 진료는 평일 오전 9시부터 오후 8시까지, 토요일·일요일·공휴일은 오전 9시부터 오후 4시까지 점심시간 없이 이어집니다.",
           evidence: [
             "공식 홈페이지: 교통사고 후유증·산재치료·수술 후 재활·입원 집중치료 안내",
             "인스타그램 @bonhan_7581 소개: ‘자동차보험 대인접수 본인부담금 0원’ 표기",
-            "공공데이터(심평원) 기준 입원실 35병상",
-            "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00 / 주말·공휴일 09:00~16:00 / 점심시간 없이 진료"
+            "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00 / 주말·공휴일 09:00~16:00 / 점심시간 없이",
+            "피클4 수정 지시 반영: ‘0원’을 조건 문장과 한 덩어리로, ‘35병상’ 환자 문안에서 제외, ‘입원 가능 여부는 병실 상황’ 추가"
           ],
-          publishNote: "본인부담금 0원은 비급여 예외가 있으므로 ‘비급여 항목·보험사 심사에 따라 달라질 수 있음’ 문장을 빼지 마세요.",
-          reviews: rv(), reviewNote: ""
+          publishNote: "‘본인부담금 0원’은 비급여 예외 문장과 반드시 함께 발행하세요. ‘정형외과 협진’ 표현은 쓰지 않습니다(확인된 양방은 가정의학과 1명).",
+          reviews: reviewSet({ p1: "ok", p2: "ok", p3: "fix", p4: "fix", p5: "ok" }),
+          reviewNote: "3번 수정요청 — q3 1위 페이지 안 FAQ로 넣는 것이 가장 빠름(게시 위치 없음). 4번 보완본 반영 완료."
         },
         {
           id: "d3",
-          title: "③ 도수재활·초음파 약침·양한방 협진 안내",
+          title: "③ 도수재활·초음파 약침·양한방 협진 안내 (수정본)",
           question: "탕정에서 초음파 약침과 체외충격파, 도수재활을 함께 받을 수 있는 곳이 있나요?",
           targets: ["q10", "q5", "q8"],
-          body: "본한방병원은 초음파 약침, 체외충격파, 도수치료와 추나를 함께 운영하며, 한방 진료와 양방 협진 체계를 안내하고 있는 한방병원입니다.\n\n초음파로 병변을 확인하면서 약침을 시행하고, 체외충격파와 초음파 약침은 비급여 항목으로 타수·횟수에 따른 가격을 홈페이지에 공개하고 있습니다. 도수치료와 추나는 진찰 결과에 따라 적용 부위와 횟수를 정합니다.\n\n치료 방법과 기간은 진찰 후 상태에 따라 달라지며, 치료 효과와 부작용은 개인에 따라 다를 수 있습니다. 진료는 평일 오전 9시부터 오후 8시까지, 주말·공휴일은 오전 9시부터 오후 4시까지이며, 상담은 041-541-7581로 받으실 수 있습니다.",
+          body: "본한방병원은 초음파로 병변을 확인하면서 약침을 놓는 초음파 약침, 체외충격파, 도수재활과 추나를 함께 운영하고 있습니다. 한방 진료와 함께 가정의학과 협진을 보고 있습니다.\n\n체외충격파는 타수에 따라 2,000타·3,000타·4,000타로 나누어 시행하고, 초음파 통증약침은 1회 단위로 시행합니다. 도수치료와 추나는 진찰 결과에 따라 적용 부위와 횟수를 정합니다. 비급여 항목의 비용은 홈페이지 비급여 진료비 안내에 공개되어 있으며, 치료 범위에 따라 달라질 수 있어 방문 전 확인을 권합니다.\n\n치료 방법과 기간은 진찰 후 상태에 따라 달라지고, 효과와 부작용은 사람마다 다를 수 있습니다. 진료는 평일 오전 9시부터 오후 8시까지, 토요일·일요일·공휴일은 오전 9시부터 오후 4시까지이며, 상담은 041-541-7581로 받으실 수 있습니다.",
           evidence: [
             "공식 홈페이지: 초음파 약침·체외충격파·도수치료·추나 진료 안내",
             "공식 홈페이지 비급여 진료비 표: 체외충격파 2,000타 70,000원 / 3,000타 100,000원 / 4,000타 120,000원, 초음파 통증약침 1회 50,000원",
-            "심평원 공개 비급여 자료(nowdoc 등): 체외충격파 50,000원 — 홈페이지 표와 금액이 달라 발행 전 병원 확인 필요",
-            "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00 / 주말·공휴일 09:00~16:00",
-            "인스타그램 @bonhan_7581 소개: ‘1:1 맞춤 도수재활·추나·양·한방 협진’ 표기"
+            "심평원 연동 표기(nowdoc 등): 체외충격파 50,000원 — 타수 구분이 없어 홈페이지 표와 직접 비교 불가",
+            "인스타그램 @bonhan_7581 소개: ‘1:1 맞춤 도수재활·추나·양·한방 협진’ 표기",
+            "피클2·4 수정 지시 반영: 금액 본문 제외, ‘가정의학과 협진’으로 한정, ‘도수재활’ 표현 유지"
           ],
-          publishNote: "비급여 가격은 홈페이지 고지(타수별 7만·10만·12만 원)와 심평원 공개 자료(5만 원)가 달라, 금액을 본문에 넣기 전에 병원 확인이 필요합니다. 확인 전에는 금액 없이 '가격 공개'만 안내하세요.",
-          reviews: rv(), reviewNote: ""
+          publishNote: "금액은 계속 본문에서 제외합니다(홈페이지 7·10·12만 vs 심평원 5만, 타수 구분 없어 비교 불가). ‘양·한방 협진’은 병원 확인 후에만 강한 표현으로 승격하세요.",
+          reviews: reviewSet({ p1: "ok", p2: "fix", p3: "ok", p4: "fix", p5: "ok" }),
+          reviewNote: "2번 수정요청 — ‘양한방 협진’ 근거를 네이버 예약 소개문으로 명시. 3번 승인(금액 제외 처리 적절). 4번 보완본 반영 완료."
+        },
+        {
+          id: "d4",
+          title: "④ 탕정역 주말·공휴일 진료 시간 안내 (신규)",
+          question: "탕정역 근처에서 주말이나 공휴일에 진료하는 한방병원이 있나요? 몇 시까지 하나요?",
+          targets: ["q2"],
+          body: "네, 본한방병원은 토요일·일요일과 공휴일에도 오전 9시부터 오후 4시까지 점심시간 없이 진료합니다. 평일에는 오전 9시부터 오후 8시까지 야간진료를 합니다.\n\n주말·공휴일에도 진료하지만 의료진별 휴진일이 있을 수 있으니, 방문 전에 041-541-7581로 그날 진료 여부를 확인하시는 편이 안전합니다. 탕정역 1번 출구에서 약 204m, 충남 아산시 탕정면 한들물빛6로 14(원윤타워 5~7층)에 있고, 건물 지하주차장을 진료 시간 내 무료로 이용하실 수 있습니다.\n\n갑자기 증상이 심해지거나 응급 상황이라면 한방병원 방문 전에 119 또는 가까운 응급실을 먼저 이용해 주세요. 예약은 네이버 예약(https://m.booking.naver.com/booking/13/bizes/1422662)에서 하실 수 있습니다.",
+          evidence: [
+            "공식 홈페이지 ‘진료시간’: 주말·공휴일 09:00~16:00 / 점심시간 없이 / 평일 09:00~20:00(야간진료)",
+            "공식 홈페이지 ‘오시는 길’: 탕정역 1번 출구에서 204m, 한들물빛6로 14 5~7층",
+            "공식 홈페이지 ‘주차안내’: 지하주차장 치료시간 내 무료",
+            "네이버 예약 페이지 접속 확인(HTTP 200, 2026-11-27)",
+            "피클2 요청 반영: 첫 문단에 ‘토·일·공휴일 09:00~16:00, 점심시간 없이’를 숫자로 앞세움"
+          ],
+          publishNote: "발행 제목은 ‘아산 탕정 주말·공휴일 진료 한방병원, 몇 시까지 하나요?’ 형태의 질문형으로. 레메디와 시간을 직접 비교하는 문장은 넣지 않습니다(타 기관 비교 금지).",
+          reviews: reviewSet({ p1: "ok", p2: "fix", p4: "none", p5: "ok" }),
+          reviewNote: "신규 카드 — 1번 확인·5번 기술 검수 통과. 2번은 제목에 지역·시간을 넣는 조건부 권장. 3번·4번은 이 카드에 대한 판정 없음(미검토)."
+        },
+        {
+          id: "d5",
+          title: "⑤ 아산·천안 척추 수술 후 재활 안내 (신규)",
+          question: "아산·천안에서 허리·목 수술 후 재활을 받을 수 있는 한방병원이 있나요?",
+          targets: ["q4"],
+          body: "본한방병원은 척추·관절 수술 후 통증과 재활을 진료 과목으로 안내하고 있습니다. 수술 부위 상태와 회복 정도에 따라 침·약침·한약, 도수재활, 체외충격파 같은 치료를 조합하며, 입원과 통원 중 어떤 형태로 진행할지는 진찰 후 정해집니다.\n\n수술을 받은 병원의 진료 기록과 영상 자료가 있으면 진찰에 도움이 됩니다. 진료는 평일 오전 9시부터 오후 8시까지, 토요일·일요일·공휴일은 오전 9시부터 오후 4시까지 점심시간 없이 이어지고, 상담과 예약은 041-541-7581 또는 네이버 예약(https://m.booking.naver.com/booking/13/bizes/1422662)으로 하실 수 있습니다.\n\n수술 직후에는 수술을 집도한 병원의 경과 관찰이 우선이며, 재활 시작 시점은 수술한 의료진과 상의해 정하는 것이 안전합니다.",
+          evidence: [
+            "공식 홈페이지 ‘수술 후 통증’ 페이지(s2/s2_02.php) — 수술 후 재활 안내 존재",
+            "공식 홈페이지 진료과목: 척추·관절·통증 / 교통사고·산재·재활",
+            "공식 홈페이지 ‘진료시간’: 평일 09:00~20:00 / 주말·공휴일 09:00~16:00",
+            "피클2 요청 반영: 제목·H1에 ‘아산·천안 척추 수술 후 재활’ 지역·질환 명시, 발행 1순위"
+          ],
+          publishNote: "발행 시 공식 페이지 제목을 ‘아산·천안 척추 수술 후 재활 한방병원’으로 바꾸고 H1에 질환을 넣으면 q4 1위(레메디 블로그)를 겨냥할 수 있습니다.",
+          reviews: reviewSet({ p1: "ok", p2: "fix", p4: "none", p5: "ok" }),
+          reviewNote: "신규 카드 — 1번 확인·5번 기술 검수 통과. 2번은 제목·H1 반영 조건부 권장(발행 1순위). 3번·4번은 이 카드에 대한 판정 없음(미검토)."
         }
       ],
       checklist: [
-        { id: "c1", text: "공식 홈페이지 접속 확인", note: "2026-11-27 HTTP 200 확인 (http://www.bonhanbang.com/)", done: true },
-        { id: "c2", text: "새 홈페이지 시안 접속 확인", note: "2026-11-27 HTTP 200 확인 (https://bonhanbang-premium-preview.netlify.app/, title ‘본한방병원’). 이전 실측에서 시간 초과가 있었으니 발행 전 재확인 권장.", done: true },
-        { id: "c3", text: "검색엔진 색인 확인", note: "구글 ‘site:bonhanbang.com’, 네이버 사이트 검색으로 색인 여부 확인 필요 — 아직 미확인", done: false },
-        { id: "c4", text: "평일 종료 시각 표기 통일 (20:00 vs 21:00)", note: "공식 홈페이지·새 시안·네이버 예약 링크 모두 20:00 표기를 확인. 네이버 예약 페이지 안내 문구의 21:00 표기는 이번 조회에서 확인되지 않음(로그인·동적 화면은 미확인).", done: false },
-        { id: "c5", text: "인스타그램 @bonhan_7581 링크 일치", note: "공식 홈페이지·새 시안 HTML에서 인스타그램 링크가 검출되지 않음. 푸터에 @bonhan_7581 링크 추가 필요.", done: false },
-        { id: "c6", text: "네이버 플레이스 정보 일치", note: "상호·주소·전화·진료시간이 플레이스와 같은지 직접 확인 필요 — 이번 실측에서는 미확인(네이버 지도 동적 페이지)", done: false },
-        { id: "c7", text: "원고 3건 금지어 검사 통과", note: "2번 탭의 금지어 검사에서 ‘통과’ 확인 후 체크", done: false },
-        { id: "c8", text: "의료광고 심의 대상 여부 확인", note: "매체·표현에 따라 사전심의 대상이 될 수 있어 병원 측 확인 필요", done: false },
-        { id: "c9", text: "병원 승인 후 발행", note: "원고·가격·진료시간은 병원 확인 후 발행", done: false },
-        { id: "c10", text: "발행 후 48시간 뒤 같은 10개 질문 재측정", note: "재측정 결과를 질문 실행기에 입력하고 미노출 건수 변화를 기록", done: false }
+        { id: "c1", text: "공식 홈페이지 접속 확인", note: "2026-11-27 HTTP 200 (http://www.bonhanbang.com/)", done: true },
+        { id: "c2", text: "새 홈페이지 시안 접속 확인", note: "2026-11-27 HTTP 200 (https://bonhanbang-premium-preview.netlify.app/)", done: true },
+        { id: "c3", text: "원고 d1~d5 금지어 22종 검사 통과", note: "피클5 기술 검수 — 5개 카드 전부 검출 0건, MedicalClinic+FAQPage JSON-LD 구조 정상", done: true },
+        { id: "c4", text: "홈페이지 ‘온라인예약’을 실제 예약 링크로 교체", note: "현재 /mn08/mn08_02.php 게시판 글쓰기로 연결 — 네이버 예약 직링크(bizes/1422662)로 교체 필요", done: false },
+        { id: "c5", text: "시안 noindex,nofollow,noarchive 제거", note: "오픈 도메인 이전에 반드시 제거. 현재 상태로는 검색 유입 0", done: false },
+        { id: "c6", text: "인스타 @bonhan_7581 링크 연결", note: "공식·시안 모두 인스타 링크 0건 — 푸터에 추가(양방향 링크)", done: false },
+        { id: "c7", text: "UTM 링크 4채널 삽입", note: "스레드·인스타·블로그·시안 — 현재 utm_ 파라미터 0건이라 전환 측정 불가", done: false },
+        { id: "c8", text: "병원 확인 3건 받기", note: "① 1인실 병실 수·상급병실료 신고 ② 양방 진료과 범위 ③ 체외충격파 타수별 기준 단가", done: false },
+        { id: "c9", text: "의료광고 심의 대상 여부 확인", note: "매체·표현에 따라 사전심의 대상 — 병원 측 확인 필요", done: false },
+        { id: "c10", text: "병원 승인 후 발행", note: "원고·가격·진료시간은 병원 확인 후 발행", done: false },
+        { id: "c11", text: "발행 48시간 뒤 같은 10문항 재측정", note: "피클3이 11-28 1차 재측정 → 오늘 값을 0주차 기준선으로 고정", done: false }
       ],
-      agentNotes: { gpt: "", p1: "", p2: "", p3: "", p4: "", p5: "" },
-      history: []
+      leaks: [
+        {
+          id: "L1", level: "high", title: "홈페이지에 네이버 예약 링크가 0건",
+          evidence: "공식 홈페이지 외부 링크는 카카오톡 채널·네이버 톡톡 2개뿐. 퀵메뉴 ‘온라인예약’은 /mn08/mn08_02.php 게시판 글쓰기로 연결됩니다.",
+          action: "네이버 예약 직링크(bizes/1422662)를 상단·본문·푸터에 넣고 UTM 부착", owner: "피클1(공식 채널)·피클4(UX)", done: false
+        },
+        {
+          id: "L2", level: "high", title: "새 홈페이지 시안이 검색에서 제외돼 있음",
+          evidence: "bonhanbang-premium-preview.netlify.app 의 meta robots가 noindex,nofollow,noarchive. 시안에 있는 예약 링크도 검색 유입을 못 받습니다.",
+          action: "오픈 도메인 이전 시 noindex 제거 · sitemap/robots 제출", owner: "피클4·피클2", done: false
+        },
+        {
+          id: "L3", level: "mid", title: "UTM·유입 파라미터 0건",
+          evidence: "공식·시안 페이지 전체에서 utm_ 파라미터 0건 — 어느 채널(스레드 답글·인스타·블로그·플레이스)이 예약으로 이어졌는지 측정 자체가 불가능합니다.",
+          action: "4채널 UTM 표준안 적용 후 주 1회 예약 건수 수기 입력", owner: "피클3", done: false
+        },
+        {
+          id: "L4", level: "mid", title: "인스타 ↔ 홈페이지가 양방향으로 끊김",
+          evidence: "홈페이지→인스타 링크 0건(피클1 확인). 반대 방향(인스타·스레드 프로필 외부링크)은 로그인 월에 막혀 미확인.",
+          action: "푸터에 @bonhan_7581 링크 추가 + 인스타·스레드 프로필 링크를 예약 URL로 교체", owner: "피클1(계정 확인)·피클4", done: false
+        }
+      ],
+      agentNotes: {
+        gpt: "최종 검수는 아직 시작하지 않았습니다(미검토). 매트릭스의 탑똘마니 열은 비어 있고, ChatGPT 10칸도 미측정입니다.",
+        p1: "q6 1인실은 운영 확인(인스타 VIP 1인실 그리드 11-21, 입원·식사 4장 11-23)이나 병실 수·상급병실료 차액 미공개 → 원고 보류. q9 암 회복기는 공식 진료과목에 없어 보류. 체외충격파는 홈페이지 기준 2,000타 7만·3,000타 10만·4,000타 12만(심평원 5만과 충돌). 공식·시안 모두 @bonhan_7581 링크 미연결.",
+        p2: "레메디는 자사 블로그 질문형 글(11-18) + geo 게시판 132건으로 우리 10문항 중 7개(q3~q8, q10)를 정면 겨냥. 우리는 자사 블로그·GEO 게시판·네이버 블로그 0건. q2는 ‘토·일·공휴일 09:00~16:00 점심시간 없이’를 첫 문단에, q4는 제목에 ‘아산·천안 척추 수술 후 재활’을 넣어 발행 1순위.",
+        p3: "2026-11-27 18:00 KST 공개 웹 인덱스 조회 기준. 네이버·구글 SERP 직접 캡처가 아니라 엔진·시점에 따라 순위가 달라질 수 있고, 못 본 칸은 비워 뒀습니다(추정 없음). q4는 2위로, q5는 미노출로 정정했습니다. ChatGPT 10칸은 제가 질의할 수단이 없어 미측정으로 둡니다.",
+        p4: "d1 휴진 고지·예약 URL·치료시간 내 주차, d2 본인부담금 조건문·35병상 제외·병실 상황, d3 금액 제외·가정의학과 협진 한정·도수재활 반영. q6 ‘호텔식’은 시설 최상급 표현이라 문안 사용 불가. d4(q2 주말)·d5(q4 수술 후 재활)는 원고가 아예 없던 질문이라 신규 작성.",
+        p5: "기술·스키마·금지어 1차 검수: d1~d5 금지어 22종 검출 0건, MedicalClinic+FAQPage JSON-LD 구조 정상. q6·q9는 사실 확인 전 보류 유지. V3로 팀 실측·판정·원고를 기본 데이터로 내장."
+      },
+      history: [
+        { ts: "2026-11-27T18:01:00+09:00", kind: "agent",  text: "피클5 — d1~d5 금지어 22종 0건 · MedicalClinic+FAQPage JSON-LD 검증 통과, V3 취합 시작" },
+        { ts: "2026-11-27T18:00:30+09:00", kind: "draft",  text: "피클4 — d1~d3 보완본 반영, d4(q2 주말·공휴일)·d5(q4 수술 후 재활) 신규 원고 작성 완료" },
+        { ts: "2026-11-27T18:00:00+09:00", kind: "measure", text: "피클3 — 10문항 웹 실측: 공식 7(1위 5 + 2위 2) · 미노출 3(q5·q6·q9). q4 2위·q5 미노출로 정정" },
+        { ts: "2026-11-27T17:59:00+09:00", kind: "check",  text: "피클3 — 유입 끊김 4건 확인: 예약 링크 0건(mn08_02.php 게시판) · 시안 noindex · UTM 0건 · 인스타 양방향 링크 끊김" },
+        { ts: "2026-11-27T17:58:00+09:00", kind: "review", text: "피클2 — 레메디 블로그(11-18 질문형)·GEO 게시판 132건 분석, 키워드 축 ‘탕정역·1번 출구·주말 4시까지’ 제안" },
+        { ts: "2026-11-27T17:57:00+09:00", kind: "review", text: "피클1 — q6 1인실 운영 확인(인스타 11-21·11-23), 병실 수·차액 미공개로 원고 보류 판정" },
+        { ts: "2026-11-27T17:56:00+09:00", kind: "check",  text: "피클1 — q9 암 회복기 공식 안내 없음 · 체외충격파 2,000타 7만/3,000타 10만/4,000타 12만(심평원 5만과 충돌) · 인스타 링크 미연결" },
+        { ts: "2026-11-27T17:55:00+09:00", kind: "check",  text: "피클1 — 13:30 회차 승인 맞답글 2건 등록(17:53~17:55), 17:30 피드·댓글 4건 등록(17:51)" }
+      ],
+      live: null,
+      userOverrides: {}
     };
   }
   /* ================= state ================= */
@@ -1045,17 +1303,27 @@
   function normalize(s){
     if(!s || typeof s !== "object") return null;
     if(!Array.isArray(s.questions)) return null;
-    s.version = 2;
+    s.version = VERSION;
     s.questions.forEach(function(q){
-      if(!q.channels || typeof q.channels !== "object") q.channels = {};
-      CHANNELS.forEach(function(c){
-        if(!q.channels[c] || typeof q.channels[c] !== "object") q.channels[c] = ch();
-        if(STATUS_KEYS.indexOf(q.channels[c].status) < 0) q.channels[c].status = "unmeasured";
-        if(typeof q.channels[c].url !== "string") q.channels[c].url = "";
-      });
       if(!q.web || typeof q.web !== "object") q.web = { status: "unmeasured", date: "", note: "", urls: [] };
       if(WEB_KEYS.indexOf(q.web.status) < 0) q.web.status = "unmeasured";
       if(!Array.isArray(q.web.urls)) q.web.urls = [];
+      q.web.rank = (typeof q.web.rank === "number") ? q.web.rank : null;
+      if(typeof q.web.by !== "string" || !q.web.by) q.web.by = "피클3";
+      if(typeof q.web.engine !== "string" || !q.web.engine) q.web.engine = "공개 웹 인덱스 조회";
+      if(typeof q.web.at !== "string" || !q.web.at) q.web.at = MEASURED_AT;
+      /* V2까지 쓰던 4종 채널(AI) 데이터는 탑똘마니 1개 레인으로 접습니다. */
+      var oldAi = (q.channels && q.channels.chatgpt) ? q.channels.chatgpt : null;
+      if(!q.ai || typeof q.ai !== "object"){
+        q.ai = oldAi && oldAi.status && oldAi.status !== "unmeasured"
+          ? { status: oldAi.status, url: oldAi.url || "", note: oldAi.note || "", date: "" }
+          : { status: "unmeasured", url: "", note: "", date: "" };
+      }
+      if(STATUS_KEYS.indexOf(q.ai.status) < 0) q.ai.status = "unmeasured";
+      if(typeof q.ai.url !== "string") q.ai.url = "";
+      if(typeof q.ai.note !== "string") q.ai.note = "";
+      if(typeof q.ai.date !== "string") q.ai.date = "";
+      delete q.channels;
       if(!q.reviews || typeof q.reviews !== "object") q.reviews = rv();
       AGENT_IDS.forEach(function(a){
         if(REVIEW_CYCLE.indexOf(q.reviews[a]) < 0) q.reviews[a] = "none";
@@ -1087,13 +1355,26 @@
       if(typeof c.note !== "string") c.note = "";
       c.done = !!c.done;
     });
+    if(!Array.isArray(s.leaks)) s.leaks = [];
+    s.leaks.forEach(function(l){
+      if(typeof l.title !== "string") l.title = "";
+      if(typeof l.evidence !== "string") l.evidence = "";
+      if(typeof l.action !== "string") l.action = "";
+      if(typeof l.owner !== "string") l.owner = "";
+      if(["high", "mid", "low"].indexOf(l.level) < 0) l.level = "mid";
+      l.done = !!l.done;
+    });
     if(!s.agentNotes || typeof s.agentNotes !== "object") s.agentNotes = {};
     AGENT_IDS.forEach(function(a){ if(typeof s.agentNotes[a] !== "string") s.agentNotes[a] = ""; });
     if(!Array.isArray(s.history)) s.history = [];
+    if(!s.userOverrides || typeof s.userOverrides !== "object") s.userOverrides = {};
+    if(s.live && typeof s.live !== "object") s.live = null;
     if(typeof s.measuredAt !== "string") s.measuredAt = MEASURED_DATE;
     return s;
   }
 
+  /* V3: 저장 키를 올려(V2의 빈 캐시 무시) 팀 실측 데이터가 바로 보이게 합니다.
+     V2 저장분은 자동으로 끌어오지 않고, JSON 가져오기로만 받습니다(수정분 보존). */
   function load(){
     var raw = null;
     try { raw = window.localStorage.getItem(STORE_KEY); } catch(e){ raw = null; }
@@ -1103,25 +1384,7 @@
         if(parsed) return parsed;
       } catch(e){ /* fall through */ }
     }
-    /* one-time migration from the V1 tool's saved data */
-    try {
-      var legacy = window.localStorage.getItem(LEGACY_KEY);
-      if(legacy){
-        var old = JSON.parse(legacy);
-        if(old && Array.isArray(old.questions)){
-          old.questions.forEach(function(q){
-            q.reviews = rv();
-            q.reviewNote = "";
-            q.comp = { level: "none", note: "" };
-          });
-          (old.drafts || []).forEach(function(d){ d.reviews = rv(); d.reviewNote = ""; });
-          old.agentNotes = { gpt: "", p1: "", p2: "", p3: "", p4: "", p5: "" };
-          var migrated = normalize(old);
-          if(migrated) return migrated;
-        }
-      }
-    } catch(e){ /* ignore */ }
-    return INITIAL();
+    return normalize(INITIAL()) || INITIAL();
   }
 
   function save(){
@@ -1251,21 +1514,23 @@
 
   function metrics(){
     var total = state.questions.length;
-    var official = 0, third = 0, absent = 0, webUnm = 0, webScoreSum = 0;
-    var chTotal = total * CHANNELS.length, chDone = 0, chPerf = 0;
+    var official = 0, third = 0, absent = 0, webUnm = 0, webScoreSum = 0, rank1 = 0, rank2 = 0;
+    var aiTotal = total, aiDone = 0, aiPerf = 0;
     state.questions.forEach(function(q){
       if(q.web.status === "official") official++;
       else if(q.web.status === "third") third++;
       else if(q.web.status === "absent") absent++;
       else webUnm++;
+      if(q.web.status !== "unmeasured" && q.web.rank === 1) rank1++;
+      if(q.web.status !== "unmeasured" && q.web.rank === 2) rank2++;
       webScoreSum += webIndex(q);
-      CHANNELS.forEach(function(c){
-        var st = q.channels[c].status;
-        if(st !== "unmeasured") chDone++;
-        if(st === "official") chPerf += 1;
-        else if(st === "third") chPerf += 0.6;
-      });
+      var st = q.ai ? q.ai.status : "unmeasured";
+      if(st !== "unmeasured") aiDone++;
+      if(st === "official") aiPerf += 1;
+      else if(st === "third") aiPerf += 0.6;
     });
+    var measuredCells = (total - webUnm) + aiDone;
+    var laneTotal = total * LANES.length;
 
     var cells = itemList().length * AGENT_IDS.length;
     var reviewed = 0, approved = 0, holds = 0, fixes = 0;
@@ -1279,6 +1544,7 @@
 
     var chkDone = state.checklist.filter(function(c){ return c.done; }).length;
     var chkTotal = state.checklist.length;
+    var leaksOpen = state.leaks.filter(function(l){ return !l.done; }).length;
     var passDrafts = state.drafts.filter(function(d){ return scanBanned(d.body).every(function(h){ return h.level !== "high"; }); }).length;
     var safeSum = 0;
     state.drafts.forEach(function(d){ safeSum += draftSafety(d); });
@@ -1286,9 +1552,9 @@
 
     var webGot = total ? (webScoreSum / total) : 0;      /* 0..100 */
     var bd = [
-      { key: "web", label: "웹 노출", got: webGot / 100 * 35, max: 35, note: "공식 " + official + " · 제3자 " + third + " · 미노출 " + absent },
-      { key: "aim", label: "AI 측정 커버리지", got: chTotal ? chDone / chTotal * 15 : 0, max: 15, note: chDone + "/" + chTotal + "칸 입력" },
-      { key: "aip", label: "AI 인용 성과", got: chTotal ? chPerf / chTotal * 15 : 0, max: 15, note: "공식 1.0 · 제3자 0.6" },
+      { key: "web", label: "웹 노출", got: webGot / 100 * 35, max: 35, note: "1위 " + rank1 + " · 2위 " + rank2 + " · 미노출 " + absent },
+      { key: "aim", label: "측정 커버리지", got: laneTotal ? measuredCells / laneTotal * 15 : 0, max: 15, note: "웹 " + (total - webUnm) + " + 탑똘마니 " + aiDone + " / " + laneTotal + "칸" },
+      { key: "aip", label: "탑똘마니 인용", got: aiTotal ? aiPerf / aiTotal * 15 : 0, max: 15, note: aiDone ? "공식 1.0 · 제3자 0.6" : "ChatGPT 10칸 미측정" },
       { key: "rev", label: "6인 합의", got: cells ? approved / cells * 15 : 0, max: 15, note: approved + "/" + cells + "셀 승인" },
       { key: "chk", label: "발행 체크", got: chkTotal ? chkDone / chkTotal * 10 : 0, max: 10, note: chkDone + "/" + chkTotal + "항목" },
       { key: "saf", label: "원고 안전도", got: safetyAvg / 100 * 10, max: 10, note: "금지어 " + (BANNED.length) + "종 검사" }
@@ -1297,11 +1563,14 @@
 
     return {
       total: total, official: official, third: third, absent: absent, webUnm: webUnm,
-      chTotal: chTotal, chDone: chDone, chPerf: chPerf,
+      rank1: rank1, rank2: rank2, webMeasured: total - webUnm,
+      aiTotal: aiTotal, aiDone: aiDone, aiPerf: aiPerf,
+      laneTotal: laneTotal, measuredCells: measuredCells,
+      chTotal: laneTotal, chDone: measuredCells, chPerf: aiPerf,
       cells: cells, reviewed: reviewed, approved: approved, holds: holds, fixes: fixes,
       consensus: reviewed ? approved / reviewed * 100 : null,
       coverage: cells ? reviewed / cells * 100 : 0,
-      chkDone: chkDone, chkTotal: chkTotal, passDrafts: passDrafts, safetyAvg: safetyAvg,
+      chkDone: chkDone, chkTotal: chkTotal, leaksOpen: leaksOpen, passDrafts: passDrafts, safetyAvg: safetyAvg,
       breakdown: bd, score: Math.round(score * 10) / 10, rawScore: score
     };
   }
@@ -1316,20 +1585,20 @@
 
   function pipelineData(m){
     var webPct = m.total ? (m.total - m.webUnm) / m.total * 100 : 0;
-    var aiPct = m.chTotal ? m.chDone / m.chTotal * 100 : 0;
+    var aiPct = m.aiTotal ? m.aiDone / m.aiTotal * 100 : 0;
     var revPct = m.cells ? m.reviewed / m.cells * 100 : 0;
-    var c7 = state.checklist.some(function(c){ return c.id === "c7" && c.done; });
-    var c9 = state.checklist.some(function(c){ return c.id === "c9" && c.done; });
+    var c3 = state.checklist.some(function(c){ return c.id === "c3" && c.done; });
     var c10 = state.checklist.some(function(c){ return c.id === "c10" && c.done; });
+    var c11 = state.checklist.some(function(c){ return c.id === "c11" && c.done; });
     var draftPassPct = state.drafts.length ? m.passDrafts / state.drafts.length * 100 : 0;
-    var inspPct = draftPassPct * 0.5 + (c7 ? 50 : 0);
-    var pubPct = (c9 ? 50 : 0) + (c10 ? 50 : 0);
+    var inspPct = draftPassPct * 0.5 + (c3 ? 50 : 0);
+    var pubPct = (c10 ? 50 : 0) + (c11 ? 50 : 0);
     var steps = [
       { n: "01", title: "질문·웹 실측", pct: webPct, target: "questions", desc: "웹 " + (m.total - m.webUnm) + "/" + m.total + "건" },
-      { n: "02", title: "AI 4종 교차 측정", pct: aiPct, target: "questions", desc: m.chDone + "/" + m.chTotal + "칸" },
-      { n: "03", title: "6인(GPT+피클1~5) 검증", pct: revPct, target: "matrix", desc: m.reviewed + "/" + m.cells + "셀" },
+      { n: "02", title: "탑똘마니(ChatGPT) 측정", pct: aiPct, target: "ledger", desc: m.aiDone + "/" + m.aiTotal + "칸" },
+      { n: "03", title: "6인(탑똘마니+피클1~5) 검증", pct: revPct, target: "matrix", desc: m.reviewed + "/" + m.cells + "셀" },
       { n: "04", title: "금지어·스키마 검수", pct: inspPct, target: "drafts", desc: "원고 " + m.passDrafts + "/" + state.drafts.length + "건" },
-      { n: "05", title: "발행·1~4주 추적", pct: pubPct, target: "publish", desc: c9 ? (c10 ? "발행·재측정 완료" : "발행 완료") : "발행 대기" }
+      { n: "05", title: "발행·1~4주 추적", pct: pubPct, target: "publish", desc: c10 ? (c11 ? "발행·재측정 완료" : "발행 완료") : "발행 대기" }
     ];
     steps.forEach(function(s, i){
       s.pct = Math.max(0, Math.min(100, s.pct));
@@ -1343,10 +1612,10 @@
     var m = metrics();
     var cells = [
       { cls: "", lbl: "총 추적 질문", val: m.total, unit: "개", sub: "병원명 없는 환자 질문" },
-      { cls: "em", lbl: "공식 사이트 인용", val: m.official, unit: "건", sub: "bonhanbang.com 노출" },
-      { cls: "cy", lbl: "제3자 페이지", val: m.third, unit: "건", sub: "공식 없이 외부만" },
-      { cls: "ro", lbl: "미노출", val: m.absent, unit: "건", sub: "보완 필요" },
-      { cls: "am", lbl: "AI 측정", val: m.chDone, unit: "/" + m.chTotal, sub: "4종 × " + m.total + "질문" }
+      { cls: "em", lbl: "공식 사이트 인용", val: m.official, unit: "건", sub: "1위 " + m.rank1 + " · 2위 " + m.rank2 },
+      { cls: "ro", lbl: "미노출", val: m.absent, unit: "건", sub: "q5 · q6 · q9" },
+      { cls: "cy", lbl: "팀 판정", val: m.reviewed, unit: "/" + m.cells, sub: "승인 " + m.approved + " · 보류 " + m.holds + " · 수정 " + m.fixes },
+      { cls: "am", lbl: "탑똘마니 측정", val: m.aiDone, unit: "/" + m.aiTotal, sub: "ChatGPT " + m.aiTotal + "칸 (미측정 유지)" }
     ];
     $("stat-strip").innerHTML = cells.map(function(c){
       return '<div class="stat ' + c.cls + '"><span class="lbl">' + c.lbl + '</span>' +
@@ -1580,6 +1849,14 @@
     }).join("") + "</span>";
   }
 
+  function rankBadge(w){
+    if(w.status === "absent") return '<span class="rankb r0">미노출</span>';
+    if(w.status === "unmeasured") return '<span class="rankb r0">미측정</span>';
+    if(w.rank === 1) return '<span class="rankb r1">1위</span>';
+    if(w.rank === 2) return '<span class="rankb r2">2위</span>';
+    return '<span class="rankb r3">노출</span>';
+  }
+
   function renderQuestions(){
     var host = $("question-list");
     if(!state.questions.length){
@@ -1587,51 +1864,138 @@
       return;
     }
     host.innerHTML = state.questions.map(function(q){
-      var w = q.web;
+      var w = q.web, ai = q.ai || { status: "unmeasured", url: "", note: "" };
       var links = (w.urls || []).map(function(u){
         return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
       }).join("");
-      var rows = CHANNELS.map(function(c){
-        var cell = q.channels[c];
-        var st = STATUS[cell.status] || STATUS.unmeasured;
-        return '<div class="runrow">' +
-          '<span class="chname">' + CH_NAME[c] + "</span>" +
-          '<button class="stbtn ' + st.cls + '" type="button" data-act="ai-status" data-id="' + esc(q.id) + '" data-ch="' + c + '" title="클릭할 때마다 상태가 바뀝니다">' + st.short + "</button>" +
-          '<select class="sel mini" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="status" title="' + CH_NAME[c] + ' 상태 직접 선택" aria-label="' + CH_NAME[c] + ' 상태">' + statusOptions(cell.status) + "</select>" +
-          '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="url" placeholder="인용 URL (선택)" value="' + esc(cell.url) + '" aria-label="' + CH_NAME[c] + ' 인용 URL">' +
-        "</div>";
-      }).join("");
-      var aiLinks = CHANNELS.map(function(c){
-        return '<a class="ai-link" href="' + CH_LINK[c](q.q) + '" target="_blank" rel="noopener" data-copy-ai="' + esc(q.id) + '">' + CH_NAME[c] + " ↗</a>";
-      }).join("");
+      var aiSt = STATUS[ai.status] || STATUS.unmeasured;
       return '<article class="card qcard" data-card="' + esc(q.id) + '">' +
         '<div class="qhead"><span class="qid">' + esc(q.id) + "</span>" +
           '<div class="qmain"><h3>' + esc(q.q) + "</h3>" +
-            '<div class="qmeta">' + statusBadge(w.status) +
+            '<div class="qmeta">' + statusBadge(w.status) + rankBadge(w) +
               '<span class="tag">' + esc(q.intent || "미분류") + "</span>" +
-              '<span class="tag">실측 ' + esc(w.date || "미기록") + "</span>" +
+              '<span class="tag">웹 실측 ' + esc(w.date || "미기록") + "</span>" +
               (q.comp && q.comp.level !== "none" ? '<span class="tag" style="color:#fcd34d">경쟁 압력 ' + COMP[q.comp.level].idx + "</span>" : "") +
             "</div></div>" +
           reviewDots(q.id) +
           '<button class="del" type="button" data-act="del-q" data-id="' + esc(q.id) + '">삭제</button>' +
         "</div>" +
         '<div class="qbody">' +
-          '<div class="webbox"><div class="wt">웹 검색 실측 · ' + esc(w.date || MEASURED_DATE) +
+          '<div class="webbox"><div class="wt">피클3 웹 실측 · ' + esc(w.date || MEASURED_DATE) + rankBadge(w) +
             '<select class="sel" style="width:auto;margin-left:auto" data-web="' + esc(q.id) + '" aria-label="웹 실측 상태">' + statusOptions(w.status, WEB_KEYS) + "</select></div>" +
             '<p>' + esc(w.note || "기록 없음") + "</p>" +
             (links ? '<div class="srclinks">' + links + "</div>" : "") +
+            '<div class="wby">측정자 ' + esc(w.by || "피클3") + " · " + esc(w.engine || "") + " · " + esc(w.at || MEASURED_AT).replace("T", " ").slice(0, 16) + "</div>" +
           "</div>" +
-          '<div class="runner">' + rows +
-            '<div class="qfoot"><div class="airow">' + aiLinks + "</div>" +
+          '<div class="runner">' +
+            '<div class="runrow">' +
+              '<span class="chname">탑똘마니</span>' +
+              '<button class="stbtn ' + aiSt.cls + '" type="button" data-act="ai-status" data-id="' + esc(q.id) + '" data-ch="gpt" title="클릭할 때마다 상태가 바뀝니다">' + aiSt.short + "</button>" +
+              '<select class="sel mini" data-q="' + esc(q.id) + '" data-ch="gpt" data-field="status" title="탑똘마니(ChatGPT) 상태 직접 선택" aria-label="탑똘마니 상태">' + statusOptions(ai.status) + "</select>" +
+              '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="gpt" data-field="url" placeholder="ChatGPT 답변에 인용된 URL (선택)" value="' + esc(ai.url) + '" aria-label="탑똘마니 인용 URL">' +
+            "</div>" +
+            '<p class="ailane-note">' + esc(ai.note || "탑똘마니(ChatGPT) 1종만 측정합니다 — 외부 AI 바로 열기 버튼은 V3에서 제거했습니다.") + "</p>" +
+            '<div class="qfoot"><div class="airow"><span class="tag">측정 레인: 웹 실측(피클3) + 탑똘마니(ChatGPT)</span></div>' +
               '<span style="display:flex;gap:6px">' +
                 '<button class="btn mini" type="button" data-act="copy-prompt" data-id="' + esc(q.id) + '">프롬프트 복사</button>' +
                 '<button class="btn mini ghost" type="button" data-act="copy-q" data-id="' + esc(q.id) + '">질문 복사</button>' +
               "</span></div>" +
           "</div>" +
-          '<div class="memo"><textarea rows="2" data-memo="' + esc(q.id) + '" placeholder="재측정 날짜·조건·특이사항 — 예) 2026-11-29 시크릿창 재측정, ChatGPT 병원 미언급" aria-label="메모">' + esc(q.memo) + "</textarea></div>" +
+          '<div class="memo"><textarea rows="2" data-memo="' + esc(q.id) + '" placeholder="재측정 날짜·조건·특이사항 — 예) 2026-11-28 18:00 피클3 재측정, 탑똘마니 ChatGPT 병원 미언급" aria-label="메모">' + esc(q.memo) + "</textarea></div>" +
         "</div>" +
       "</article>";
     }).join("");
+  }
+
+  /* ================= render: 측정 대장 (출처·일시) ================= */
+  function renderLedger(){
+    var host = $("ledger-body");
+    if(!host) return;
+    host.innerHTML = state.questions.map(function(q){
+      var w = q.web, ai = q.ai || { status: "unmeasured" };
+      var wSt = STATUS[w.status] || STATUS.unmeasured;
+      var aSt = STATUS[ai.status] || STATUS.unmeasured;
+      var srcs = (w.urls || []).map(function(u){
+        return '<a class="srclink ' + (u.type === "official" ? "official" : "third") + '" href="' + esc(u.url) + '" target="_blank" rel="noopener">' + esc(u.label || u.url) + "</a>";
+      }).join("");
+      return "<tr><th class=\"lg-q\"><span class=\"rid\">" + esc(q.id) + '</span>' + esc(q.q) + "</th>" +
+        "<td><b>피클3</b><small>" + esc(w.date || "–") + " 18:00</small></td>" +
+        "<td>" + (w.status === "absent" ? '<span class="badge b-bad">미노출</span>' : rankBadge(w) + ' <span class="badge ' + wSt.badge + '">' + wSt.short + "</span>") + "</td>" +
+        '<td class="lg-src">' + (srcs || '<span class="dim">기록 없음</span>') + "</td>" +
+        "<td><b>탑똘마니</b><small>" + (ai.status === "unmeasured" ? "미측정" : esc(ai.date || "측정")) + "</small></td>" +
+        '<td><span class="badge ' + aSt.badge + '">' + aSt.short + "</span></td></tr>";
+    }).join("");
+  }
+
+  /* ================= render: 유입 끊김 진단 ================= */
+  function renderLeaks(){
+    var host = $("leak-cards");
+    if(!host) return;
+    var m = metrics();
+    var pill = $("leak-count");
+    if(pill) pill.textContent = m.leaksOpen + "건 미해결 / " + state.leaks.length + "건";
+    host.innerHTML = state.leaks.map(function(l){
+      var lv = l.level === "high" ? { t: "치명", c: "lv-high" } : (l.level === "low" ? { t: "낮음", c: "lv-low" } : { t: "주의", c: "lv-mid" });
+      return '<article class="leak ' + lv.c + (l.done ? " done" : "") + '" data-leak="' + esc(l.id) + '">' +
+        '<div class="lk-head"><span class="lk-lv">' + lv.t + "</span><b>" + esc(l.title) + "</b>" +
+          '<label class="lk-chk"><input type="checkbox" data-leak-chk="' + esc(l.id) + '"' + (l.done ? " checked" : "") + "> 해결</label></div>" +
+        '<p class="lk-ev">' + esc(l.evidence) + "</p>" +
+        '<p class="lk-act"><span>조치</span>' + esc(l.action) + "</p>" +
+        '<p class="lk-owner">담당 ' + esc(l.owner) + "</p>" +
+      "</article>";
+    }).join("");
+  }
+
+  /* ================= render: 실시간 라이브 ================= */
+  var LIVE_STATUS_LABEL = { working: "작업 중", done: "완료", waiting: "대기" };
+  var LIVE_STATUS_CLS = { working: "working", done: "done", waiting: "waiting" };
+
+  function fmtLiveTime(v){
+    if(!v) return "–";
+    try {
+      return new Date(v).toLocaleString("ko-KR", { timeZone: "Asia/Seoul", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23" });
+    } catch(e){ return String(v); }
+  }
+
+  function renderLive(){
+    var host = $("live-agents");
+    if(!host) return;
+    var live = state.live;
+    var agents = (live && live.agents) || [];
+    if(!agents.length){
+      host.innerHTML = '<p class="lb-empty">아직 라이브 상태를 받지 못했습니다. <b>지금 동기화</b>를 누르거나 60초를 기다리면 공개 상태 파일(live-state.json)에서 팀 작업 상태를 읽어옵니다.</p>';
+    } else {
+      host.innerHTML = agents.map(function(a){
+        var cls = LIVE_STATUS_CLS[a.status] || "waiting";
+        var label = LIVE_STATUS_LABEL[a.status] || a.status || "대기";
+        return '<article class="lb-agent ' + cls + '">' +
+          '<div class="lb-a-head"><span class="lb-dot"></span><b>' + esc(a.name || a.id) + "</b>" +
+            '<span class="lb-st">' + esc(label) + "</span></div>" +
+          '<p class="lb-task">' + esc(a.currentTask || "–") + "</p>" +
+          '<div class="lb-meta"><span>' + esc(fmtLiveTime(a.lastActiveAt)) + "</span>" +
+            (typeof a.doneCount === "number" && typeof a.totalCount === "number" ? "<span>" + a.doneCount + "/" + a.totalCount + " 항목</span>" : "") +
+          "</div></article>";
+      }).join("");
+    }
+    var upd = $("live-updated");
+    if(upd) upd.textContent = live && live.updatedAt ? "팀 상태 갱신 " + fmtLiveTime(live.updatedAt) : "팀 상태 갱신 –";
+    var ev = $("live-events");
+    if(ev){
+      var events = (live && live.events) || [];
+      ev.innerHTML = events.slice(0, 8).map(function(e){
+        return "<li><time>" + esc(String(e.at || "").replace("T", " ").slice(11, 16)) + "</time><b>" + esc(e.who || "") + "</b><span>" + esc(e.text || "") + "</span></li>";
+      }).join("");
+    }
+    var sync = $("live-status");
+    if(sync){
+      if(state.livePulledAt){
+        sync.textContent = "마지막 동기화 " + fmtLiveTime(state.livePulledAt);
+        sync.className = "pill em";
+      } else if(state.liveError){
+        sync.textContent = "동기화 실패 — " + state.liveError;
+        sync.className = "pill am";
+      }
+    }
   }
 
   /* ================= render: drafts ================= */
@@ -1778,6 +2142,9 @@
     renderMatrix();
     renderConsensus();
     renderQuestions();
+    renderLedger();
+    renderLeaks();
+    renderLive();
     renderDrafts();
     renderChecklist();
     renderHistory();
@@ -1796,11 +2163,12 @@
 
   function setStatus(id, chId, st, silent){
     var q = itemById(id);
-    if(!q || !q.channels || CHANNELS.indexOf(chId) < 0) return false;
+    if(!q || !q.ai || CHANNELS.indexOf(chId) < 0) return false;
     if(STATUS_KEYS.indexOf(st) < 0) return false;
-    var prev = q.channels[chId].status;
+    var prev = q.ai.status;
     if(prev === st) return false;
-    q.channels[chId].status = st;
+    q.ai.status = st;
+    q.ai.date = new Date().toISOString().slice(0, 10);
     if(!silent) log("measure", "[" + id + "] " + CH_NAME[chId] + " 상태: " + STATUS[prev].label + " → " + STATUS[st].label);
     save();
     return true;
@@ -1812,7 +2180,9 @@
     var prev = q.web.status;
     if(prev === st) return false;
     q.web.status = st;
+    q.web.rank = (st === "absent" || st === "unmeasured") ? null : (q.web.rank || null);
     q.web.date = new Date().toISOString().slice(0, 10);
+    q.web.at = new Date().toISOString();
     log("measure", "[" + id + "] 웹 실측 상태: " + STATUS[prev].label + " → " + STATUS[st].label);
     save();
     return true;
@@ -1825,6 +2195,8 @@
     var prev = o.reviews[agentId];
     if(prev === v) return false;
     o.reviews[agentId] = v;
+    if(!state.userOverrides) state.userOverrides = {};
+    state.userOverrides[itemId + "|" + agentId] = 1;   /* 직접 누른 판정은 라이브 동기화가 덮어쓰지 않음 */
     var a = AGENTS.filter(function(x){ return x.id === agentId; })[0];
     log("review", "[" + itemId + "] " + a.name + " 검증: " + REVIEW[prev].label + " → " + REVIEW[v].label);
     save();
@@ -1833,8 +2205,8 @@
 
   function cycleStatus(id, chId){
     var q = itemById(id);
-    if(!q || !q.channels) return;
-    var cur = q.channels[chId].status;
+    if(!q || !q.ai) return;
+    var cur = q.ai.status;
     var next = CYCLE[(CYCLE.indexOf(cur) + 1) % CYCLE.length];
     if(setStatus(id, chId, next)){
       renderAll();
@@ -1980,15 +2352,20 @@
       return;
     }
 
+    if(act === "live-sync"){
+      syncLive(true).then(function(ok){ toast(ok ? "라이브 상태를 새로 받았습니다" : "동기화에 실패했습니다 — 상태 파일 경로를 확인하세요"); });
+      return;
+    }
+
     if(act === "export"){ exportJson(); return; }
     if(act === "export-hist"){ exportHistoryCsv(); return; }
     if(act === "reset"){
-      if(!window.confirm("초기 실측 데이터(2026-11-27)로 되돌립니다.\n입력한 측정값·검증·메모·원고 수정이 모두 사라집니다.\n\n계속할까요?")) return;
+      if(!window.confirm("V3 팀 실측 데이터(2026-11-27 18:00)로 되돌립니다.\n입력한 측정값·검증·메모·원고 수정이 모두 사라집니다.\n\n계속할까요?")) return;
       state = normalize(INITIAL());
       selectedReview = "q1";
-      log("reset", "초기 실측 데이터 복원 (AI 4종 40칸 미측정 유지)");
+      log("reset", "V3 팀 실측 데이터 복원 (웹 실측 10칸 · 탑똘마니 10칸 미측정 유지)");
       save(); renderAll();
-      toast("초기 실측 데이터로 복원했습니다");
+      toast("V3 팀 실측 데이터로 복원했습니다");
       return;
     }
   });
@@ -2018,7 +2395,7 @@
     if(t.matches("input[data-ch][data-field='url']")){
       var j = qIndex(t.getAttribute("data-q"));
       if(j < 0) return;
-      state.questions[j].channels[t.getAttribute("data-ch")].url = t.value.trim();
+      state.questions[j].ai.url = t.value.trim();
       save();
       return;
     }
@@ -2029,6 +2406,18 @@
       state.questions[k].memo = t.value;
       log("memo", "[" + state.questions[k].id + "] 메모 수정");
       save(); renderFeed(); renderHistory();
+      return;
+    }
+
+    if(t.matches("input[data-leak-chk]")){
+      var lid = t.getAttribute("data-leak-chk");
+      state.leaks.forEach(function(l){
+        if(l.id === lid){
+          l.done = t.checked;
+          log("check", "유입 진단 " + (t.checked ? "해결" : "재개") + ": " + l.title);
+        }
+      });
+      save(); renderAll();
       return;
     }
 
@@ -2067,7 +2456,7 @@
     if(t.matches("input[data-ch][data-field='url']")){
       var j = qIndex(t.getAttribute("data-q"));
       if(j < 0) return;
-      state.questions[j].channels[t.getAttribute("data-ch")].url = t.value.trim();
+      state.questions[j].ai.url = t.value.trim();
       window.clearTimeout(saveTimer);
       saveTimer = window.setTimeout(save, 500);
       return;
@@ -2116,8 +2505,8 @@
     while(qIndex(newId) >= 0){ n++; newId = "q" + n; }
     state.questions.push({
       id: newId, q: v, intent: "직접 추가",
-      web: { status: "unmeasured", date: "", note: "직접 추가한 질문 — 아직 실측하지 않았습니다.", urls: [] },
-      channels: { chatgpt: ch(), gemini: ch(), perplexity: ch(), claude: ch() },
+      web: { status: "unmeasured", rank: null, date: "", at: "", by: "직접 추가", engine: "", note: "직접 추가한 질문 — 아직 실측하지 않았습니다.", urls: [] },
+      ai: { status: "unmeasured", url: "", note: "", date: "" },
       reviews: rv(), reviewNote: "", memo: "",
       comp: { level: "none", note: "" }
     });
@@ -2151,7 +2540,7 @@
 
   function exportJson(){
     var d = new Date();
-    var name = "bonhan-geo-v2-" + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + "-" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".json";
+    var name = "bonhan-geo-v3-" + d.getFullYear() + pad2(d.getMonth() + 1) + pad2(d.getDate()) + "-" + pad2(d.getHours()) + pad2(d.getMinutes()) + ".json";
     var blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
@@ -2172,31 +2561,162 @@
     var blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
     var url = URL.createObjectURL(blob);
     var a = document.createElement("a");
-    a.href = url; a.download = "bonhan-geo-v2-history.csv";
+    a.href = url; a.download = "bonhan-geo-v3-history.csv";
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     window.setTimeout(function(){ URL.revokeObjectURL(url); }, 1500);
     toast("이력을 내보냈습니다");
   }
 
-  /* AI 링크를 누르면 프롬프트를 복사해 두어 바로 붙여넣을 수 있게 */
-  document.addEventListener("click", function(e){
-    var a = e.target.closest("[data-copy-ai]");
-    if(!a) return;
-    var q = itemById(a.getAttribute("data-copy-ai"));
-    if(!q) return;
-    log("copy", "[" + q.id + "] AI 바로 열기 · 질문 복사");
-    save(); renderFeed(); renderHistory();
-    copyText(q.q).then(function(ok){
-      if(ok === false) toast("질문 복사 권한이 없습니다 — AI 창에 직접 붙여넣으세요");
+  /* ================= 실시간 라이브 동기화 (live-state.json) ================= */
+  var liveTimer = null;
+  var liveBusy = false;
+
+  function b64ToText(b64){
+    var bin = "";
+    try { bin = window.atob(String(b64).replace(/\s+/g, "")); } catch(e){ return ""; }
+    try {
+      var bytes = new Uint8Array(bin.length);
+      for(var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+      return new TextDecoder("utf-8").decode(bytes);
+    } catch(e){
+      try { return decodeURIComponent(escape(bin)); } catch(e2){ return bin; }
+    }
+  }
+
+  function normalizeLive(obj){
+    if(!obj || typeof obj !== "object") return null;
+    var agents = [];
+    var src = obj.agents || obj.agentStatus || [];
+    function pushAgent(id, a){
+      a = a || {};
+      var st = (["working", "done", "waiting"].indexOf(a.status) >= 0) ? a.status : "waiting";
+      agents.push({
+        id: String(id || a.id || a.name || ""),
+        name: String(a.name || id || ""),
+        role: String(a.role || ""),
+        status: st,
+        currentTask: String(a.currentTask || ""),
+        lastActiveAt: a.lastActiveAt || "",
+        doneCount: (typeof a.doneCount === "number") ? a.doneCount : null,
+        totalCount: (typeof a.totalCount === "number") ? a.totalCount : null
+      });
+    }
+    if(Array.isArray(src)){ src.forEach(function(a){ if(a && typeof a === "object") pushAgent(a.id || a.name, a); }); }
+    else if(src && typeof src === "object"){ Object.keys(src).forEach(function(k){ pushAgent(k, src[k]); }); }
+
+    var events = [];
+    var rawEvents = Array.isArray(obj.events) ? obj.events : (Array.isArray(obj.recentEvents) ? obj.recentEvents : []);
+    rawEvents.forEach(function(e){
+      if(!e) return;
+      if(typeof e === "string"){ events.push({ at: "", who: "", text: e }); return; }
+      events.push({ at: e.at || e.time || "", who: e.who || e.agent || e.name || "", text: e.text || e.task || "" });
     });
-  });
+
+    var judgments = [];
+    (Array.isArray(obj.judgments) ? obj.judgments : []).forEach(function(j){
+      if(!j || !j.item || !j.agent) return;
+      if(REVIEW_CYCLE.indexOf(j.verdict) < 0) return;
+      judgments.push({ item: String(j.item), agent: String(j.agent), verdict: j.verdict, note: j.note ? String(j.note) : "" });
+    });
+
+    return { updatedAt: obj.updatedAt || "", note: obj.note || "", agents: agents, events: events, judgments: judgments };
+  }
+
+  function applyLive(obj, source){
+    var live = normalizeLive(obj);
+    if(!live) return false;
+    state.live = live;
+    state.livePulledAt = new Date().toISOString();
+    state.liveSource = source || "";
+    state.liveError = "";
+    var applied = 0;
+    live.judgments.forEach(function(j){
+      var o = itemById(j.item);
+      if(!o || AGENT_IDS.indexOf(j.agent) < 0) return;
+      if(state.userOverrides && state.userOverrides[j.item + "|" + j.agent]) return;
+      if(o.reviews[j.agent] !== j.verdict){ o.reviews[j.agent] = j.verdict; applied++; }
+      if(j.note) o.reviewNote = j.note;
+    });
+    save();
+    renderLive();
+    renderMatrix();
+    renderConsensus();
+    renderAgents();
+    renderQuestions();
+    renderDrafts();
+    renderDashboard();
+    return applied;
+  }
+
+  function applyLiveText(text, source){
+    var obj = null;
+    try { obj = JSON.parse(String(text)); } catch(e){ obj = null; }
+    if(!obj) return false;
+    return applyLive(obj, source) !== false;
+  }
+
+  function liveSetStatus(msg, cls){
+    var el = $("live-status");
+    if(!el) return;
+    el.textContent = msg;
+    el.className = "pill " + (cls || "");
+  }
+
+  function syncLive(manual){
+    if(liveBusy) return Promise.resolve(false);
+    if(typeof fetch !== "function"){
+      liveSetStatus("이 브라우저에서는 자동 동기화를 쓸 수 없습니다", "am");
+      return Promise.resolve(false);
+    }
+    liveBusy = true;
+    if(manual) liveSetStatus("동기화 중…", "em");
+    function fallback(){
+      return fetch(LIVE_RAW_URL + "?t=" + Date.now(), { cache: "no-store" })
+        .then(function(r){ if(!r.ok) throw new Error("raw " + r.status); return r.text(); })
+        .then(function(t){
+          if(!applyLiveText(t, "raw")) throw new Error("raw parse");
+          return true;
+        });
+    }
+    return fetch(LIVE_API_URL + "?t=" + Date.now(), { cache: "no-store", headers: { "Accept": "application/vnd.github+json" } })
+      .then(function(r){
+        if(!r.ok) throw new Error("api " + r.status);
+        return r.json();
+      })
+      .then(function(j){
+        var text = (j && j.content) ? b64ToText(j.content) : "";
+        if(!text) throw new Error("empty");
+        if(!applyLiveText(text, "api")) throw new Error("parse");
+        return true;
+      })
+      .catch(function(){
+        return fallback().catch(function(e2){
+          state.liveError = String((e2 && e2.message) || e2);
+          liveSetStatus("동기화 실패 — " + state.liveError, "am");
+          return false;
+        });
+      })
+      .then(function(ok){
+        liveBusy = false;
+        if(ok) liveSetStatus("마지막 동기화 " + fmtLiveTime(state.livePulledAt), "em");
+        renderLive();
+        return ok;
+      });
+  }
+
+  function startLive(){
+    renderLive();
+    syncLive(false);
+    if(liveTimer) window.clearInterval(liveTimer);
+    liveTimer = window.setInterval(function(){ syncLive(false); }, LIVE_POLL_MS);
+  }
 
   /* ================= boot ================= */
   state = load();
   selectedReview = state.questions.length ? state.questions[0].id : "";
 
-  /* consult a stale V1 score check: nothing to migrate further */
   renderAll();
+  startLive();
 
   window.GEO_OK = true;
   window.GEO_STATE = function(){ return state; };
@@ -2225,6 +2745,28 @@
     importJSON: importJSON,
     buildJsonLd: buildJsonLd,
     go: go
+  };
+  window.GEO_LIVE = {
+    url: LIVE_API_URL,
+    rawUrl: LIVE_RAW_URL,
+    pollMs: LIVE_POLL_MS,
+    b64ToText: b64ToText,
+    normalize: normalizeLive,
+    apply: applyLive,
+    applyText: applyLiveText,
+    sync: syncLive,
+    start: startLive,
+    state: function(){ return state.live; },
+    pulledAt: function(){ return state.livePulledAt || ""; }
+  };
+  window.GEO_V3 = {
+    version: VERSION,
+    metrics: metrics,
+    score: function(){ return metrics().score; },
+    lanes: function(){ return LANES.slice(); },
+    leaks: function(){ return state.leaks; },
+    drafts: function(){ return state.drafts.map(function(d){ return d.id; }); },
+    live: window.GEO_LIVE
   };
 })();
 </script>
