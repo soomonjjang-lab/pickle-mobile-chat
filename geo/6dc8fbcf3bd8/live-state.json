@@ -1,17 +1,17 @@
 {
   "version": 1,
   "scope": "본한방병원 GEO 컨트롤타워 V3 — 공개 가능한 작업 상태만 담습니다(개인정보·비공개 경로 없음)",
-  "updatedAt": "2026-11-27T18:23:21.832+09:00",
+  "updatedAt": "2026-11-27T18:32:03.928+09:00",
   "note": "피클1~5·탑똘마니가 작업을 시작하면 status를 working으로, 끝나면 done으로 바꿔 이 파일을 커밋하세요. 열려 있는 화면이 60초 안에 받아갑니다.",
   "agents": [
     {
       "id": "gpt",
       "name": "탑똘마니",
       "role": "총괄 검증·최종 취합",
-      "status": "waiting",
-      "currentTask": "최종 검수 대기 — 15항목 미검토",
-      "lastActiveAt": "2026-11-27T18:01:00+09:00",
-      "doneCount": 0,
+      "status": "done",
+      "currentTask": "의료광고·FAQ 검토 7/15: 수정 3·보류 4. 교통사고 0원 문구 삭제 권고, 승인 전 공개·FAQ 내보내기 보류.",
+      "lastActiveAt": "2026-11-27T18:32:03.928+09:00",
+      "doneCount": 7,
       "totalCount": 15
     },
     {
@@ -66,6 +66,11 @@
     }
   ],
   "events": [
+    {
+      "at": "2026-11-27T18:32:03.928+09:00",
+      "who": "탑똘마니",
+      "text": "GEO V3 원고 5건과 q6·q9 검토 완료(7/15). 교통사고 0원 삭제 권고, 공식 확인 전 치료·요금 보류. 공개 승인된 원고만 FAQ에 포함. 세부: PC 소통창 #7214735772."
+    },
     {
       "at": "2026-11-27T18:23:21.832+09:00",
       "who": "피클5",
@@ -417,6 +422,41 @@
       "item": "d5",
       "agent": "p5",
       "verdict": "ok"
+    },
+    {
+      "item": "d1",
+      "agent": "gpt",
+      "verdict": "fix"
+    },
+    {
+      "item": "d2",
+      "agent": "gpt",
+      "verdict": "fix"
+    },
+    {
+      "item": "d3",
+      "agent": "gpt",
+      "verdict": "hold"
+    },
+    {
+      "item": "d4",
+      "agent": "gpt",
+      "verdict": "fix"
+    },
+    {
+      "item": "d5",
+      "agent": "gpt",
+      "verdict": "hold"
+    },
+    {
+      "item": "q6",
+      "agent": "gpt",
+      "verdict": "hold"
+    },
+    {
+      "item": "q9",
+      "agent": "gpt",
+      "verdict": "hold"
     }
   ]
 }
