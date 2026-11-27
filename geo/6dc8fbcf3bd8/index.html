@@ -168,7 +168,7 @@
   .breakdown{display:grid;gap:7px;border-top:1px solid var(--line);padding-top:12px;margin-top:auto}
   .bd{display:grid;grid-template-columns:1fr auto;gap:4px 8px;align-items:center}
   .bd .n{font-size:11.5px;color:var(--muted);font-weight:700}
-  .bd .v{font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt)}
+  .bd .v{font-size:11.5px;font-weight:800;font-variant-numeric:tabular-nums;color:var(--txt);white-space:nowrap}
   .bd .bar{grid-column:1/-1;height:5px;border-radius:99px;background:rgba(148,163,184,.12);overflow:hidden}
   .bd .bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,var(--em-d),var(--cy));transition:width .7s cubic-bezier(.22,1,.36,1)}
   .bd.b0 .bar i{background:linear-gradient(90deg,#475569,#64748b)}
@@ -185,6 +185,10 @@
   .legend{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;font-size:11px;color:var(--muted)}
   .legend i{display:inline-block;width:9px;height:9px;border-radius:3px;margin-right:5px;vertical-align:-1px}
   .lg-em{background:#34d399}.lg-am{background:#fbbf24}.lg-cy{background:#38bdf8}
+  .minis{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px;border-top:1px solid var(--line);padding-top:12px}
+  .minis div{background:rgba(2,6,23,.35);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+  .minis b{display:block;font-size:17px;font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .minis small{font-size:10px;color:var(--muted);font-weight:700}
   .occ{display:grid;gap:10px 26px;grid-template-columns:1fr 1fr}
   .occrow{display:grid;grid-template-columns:118px 1fr;gap:10px;align-items:center}
   .occrow .q{font-size:11.5px;color:var(--muted);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -218,6 +222,8 @@
   .feed-list time{font-size:10px;color:var(--dim);font-weight:700;font-variant-numeric:tabular-nums;padding-top:1px}
   .feed-list span{font-size:12px;color:#cbd5e1;line-height:1.5;word-break:keep-all}
   .feed-empty{font-size:12px;color:var(--dim);text-align:center;padding:26px 6px;line-height:1.7}
+  .feed-list li.feed-empty{display:block;border-left:0;margin-left:0;padding:26px 8px}
+  .feed-list li.feed-empty::before{display:none}
   .feed .btn{margin-top:12px;width:100%}
 
   /* ============ pipeline ============ */
@@ -239,7 +245,7 @@
   @keyframes ringpulse{0%{box-shadow:0 0 0 0 rgba(56,189,248,.4)}70%{box-shadow:0 0 0 12px rgba(56,189,248,0)}100%{box-shadow:0 0 0 0 rgba(56,189,248,0)}}
   .step .st{display:block;font-size:11.5px;font-weight:800;margin-top:9px;color:var(--txt);letter-spacing:-.1px}
   .step .pct{display:block;font-size:10.5px;color:var(--dim);margin-top:1px;font-variant-numeric:tabular-nums}
-  .step .pbar{height:4px;width:64%;margin:7px auto 0;border-radius:99px;background:rgba(148,163,184,.14);overflow:hidden}
+  .step .pbar{display:block;height:4px;width:64%;margin:7px auto 0;border-radius:99px;background:rgba(148,163,184,.14);overflow:hidden}
   .step .pbar i{display:block;height:100%;background:linear-gradient(90deg,var(--em),var(--cy));border-radius:99px;transition:width .7s ease}
   .step:hover .num{transform:translateY(-2px);border-color:var(--em)}
   .step:hover .st{color:#fff}
@@ -369,6 +375,10 @@
   .st-bad{color:#fda4af;border-color:rgba(251,113,133,.45);background:rgba(251,113,133,.12)}
   select.sel,input.url{font:inherit;font-size:11.5px;color:var(--txt);background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:8px;padding:5px 7px;width:100%;min-width:0}
   select.sel:focus,input.url:focus{outline:none;border-color:rgba(52,211,153,.5)}
+  select.sel.mini{width:26px;height:26px;padding:0;border-radius:8px;color:transparent;appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.6' stroke-linecap='round'><path d='M6 9l6 6 6-6'/></svg>");
+    background-repeat:no-repeat;background-position:center;background-size:12px;background-color:rgba(148,163,184,.06)}
+  select.sel.mini:hover{border-color:rgba(52,211,153,.45)}
   select.sel option{background:#0b1424;color:var(--txt)}
   .qfoot{grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:space-between;margin-top:2px}
   .airow{display:flex;gap:5px;flex-wrap:wrap}
@@ -550,7 +560,7 @@
 
   <section id="dash" class="dash" aria-label="실시간 대시보드">
     <div class="card gauge">
-      <div class="card-head"><h2>GEO 노출 점수</h2><span class="pill" id="score-pill">측정 전</span></div>
+      <div class="card-head"><h2>GEO 노출 점수</h2><span class="pill em" id="score-pill">실시간 자동 계산</span></div>
       <div class="ring-wrap">
         <svg class="ring" viewBox="0 0 220 220" role="img" aria-label="GEO 노출 점수 링 차트">
           <defs>
@@ -572,6 +582,7 @@
       <div class="card-head"><h2>질문 카테고리 점유 비교</h2><span class="pill">본한 vs 경쟁권</span></div>
       <div class="radar-wrap"><svg id="radar" viewBox="0 0 400 330" role="img" aria-label="질문 10개 카테고리별 노출 레이더 차트"></svg></div>
       <div class="legend" id="radar-legend"></div>
+      <div class="minis" id="chart-minis"></div>
       <p class="fine">지수는 2026-11-27 실측 결과를 0~100으로 환산한 값입니다(공식 100 · 제3자 50 · 미노출 0). 레메디한방병원은 q2에서만 이름이 확인되어 다른 질문은 0이 아니라 ‘미측정’으로 비워 둡니다.</p>
     </div>
 
@@ -1205,9 +1216,9 @@
   function shortAxes(){
     return state.questions.map(function(q){
       var map = {
-        "야간 진료": "야간", "주말·공휴일 진료": "주말·공휴일", "교통사고 입원": "교통사고",
-        "수술 후 재활": "수술후 재활", "도수·추나": "도수·추나", "입원실 등급": "1인실",
-        "주차·접근성": "주차", "양한방 협진": "양·한방", "암 회복기": "암 회복기", "장비·시술": "장비·시술"
+        "야간 진료": "야간", "주말·공휴일 진료": "주말", "교통사고 입원": "교통사고",
+        "수술 후 재활": "수술후", "도수·추나": "도수·추나", "입원실 등급": "1인실",
+        "주차·접근성": "주차", "양한방 협진": "양·한방", "암 회복기": "암 회복", "장비·시술": "장비"
       };
       return map[q.intent] || (q.intent || q.id);
     });
@@ -1311,10 +1322,10 @@
     var inspPct = draftPassPct * 0.5 + (c7 ? 50 : 0);
     var pubPct = (c9 ? 50 : 0) + (c10 ? 50 : 0);
     var steps = [
-      { n: "01", title: "질문·웹 실측", pct: webPct, target: "questions", desc: m.total + "개 질문 · 웹 " + (m.total - m.webUnm) + "건 기록" },
-      { n: "02", title: "AI 4종 교차 측정", pct: aiPct, target: "questions", desc: m.chDone + "/" + m.chTotal + "칸 측정" },
-      { n: "03", title: "6인(GPT+피클1~5) 검증", pct: revPct, target: "matrix", desc: m.reviewed + "/" + m.cells + "셀 검토" },
-      { n: "04", title: "금지어·스키마 검수", pct: inspPct, target: "drafts", desc: "원고 " + m.passDrafts + "/" + state.drafts.length + "건 통과" },
+      { n: "01", title: "질문·웹 실측", pct: webPct, target: "questions", desc: "웹 " + (m.total - m.webUnm) + "/" + m.total + "건" },
+      { n: "02", title: "AI 4종 교차 측정", pct: aiPct, target: "questions", desc: m.chDone + "/" + m.chTotal + "칸" },
+      { n: "03", title: "6인(GPT+피클1~5) 검증", pct: revPct, target: "matrix", desc: m.reviewed + "/" + m.cells + "셀" },
+      { n: "04", title: "금지어·스키마 검수", pct: inspPct, target: "drafts", desc: "원고 " + m.passDrafts + "/" + state.drafts.length + "건" },
       { n: "05", title: "발행·1~4주 추적", pct: pubPct, target: "publish", desc: c9 ? (c10 ? "발행·재측정 완료" : "발행 완료") : "발행 대기" }
     ];
     steps.forEach(function(s, i){
@@ -1351,8 +1362,8 @@
     }
     $("score-num").textContent = m.score;
     $("score-label").textContent = scoreLabel(m.score);
-    $("score-pill").textContent = m.score >= 70 ? "선점 구간" : (m.score >= 45 ? "확장 구간" : "기반 구축");
-    $("score-pill").className = "pill " + (m.score >= 70 ? "em" : (m.score >= 45 ? "" : "am"));
+    $("score-pill").textContent = "실시간 자동 계산";
+    $("score-pill").className = "pill em";
     $("score-breakdown").innerHTML = m.breakdown.map(function(b){
       var pct = b.max ? (b.got / b.max * 100) : 0;
       return '<div class="bd b' + (b.got < 0.05 ? "0" : "") + '">' +
@@ -1400,8 +1411,7 @@
       out.push('<text x="' + lx.toFixed(1) + '" y="' + ly.toFixed(1) + '" text-anchor="' + anchor + '">' + esc(labels[i]) + "</text>");
       if(q.comp && q.comp.level === "high" && /레메디/.test(q.comp.note || "")){
         var d = point(i, 100);
-        out.push('<circle class="dot" cx="' + d[0].toFixed(1) + '" cy="' + d[1].toFixed(1) + '" r="4.5"></circle>');
-        out.push('<text x="' + (d[0] + 7).toFixed(1) + '" y="' + (d[1] - 5).toFixed(1) + '" text-anchor="start" style="fill:#7dd3fc">레메디</text>');
+        out.push('<circle class="dot" cx="' + d[0].toFixed(1) + '" cy="' + d[1].toFixed(1) + '" r="4.5"><title>레메디한방병원 선점(q2)</title></circle>');
       }
     });
     out.push('<circle cx="' + cx + '" cy="' + cy + '" r="2.5" fill="rgba(148,163,184,.5)"></circle>');
@@ -1410,6 +1420,18 @@
       '<span><i class="lg-em"></i>본한방병원 노출 지수</span>' +
       '<span><i class="lg-am"></i>경쟁 압력(실측 메모)</span>' +
       '<span><i class="lg-cy"></i>레메디 확인 지점(q2)</span>';
+
+    var m = metrics();
+    var avgWeb = state.questions.length ? Math.round(state.questions.reduce(function(a, q){ return a + webIndex(q); }, 0) / state.questions.length) : 0;
+    var avgComp = state.questions.length ? Math.round(state.questions.reduce(function(a, q){ return a + compIndex(q); }, 0) / state.questions.length) : 0;
+    var need = state.questions.filter(function(q){ return q.web.status === "absent"; }).length;
+    var minis = $("chart-minis");
+    if(minis){
+      minis.innerHTML =
+        '<div><b style="color:#34d399">' + avgWeb + '</b><small>본한 평균 노출 지수</small></div>' +
+        '<div><b style="color:#fbbf24">' + avgComp + '</b><small>경쟁 압력 평균</small></div>' +
+        '<div><b style="color:#fb7185">' + need + '</b><small>미노출 · 보완 필요</small></div>';
+    }
   }
 
   function renderOcc(){
@@ -1478,7 +1500,7 @@
     host.innerHTML = AGENTS.map(function(a){
       var t = agentTally(a.id), st = agentState(t);
       return '<article class="agent" data-agent="' + a.id + '">' +
-        '<div class="ah"><span class="ava">' + esc(a.name.replace("피클", "P")) + "</span>" +
+        '<div class="ah"><span class="ava">' + (a.id === "gpt" ? "GPT" : "P" + a.id.slice(1)) + "</span>" +
           '<span class="an"><b>' + esc(a.name) + "</b><small>" + esc(a.sub) + "</small></span>" +
           '<span class="badge ' + st.cls + '">' + st.label + "</span></div>" +
         '<p class="role">' + esc(a.role) + "</p>" +
@@ -1570,7 +1592,7 @@
         return '<div class="runrow">' +
           '<span class="chname">' + CH_NAME[c] + "</span>" +
           '<button class="stbtn ' + st.cls + '" type="button" data-act="ai-status" data-id="' + esc(q.id) + '" data-ch="' + c + '" title="클릭할 때마다 상태가 바뀝니다">' + st.short + "</button>" +
-          '<select class="sel" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="status" aria-label="' + CH_NAME[c] + ' 상태">' + statusOptions(cell.status) + "</select>" +
+          '<select class="sel mini" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="status" title="' + CH_NAME[c] + ' 상태 직접 선택" aria-label="' + CH_NAME[c] + ' 상태">' + statusOptions(cell.status) + "</select>" +
           '<input class="url" type="url" data-q="' + esc(q.id) + '" data-ch="' + c + '" data-field="url" placeholder="인용 URL (선택)" value="' + esc(cell.url) + '" aria-label="' + CH_NAME[c] + ' 인용 URL">' +
         "</div>";
       }).join("");
