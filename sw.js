@@ -1,8 +1,9 @@
-/* 똘마니 소통창 - service worker
+/* 똘마니 소통창 - service worker (v21)
    - 문서(HTML)는 네트워크 우선(업데이트가 바로 반영), 오프라인이면 캐시
    - 아이콘/manifest는 캐시 우선
-   - GitHub API(다른 origin)는 건드리지 않음 */
-const CACHE = 'pickle-chat-v16';
+   - GitHub API(다른 origin)는 건드리지 않음
+   - v21: 앱 버전과 캐시 이름을 맞춰 올림(구버전 캐시 자동 정리) */
+const CACHE = 'pickle-chat-v21';
 const SHELL = [
   './manifest.json',
   './icons/icon-192.png',
@@ -41,8 +42,10 @@ self.addEventListener('fetch', (e) => {
     e.respondWith(
       fetch(req, { cache: 'no-store' })
         .then((res) => {
-          const copy = res.clone();
-          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          if (res && res.ok) {
+            const copy = res.clone();
+            caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          }
           return res;
         })
         .catch(() => caches.match(req).then((hit) => hit || caches.match('./index.html')))

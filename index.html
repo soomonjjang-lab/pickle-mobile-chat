@@ -175,7 +175,7 @@
 <body>
 <div id="app">
   <header>
-    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v20</small></h1>
+    <h1>💬 똘마니 소통창 <small style="font-size:10px;font-weight:500;color:#80868b;">v21</small></h1>
     <div id="status"><i id="dot"></i><span id="statusText">연결 대기</span></div>
     <div class="hbtns">
       <button class="ibtn" id="refreshBtn" aria-label="새로고침"><span>⟳</span></button>
@@ -271,10 +271,39 @@
 <script>
 (function(){
   'use strict';
+
+  /* =========================================================================
+     똘마니 소통창 (모바일)  ·  v21
+     -------------------------------------------------------------------------
+     v20 에서 "글이 보이다 말다" 하던 원인:
+       1) 첫 로딩·전체 동기화가 댓글을 "1페이지부터 최대 15페이지(=1,500개)"만
+          가져왔다. Issue #1 은 1,647개(17페이지)라 최신 147개를 아예 못 가져왔고,
+       2) 90초마다 도는 전체 동기화가 "이번에 안 받아온 글"을 msgs 에서 지워버려서
+          새로 온 글(그리고 방금 내가 보낸 글)이 사라졌다. 다시 since 로는 안 돌아온다.
+       3) since 경계를 마지막 updated_at 그대로 써서 같은 초에 올라온 글이 누락됐다.
+       4) 매번 list.innerHTML='' 로 전체를 다시 그려 깜빡임·스크롤 튐이 있었다.
+       5) 보내는 중(pending) 말풍선을 [GPT] 로 그려서, 전송되면 [PC] 로 바뀌었다.
+     v21:
+       · 최신 페이지부터(BOOT_PAGES) 받고, 병합은 "덧붙이기"만(지우지 않음).
+       · 최신 구간 재대조(reconcile)에서만, 그 구간 안에서 실제로 사라진 글만 제거.
+       · since 는 3분 안전 마진 + id 중복 제거.
+       · DOM 노드를 키로 재사용(깜빡임·스크롤 점프 방지), 이전 대화는 서버에서 페이지 단위로.
+       · 보내는 중 말풍선은 [PC]/나 로 표시.
+     ========================================================================= */
+
   var OWNER='soomonjjang-lab', REPO='pickle-pc-control', ISSUE=1;
   var API='https://api.github.com/repos/'+OWNER+'/'+REPO;
   var K_TOKEN='pickle_chat_token_v1';
-  var POLL_MS=9000;
+
+  var POLL_MS=9000;            // 자동 확인 주기
+  var PAGE_SIZE=100;           // GitHub 댓글 API 최대
+  var BOOT_PAGES=2;            // 첫 로딩에서 가져올 최신 페이지 수 (=최신 200개)
+  var RECONCILE_EVERY=10;      // 몇 번째 폴링마다 최신 구간 재대조
+  var RECONCILE_PAGES=2;       // 재대조 때 다시 받을 최신 페이지 수
+  var SINCE_MARGIN_MS=180000;  // since 경계 안전 마진(3분)
+  var MAX_INC_PAGES=20;        // 증분 조회 최대 페이지
+  var RENDER_MIN=50;           // 처음 그리는 말풍선 수
+  var RENDER_STEP=100;         // "더 보기" 한 번에 늘리는 수
 
   var SPEAKERS=[
     {tag:'[똘마니1]', name:'똘마니1', cls:'p', av:'1'},
@@ -292,14 +321,22 @@
     {tag:'[돈다바리]',name:'똘마니5', cls:'db', av:'5'},
     {tag:'[PC]',      name:'나',      cls:'me', av:'나'}
   ];
+  var SP_PC=SPEAKERS[SPEAKERS.length-1];
 
   var DEMO=/(\?|&)demo=1/.test(location.search);
   var token=localStorage.getItem(K_TOKEN)||'';
   var msgs=new Map();
-  var lastSync=null, fullCounter=0, polling=false, timer=null;
+
+  var cache=new Map(), nextCache=null;
+
+  var lastSync=null;                    // 지금까지 본 가장 최근 updated_at(ISO)
+  var totalComments=0, lastPageNum=1, loadedOldestPage=null;
+  var busy=false, queued=null, pollCounter=0, timer=null, session=0;
+
   var imgCache=new Map();
   var pending=new Map();
-  var atBottom=true, lastRenderedCount=0, renderLimit=50;
+  var atBottom=true, lastRenderedCount=0, renderLimit=RENDER_MIN;
+  var pendingNewCount=0;
   var installEvt=null;
 
   var $=function(id){return document.getElementById(id)};
@@ -325,23 +362,18 @@
     var hh=h%12; if(hh===0) hh=12;
     return ap+' '+hh+':'+(m<10?'0':'')+m;
   }
-  function relTime(ts){
-    var s=Math.round((Date.now()-ts)/1000);
-    if(s<10) return '방금';
-    if(s<60) return s+'초 전';
-    var m=Math.round(s/60);
-    if(m<60) return m+'분 전';
-    return Math.round(m/60)+'시간 전';
+  function nowLabel(){
+    return new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});
   }
 
   /* ---------- API ---------- */
-  function api(path, opts){
+  function apiReq(path, opts){
     opts=opts||{};
     var headers={
-      'Authorization':'Bearer '+token,
       'Accept':'application/vnd.github+json',
       'X-GitHub-Api-Version':'2022-11-28'
     };
+    if(token) headers['Authorization']='Bearer '+token;
     if(opts.body) headers['Content-Type']='application/json';
     return fetch(API+path,{
       method:opts.method||'GET',
@@ -356,9 +388,12 @@
         throw {code:403};
       }
       if(!r.ok) return r.text().then(function(t){ throw {code:r.status,msg:t}; });
-      if(r.status===204) return null;
-      return r.json();
+      if(r.status===204) return {data:null,headers:r.headers};
+      return r.json().then(function(j){ return {data:j,headers:r.headers}; });
     });
+  }
+  function api(path,opts){
+    return apiReq(path,opts).then(function(x){ return x.data; });
   }
 
   function setStatus(kind,txt){
@@ -368,66 +403,196 @@
     dot.title=txt;
   }
 
-  /* ---------- loading ---------- */
-  function poll(full){
-    if(!token || polling) return;
-    if(DEMO) return;
-    polling=true;
-    var useSince = (!full && lastSync) ? ('&since='+encodeURIComponent(lastSync)) : '';
-    var all=[], page=1;
-    function next(){
-      return api('/issues/'+ISSUE+'/comments?per_page=100&page='+page+useSince).then(function(batch){
-        all=all.concat(batch);
-        if(batch.length<100 || page>=15){ return all; }
-        page++;
-        return next();
+  /* ---------- loading (동기화) ---------- */
+  function parseLastPage(link){
+    if(!link) return null;
+    var m=String(link).match(/[?&]page=(\d+)[^>]*>;\s*rel="last"/);
+    return m?parseInt(m[1],10):null;
+  }
+
+  function fetchPage(page, since){
+    var q='/issues/'+ISSUE+'/comments?per_page='+PAGE_SIZE+'&page='+page+(since?('&since='+encodeURIComponent(since)):'');
+    return apiReq(q).then(function(x){
+      var items=Array.isArray(x.data)?x.data:[];
+      return {items:items, last:since?null:parseLastPage(x.headers.get('link'))};
+    });
+  }
+
+  /* 받아온 글을 "덧붙이기"만 한다. 어떤 경우에도 기존 글을 지우지 않는다. */
+  function merge(items){
+    var fresh=0, changed=false;
+    for(var i=0;i<items.length;i++){
+      var c=items[i];
+      if(!c || c.id===undefined || c.id===null) continue;
+      var prev=msgs.get(c.id);
+      if(!prev){ msgs.set(c.id,c); fresh++; changed=true; }
+      else if(prev.updated_at!==c.updated_at || prev.body!==c.body){ msgs.set(c.id,c); changed=true; }
+      if(!lastSync || c.updated_at>lastSync) lastSync=c.updated_at;
+    }
+    return {fresh:fresh, changed:changed};
+  }
+
+  function loadMeta(){
+    return api('/issues/'+ISSUE).then(function(meta){
+      if(meta && typeof meta.comments==='number') totalComments=meta.comments;
+      lastPageNum=Math.max(1,Math.ceil((totalComments||0)/PAGE_SIZE));
+      return totalComments;
+    });
+  }
+
+  /* 최신 n페이지(=최신 n*100개)를 병렬로 받아 합친다. */
+  function loadNewestWindow(n){
+    var start=Math.max(1,lastPageNum-n+1);
+    var pages=[];
+    for(var p=start;p<=lastPageNum;p++) pages.push(p);
+    return Promise.all(pages.map(function(p){ return fetchPage(p); })).then(function(res){
+      var items=[], ids={};
+      res.forEach(function(r){
+        if(r.last && r.last>lastPageNum) lastPageNum=r.last;
+        r.items.forEach(function(c){ if(!ids[c.id]){ ids[c.id]=1; items.push(c); } });
+      });
+      merge(items);
+      return {items:items, start:start};
+    });
+  }
+
+  function loadInitial(){
+    return loadMeta().then(function(){
+      return loadNewestWindow(BOOT_PAGES);
+    }).then(function(win){
+      if(loadedOldestPage===null) loadedOldestPage=win.start;
+      return {changed:true, fresh:win.items.length, hard:true};
+    });
+  }
+
+  /* 최신 구간만 다시 확인. 이 구간에서 실제로 사라진 글만 지운다. */
+  function reconcile(){
+    var meta = (totalComments>0 && lastPageNum>0) ? Promise.resolve(totalComments) : loadMeta();
+    return meta.then(function(){ return loadNewestWindow(RECONCILE_PAGES); }).then(function(win){
+      if(loadedOldestPage===null) loadedOldestPage=win.start;
+      var ids={}, oldest=null;
+      win.items.forEach(function(c){
+        ids[c.id]=1;
+        if(!oldest || c.created_at<oldest) oldest=c.created_at;
+      });
+      var removed=0;
+      if(oldest){
+        var drop=[];
+        msgs.forEach(function(c,id){
+          if(!ids[id] && c.created_at>=oldest) drop.push(id);
+        });
+        for(var i=0;i<drop.length;i++){ msgs.delete(drop[i]); removed++; }
+      }
+      return {changed:removed>0, fresh:0};
+    });
+  }
+
+  /* since 기반 증분. 경계 누락을 막으려고 3분 여유를 두고 다시 훑는다(중복은 id로 제거). */
+  function loadIncremental(){
+    if(!lastSync) return loadInitial();
+    var since=new Date(Date.parse(lastSync)-SINCE_MARGIN_MS).toISOString();
+    var acc=[];
+    function step(page){
+      return fetchPage(page, since).then(function(r){
+        acc=acc.concat(r.items);
+        if(r.items.length<PAGE_SIZE || page>=MAX_INC_PAGES) return acc;
+        return step(page+1);
       });
     }
-    next().then(function(items){
-      var fresh = items.filter(function(c){ return !msgs.has(c.id); });
-      var changed=false;
-      if(full){
-        var seen={};
-        items.forEach(function(c){ seen[c.id]=1; });
-        msgs.forEach(function(v,k){ if(!seen[k]){ msgs.delete(k); changed=true; } });
-      }
-      items.forEach(function(c){
-        var prev=msgs.get(c.id);
-        if(!prev || prev.updated_at!==c.updated_at || prev.body!==c.body){ msgs.set(c.id,c); changed=true; }
-        if(!lastSync || c.updated_at>lastSync) lastSync=c.updated_at;
-      });
-      setStatus('on','연결됨 · '+new Date().toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'}));
-      if(fresh.length || changed || lastRenderedCount===0){ render(); }
-      if(fresh.length && !atBottom){
-        jump.textContent='↓ 새 메시지 '+fresh.length+'개';
-        jump.classList.add('show');
-      }
-    }).catch(function(err){
-      if(err && err.code===401){
-        setStatus('err','토큰 확인 필요');
-        openToken('토큰이 만료됐거나 잘못됐어요. 다시 넣어 주세요.');
-      } else if(err && err.code===429){
-        setStatus('err','요청 한도 초과');
-        toast('GitHub 요청 한도를 넘었어요. 잠시 뒤 다시 시도해요.');
-      } else if(err && err.code===403){
-        setStatus('err','권한 없음');
-      } else if(!navigator.onLine){
-        setStatus('err','오프라인');
-      } else {
-        setStatus('err','연결 오류');
-      }
-    }).then(function(){
-      polling=false;
+    return step(1).then(function(items){
+      var m=merge(items);
+      return {changed:m.changed, fresh:m.fresh};
     });
+  }
+
+  function kindRank(k){ return k==='initial'?2:(k==='reconcile'?1:0); }
+  function mergeKind(a,b){
+    if(!a) return b;
+    if(!b) return a;
+    return kindRank(a)>=kindRank(b)?a:b;
+  }
+
+  function requestSync(kind){
+    if(!token || DEMO) return;
+    if(busy){ queued=mergeKind(queued,kind); return; }
+    var mySession=session;
+    busy=true;
+    var job;
+    try{
+      job = kind==='initial' ? loadInitial() : (kind==='reconcile' ? reconcile() : loadIncremental());
+    }catch(e){ busy=false; handleErr(e); return; }
+    job.then(function(res){
+      if(mySession!==session) return;
+      res=res||{};
+      setStatus('on','연결됨 · '+nowLabel());
+      if(res.fresh>0 && !atBottom) pendingNewCount=res.fresh;
+      if(res.changed || res.hard || lastRenderedCount===0) render();
+    }).catch(function(err){
+      if(mySession!==session) return;
+      handleErr(err);
+    }).then(function(){
+      if(mySession!==session) return;
+      busy=false;
+      var q=queued; queued=null;
+      if(q) requestSync(q);
+    });
+  }
+
+  function handleErr(err){
+    if(err && err.code===401){
+      setStatus('err','토큰 확인 필요');
+      openToken('토큰이 만료됐거나 잘못됐어요. 다시 넣어 주세요.');
+    } else if(err && err.code===429){
+      setStatus('err','요청 한도 초과');
+      toast('GitHub 요청 한도를 넘었어요. 잠시 뒤 다시 시도해요.');
+    } else if(err && err.code===403){
+      setStatus('err','권한 없음');
+    } else if(!navigator.onLine){
+      setStatus('err','오프라인');
+    } else {
+      setStatus('err','연결 오류');
+    }
   }
 
   function schedule(){
     if(timer) clearInterval(timer);
     timer=setInterval(function(){
       if(document.hidden) return;
-      fullCounter++;
-      poll(fullCounter%10===0);
+      pollCounter++;
+      if(!lastSync){ requestSync('initial'); return; }
+      requestSync(pollCounter%RECONCILE_EVERY===0?'reconcile':'incremental');
     },POLL_MS);
+  }
+
+  /* 이전 대화 더 불러오기: 이미 가진 가장 오래된 글과 겹칠 때까지(구멍 방지) 서버에서 당긴다. */
+  function loadOlder(){
+    if(busy){ toast('잠시만요…'); return; }
+    if(loadedOldestPage===null || loadedOldestPage<=1){ toast('대화의 처음이에요'); return; }
+    busy=true;
+    var oldestLoaded=null;
+    msgs.forEach(function(c){ if(!oldestLoaded || c.created_at<oldestLoaded) oldestLoaded=c.created_at; });
+    var pages=[], all=[];
+    function chain(p,n){
+      if(p<1 || n<=0) return Promise.resolve();
+      pages.push(p);
+      return fetchPage(p).then(function(r){
+        all=all.concat(r.items);
+        var newest=null;
+        r.items.forEach(function(c){ if(!newest || c.created_at>newest) newest=c.created_at; });
+        var overlaps = !oldestLoaded || !newest || newest>=oldestLoaded;
+        if(overlaps || r.items.length===0) return;
+        return chain(p-1,n-1);
+      });
+    }
+    chain(loadedOldestPage-1,3).then(function(){
+      var m=merge(all);
+      if(pages.length) loadedOldestPage=Math.min.apply(null,pages);
+      renderLimit+=all.length;
+      if(!all.length && !m.fresh) toast('더 불러올 글이 없어요');
+      render();
+    }).catch(handleErr).then(function(){
+      busy=false;
+    });
   }
 
   /* ---------- images ---------- */
@@ -496,14 +661,12 @@
       };
       img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="240" height="120"><rect width="100%" height="100%" fill="#e9ecf1"/><text x="50%" y="52%" font-size="13" fill="#6b7280" text-anchor="middle" font-family="sans-serif">사진 불러오는 중…</text></svg>');
       wrap.appendChild(img);
-      loadImage(path).then(function(u){ if(u) img.src=u; else { img.remove(); } });
+      loadImage(path).then(function(u){ if(u) img.src=u; else { if(img.parentNode) img.remove(); } });
     });
     if(hidden>0){
       var btn=document.createElement('div');
       btn.className='more'; btn.textContent='더 보기 ('+hidden+'줄)';
       btn.onclick=function(){
-        var full=document.createElement('div');
-        // re-render full without truncation
         btn.remove();
         wrap.innerHTML='';
         var h2='';
@@ -520,24 +683,16 @@
     return wrap;
   }
 
-  /* ---------- rendering ---------- */
+  /* ---------- rendering (키 기반: 바뀐 말풍선만 새로 만들고 나머지는 그대로 재사용) ---------- */
   function sortMsgs(){
     return Array.from(msgs.values()).sort(function(a,b){
       if(a.created_at<b.created_at) return -1;
       if(a.created_at>b.created_at) return 1;
-      return a.id-b.id;
+      return (Number(a.id)||0)-(Number(b.id)||0);
     });
   }
 
-  function render(){
-    var arr=sortMsgs();
-    lastRenderedCount=arr.length;
-    var nearBottom = isNearBottom();
-    list.innerHTML='';
-    if(!arr.length && pending.size===0){
-      list.innerHTML='<div class="empty">아직 메시지가 없어요.<br>아래에 첫 메시지를 보내 보세요.</div>';
-      return;
-    }
+  function computeSeenAt(arr){
     var seenAt={};
     arr.forEach(function(c){
       var b=String(c.body||'');
@@ -548,52 +703,150 @@
       else if(b.indexOf('[돈다바리]')===0 || b.indexOf('[똘마니5]')===0) seenAt.daba=c.created_at;
       else if(b.indexOf('[GPT]')===0) seenAt.gpt=c.created_at;
     });
-    var lastDay='';
-    var visible = arr.length > renderLimit ? arr.slice(-renderLimit) : arr;
-    if(arr.length > renderLimit){
-      var ob=document.createElement('div');
-      ob.style.cssText='text-align:center;margin:6px 0 10px;';
-      var btn=document.createElement('button');
-      btn.type='button';
-      btn.textContent='▲ 이전 대화 50개 더 보기 ('+(arr.length-visible.length)+'개 남음)';
-      btn.style.cssText='border:0;background:#d6e0eb;color:#334155;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px;cursor:pointer;';
-      btn.onclick=function(){ renderLimit+=50; render(); };
-      ob.appendChild(btn);
-      list.appendChild(ob);
+    return seenAt;
+  }
+
+  function speakerFor(body){
+    var b=String(body||'');
+    for(var i=0;i<SPEAKERS.length;i++){
+      if(b.indexOf(SPEAKERS[i].tag)===0) return SPEAKERS[i];
     }
+    return null;
+  }
+
+  function setChildren(nodes){
+    if(list.replaceChildren){
+      list.replaceChildren.apply(list,nodes);
+    } else {
+      while(list.firstChild) list.removeChild(list.firstChild);
+      var f=document.createDocumentFragment();
+      nodes.forEach(function(n){ f.appendChild(n); });
+      list.appendChild(f);
+    }
+  }
+
+  function updateCount(){
+    var el=$('msgCount'); if(!el) return;
+    el.textContent = totalComments ? (msgs.size+'개 / 전체 '+totalComments+'개') : (msgs.size+'개');
+  }
+
+  function dayNode(key, iso){
+    var hit=cache.get('d:'+key);
+    if(hit){ nextCache.set('d:'+key,hit); return hit.el; }
+    var dd=document.createElement('div');
+    dd.className='day';
+    dd.innerHTML='<span>'+fmtDate(iso)+'</span>';
+    nextCache.set('d:'+key,{el:dd});
+    return dd;
+  }
+
+  function moreButton(hiddenLocal, olderAvail){
+    var wrap=document.createElement('div');
+    wrap.style.cssText='text-align:center;margin:6px 0 10px;';
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.style.cssText='border:0;background:#d6e0eb;color:#334155;font-size:12px;font-weight:700;padding:6px 14px;border-radius:99px;cursor:pointer;';
+    if(hiddenLocal>0){
+      btn.textContent='▲ 이전 대화 더 보기 ('+Math.min(hiddenLocal,RENDER_STEP)+'개)';
+      btn.onclick=function(){ renderLimit+=RENDER_STEP; render(); };
+    } else {
+      btn.textContent='▲ 서버에서 이전 대화 더 불러오기';
+      btn.onclick=function(){ loadOlder(); };
+    }
+    wrap.appendChild(btn);
+    return wrap;
+  }
+
+  function render(){
+    var arr=sortMsgs();
+    var nearBottom=isNearBottom();
+    var prevTop=list.scrollTop, prevH=list.scrollHeight;
+    var newCount=pendingNewCount; pendingNewCount=0;
+    lastRenderedCount=arr.length;
+    nextCache=new Map();
+
+    if(!arr.length && pending.size===0){
+      cache=new Map();
+      var em=document.createElement('div');
+      em.className='empty';
+      em.innerHTML='아직 메시지가 없어요.<br>아래에 첫 메시지를 보내 보세요.';
+      setChildren([em]);
+      updateCount();
+      return;
+    }
+
+    var nodes=[];
+    var seenAt=computeSeenAt(arr);
+    var visible = arr.length>renderLimit ? arr.slice(-renderLimit) : arr;
+    var hiddenLocal = arr.length-visible.length;
+    var olderAvail = !!(loadedOldestPage && loadedOldestPage>1);
+    if(hiddenLocal>0 || olderAvail) nodes.push(moreButton(hiddenLocal,olderAvail));
+
+    var lastDay='';
     visible.forEach(function(c){
-      var body=String(c.body||'');
-      var sp=null;
-      for(var i=0;i<SPEAKERS.length;i++){
-        if(body.indexOf(SPEAKERS[i].tag)===0){ sp=SPEAKERS[i]; break; }
-      }
       var d=new Date(c.created_at);
       var dayKey=d.getFullYear()+'-'+d.getMonth()+'-'+d.getDate();
       if(dayKey!==lastDay){
         lastDay=dayKey;
-        var dd=document.createElement('div');
-        dd.className='day';
-        dd.innerHTML='<span>'+fmtDate(c.created_at)+'</span>';
-        list.appendChild(dd);
+        nodes.push(dayNode(dayKey,c.created_at));
       }
-      list.appendChild(rowFor(c,sp,false,seenAt));
+      nodes.push(rowNode(c, speakerFor(c.body), false, seenAt));
     });
+
     pending.forEach(function(p){
-      list.appendChild(rowFor({id:'p'+p.id,created_at:p.created_at,body:p.body,user:{login:'me'}},SPEAKERS[3],true));
+      nodes.push(rowNode({id:p.id,created_at:p.created_at,body:p.body,user:{login:'me'}}, SP_PC, true, null));
     });
-    $('msgCount').textContent=arr.length+'개';
-    if(nearBottom || atBottom){ scrollBottom(); } else { jump.classList.add('show'); jump.textContent='↓ 맨 아래로'; }
+
+    cache=nextCache;
+    setChildren(nodes);
+    updateCount();
+
+    if(nearBottom || atBottom){
+      scrollBottom();
+    } else {
+      list.scrollTop = prevTop + (list.scrollHeight - prevH);
+      jump.textContent = newCount>0 ? ('↓ 새 메시지 '+newCount+'개') : '↓ 맨 아래로';
+      jump.classList.add('show');
+    }
   }
 
-  function rowFor(c,sp,isPending,seenAt){
+  function rowNode(c, sp, isPending, seenAt){
+    var key=(isPending?'p:':'c:')+c.id;
+    var sig=key+'|'+c.created_at+'|'+((isPending||DEMO)?'':(c.updated_at||''))+'|'+(token?'t':'');
+    var hit=cache.get(key);
+    var el=null;
+    if(hit && hit.sig===sig){
+      el=hit.el;
+      nextCache.set(key,hit);
+    } else {
+      el=buildRow(c,sp,isPending,seenAt);
+      nextCache.set(key,{sig:sig,el:el});
+    }
+    if(!isPending && seenAt) applyChecks(el,c,seenAt);
+    return el;
+  }
+
+  function applyChecks(el, c, seenAt){
+    if(!el._checks) return;
+    for(var i=0;i<el._checks.length;i++){
+      var w=el._checks[i];
+      if(w.own){ w.el.style.display='none'; continue; }
+      var ok = seenAt[w.k] && seenAt[w.k]>=c.created_at;
+      w.el.textContent=w.lbl+(ok?'✓':'');
+      w.el.style.cssText=ok?'color:#1a73e8;font-weight:700;':'color:#b0b5bb;';
+    }
+  }
+
+  function buildRow(c, sp, isPending, seenAt){
     var rawBody=String(c.body||'');
-    var body=String(c.body||'');
+    var body=rawBody;
     if(sp) body=body.slice(sp.tag.length).trim();
     var cls=sp?sp.cls:'x';
     var name=sp?sp.name:(c.user&&c.user.login?c.user.login:'기타');
     var av=sp?sp.av:(name.charAt(0)||'·');
     var row=document.createElement('div');
     row.className='row'+(cls==='me'?' me':'');
+    row.setAttribute('data-id',String(c.id));
 
     var a=document.createElement('div');
     a.className='av '+cls; a.textContent=av;
@@ -639,6 +892,7 @@
       t.appendChild(del);
     }
     stack.appendChild(t);
+
     if(!isPending && seenAt){
       var watchers=[
         {k:'ttol', tag:'[똘마니1]', lbl:'1'},
@@ -650,15 +904,15 @@
       ];
       var sdiv=document.createElement('div');
       sdiv.style.cssText='font-size:9.5px;line-height:1.2;margin:1px 4px 0;display:flex;gap:5px;flex-wrap:wrap;';
+      row._checks=[];
       watchers.forEach(function(w){
-        if(rawBody.indexOf(w.tag)===0 || (w.k==='nana' && rawBody.indexOf('[개구기]')===0)) return;
         var spn=document.createElement('span');
-        var ok=seenAt[w.k] && seenAt[w.k]>=c.created_at;
-        spn.textContent=w.lbl+(ok?'✓':'');
-        spn.style.cssText=ok?'color:#1a73e8;font-weight:700;':'color:#b0b5bb;';
+        var own = (rawBody.indexOf(w.tag)===0) || (w.k==='nana' && rawBody.indexOf('[개구기]')===0);
+        spn.textContent=w.lbl;
         sdiv.appendChild(spn);
+        row._checks.push({k:w.k,tag:w.tag,lbl:w.lbl,el:spn,own:own});
       });
-      if(sdiv.childNodes.length) stack.appendChild(sdiv);
+      stack.appendChild(sdiv);
     }
 
     row.appendChild(a); row.appendChild(stack);
@@ -762,23 +1016,23 @@
   });
 
   function attachLongPress(el, c, name, body, isPending){
-    var timer=null, sx=0, sy=0;
+    var lpTimer=null, sx=0, sy=0;
     el.addEventListener('touchstart',function(e){
       if(e.touches.length!==1) return;
       sx=e.touches[0].clientX; sy=e.touches[0].clientY;
-      timer=setTimeout(function(){
-        timer=null;
+      lpTimer=setTimeout(function(){
+        lpTimer=null;
         if(navigator.vibrate) try{ navigator.vibrate(20); }catch(_){}
         openMsgSheet(c, name, body, isPending);
       },450);
     },{passive:true});
     el.addEventListener('touchmove',function(e){
-      if(!timer) return;
+      if(!lpTimer) return;
       var dx=Math.abs(e.touches[0].clientX-sx), dy=Math.abs(e.touches[0].clientY-sy);
-      if(dx>10 || dy>10){ clearTimeout(timer); timer=null; }
+      if(dx>10 || dy>10){ clearTimeout(lpTimer); lpTimer=null; }
     },{passive:true});
-    el.addEventListener('touchend',function(){ if(timer){ clearTimeout(timer); timer=null; } });
-    el.addEventListener('touchcancel',function(){ if(timer){ clearTimeout(timer); timer=null; } });
+    el.addEventListener('touchend',function(){ if(lpTimer){ clearTimeout(lpTimer); lpTimer=null; } });
+    el.addEventListener('touchcancel',function(){ if(lpTimer){ clearTimeout(lpTimer); lpTimer=null; } });
     el.addEventListener('contextmenu',function(e){
       e.preventDefault();
       openMsgSheet(c, name, body, isPending);
@@ -824,6 +1078,7 @@
     api('/issues/'+ISSUE+'/comments',{method:'POST',body:{body:p.body}}).then(function(c){
       pending.delete(p.id);
       msgs.set(c.id,c);
+      totalComments++;
       if(!lastSync||c.updated_at>lastSync) lastSync=c.updated_at;
       render();
     }).catch(function(e){
@@ -968,7 +1223,9 @@
     }).then(function(path){
       var msg='[PC] 📎 사진 첨부: '+path+(caption?('\n'+caption):'');
       return api('/issues/'+ISSUE+'/comments',{method:'POST',body:{body:msg}}).then(function(c){
-        msgs.set(c.id,c); if(!lastSync||c.updated_at>lastSync) lastSync=c.updated_at;
+        msgs.set(c.id,c);
+        totalComments++;
+        if(!lastSync||c.updated_at>lastSync) lastSync=c.updated_at;
         atBottom=true; render(); scrollBottom();
         toast('사진 보냈어요');
       });
@@ -983,6 +1240,15 @@
   }
 
   /* ---------- token ---------- */
+  function resetChatState(){
+    session++;
+    busy=false; queued=null; pollCounter=0;
+    msgs.clear(); cache.clear(); imgCache.clear(); pending.clear();
+    lastSync=null; totalComments=0; lastPageNum=1; loadedOldestPage=null;
+    renderLimit=RENDER_MIN; lastRenderedCount=0; pendingNewCount=0;
+    atBottom=true;
+  }
+
   function openToken(msg){
     if(msg){ var p=document.querySelector('#tokenSheet p.sub'); p.textContent=msg; }
     $('clearSaved').style.display = token ? 'block' : 'none';
@@ -992,7 +1258,8 @@
 
   function wipeToken(){
     localStorage.removeItem(K_TOKEN);
-    token=''; msgs.clear(); imgCache.clear(); pending.clear(); lastSync=null; lastRenderedCount=0;
+    token='';
+    resetChatState();
     render(); updateTokenState(); setStatus('','토큰 없음');
   }
   document.getElementById('clearSavedBtn').addEventListener('click',function(e){
@@ -1012,22 +1279,22 @@
         else toast('클립보드가 비어 있어요');
       }).catch(function(){ toast('길게 눌러 직접 붙여넣어 주세요'); });
     } else {
-      toast('입력칸을 길게 눌러 붙여넣어 주세요');
+      toast('입력칸을 길게 눌러 직접 붙여넣어 주세요');
     }
   });
 
   $('saveTokenBtn').addEventListener('click',function(){
     var v=$('tokenInput').value.trim();
     if(!v){ toast('토큰을 넣어 주세요'); return; }
-    if(!/^(gh[pousr]_|github_pat_)/.test(v)) { /* allow any, but give a hint */ }
     token=v;
     localStorage.setItem(K_TOKEN,token);
     $('tokenInput').value='';
     closeToken();
     setStatus('','연결 확인 중…');
     updateTokenState();
-    msgs.clear(); imgCache.clear(); lastSync=null; lastRenderedCount=0;
-    poll(true);
+    resetChatState();
+    render();
+    requestSync('initial');
     schedule();
   });
 
@@ -1051,6 +1318,7 @@
   /* ---------- settings / misc ---------- */
   $('settingsBtn').addEventListener('click',function(){
     updateTokenState();
+    updateCount();
     $('settingsSheet').classList.add('show');
   });
   $('closeSettings').addEventListener('click',function(){ $('settingsSheet').classList.remove('show'); });
@@ -1062,27 +1330,30 @@
     if(!token){ openToken(); return; }
     var b=$('refreshBtn'); b.classList.add('spin');
     setStatus('','새로고침 중…');
-    poll(true);
+    requestSync(lastSync?'reconcile':'initial');
     setTimeout(function(){ b.classList.remove('spin'); },900);
   });
 
   jump.addEventListener('click',scrollBottom);
 
-  window.addEventListener('online',function(){ setStatus('','다시 연결 중…'); poll(false); });
+  window.addEventListener('online',function(){ setStatus('','다시 연결 중…'); requestSync(lastSync?'incremental':'initial'); });
   window.addEventListener('offline',function(){ setStatus('err','오프라인'); });
   document.addEventListener('visibilitychange',function(){
-    if(!document.hidden && token) poll(false);
+    if(!document.hidden && token) requestSync(lastSync?'incremental':'initial');
+  });
+  window.addEventListener('pageshow',function(e){
+    if(e.persisted && token) requestSync(lastSync?'incremental':'initial');
   });
 
   function demoSeed(){
     var base=Date.now()-3600e3;
     var rows=[
-      ['[똘마니]','오늘 밤 작업 상황 공유드릴게요!','p'],
-      ['[똥구리]','네 성현 님, 저는 해외 채널 쪽 확인해서 여기 남기겠습니다.','d'],
-      ['[나나]','교차 감시 :04/:09 계속 돌고 있습니다 :)','n'],
-      ['[PC]','응 앱처럼 하자구','me'],
-      ['[똘마니]','**모바일 소통창 준비 완료**\n1. 폰 크롬으로 주소 열기\n2. 상단 ⚙ → 토큰 붙여넣기\n3. 크롬 메뉴 ⋮ → 홈 화면에 추가\n\n이렇게 하면 앱처럼 전체 화면으로 열립니다. https://soomonjjang-lab.github.io/pickle-mobile-chat/','p'],
-      ['[PC]','오케이 바로 해볼게','me']
+      ['[똘마니]','오늘 밤 작업 상황 공유드릴게요!'],
+      ['[똥구리]','네 성현 님, 저는 해외 채널 쪽 확인해서 여기 남기겠습니다.'],
+      ['[나나]','교차 감시 :04/:09 계속 돌고 있습니다 :)'],
+      ['[PC]','응 앱처럼 하자구'],
+      ['[똘마니]','**모바일 소통창 준비 완료**\n1. 폰 크롬으로 주소 열기\n2. 상단 ⚙ → 토큰 붙여넣기\n3. 크롬 메뉴 ⋮ → 홈 화면에 추가\n\n이렇게 하면 앱처럼 전체 화면으로 열립니다. https://soomonjjang-lab.github.io/pickle-mobile-chat/'],
+      ['[PC]','오케이 바로 해볼게']
     ];
     rows.forEach(function(r,i){
       msgs.set('demo'+i,{id:'demo'+i,body:r[0]+' '+r[1],created_at:new Date(base+i*240000).toISOString(),user:{login:'demo'}});
@@ -1127,7 +1398,7 @@
     demoSeed();
   } else if(token){
     setStatus('','연결 중…');
-    poll(true);
+    requestSync('initial');
     schedule();
   } else {
     setStatus('','토큰 없음');
