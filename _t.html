@@ -18,7 +18,7 @@
 
   function boot(){
     return fetch('index.html?ts='+Date.now(),{cache:'no-store'}).then(function(r){ return r.text(); }).then(function(html){
-      html=html.replace('<head>','<head>\n<script src="_mock.js"></script>\n');
+      html=html.replace('<head>','<head>\n<script src="_mock.js"><\/script>\n');
       var fr=document.getElementById('fr');
       return new Promise(function(res){
         fr.onload=function(){ res(fr); };
