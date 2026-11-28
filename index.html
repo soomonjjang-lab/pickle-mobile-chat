@@ -564,31 +564,23 @@
     },POLL_MS);
   }
 
-  /* 이전 대화 더 불러오기: 이미 가진 가장 오래된 글과 겹칠 때까지(구멍 방지) 서버에서 당긴다. */
+  /* 이전 대화 더 불러오기: 인접한 두 페이지(최대 200개)를 겹쳐서 받아
+     총 개수가 늘어 페이지 경계가 밀려도 중간이 비지 않게 한다. */
   function loadOlder(){
     if(busy){ toast('잠시만요…'); return; }
     if(loadedOldestPage===null || loadedOldestPage<=1){ toast('대화의 처음이에요'); return; }
     busy=true;
-    var oldestLoaded=null;
-    msgs.forEach(function(c){ if(!oldestLoaded || c.created_at<oldestLoaded) oldestLoaded=c.created_at; });
-    var pages=[], all=[];
-    function chain(p,n){
-      if(p<1 || n<=0) return Promise.resolve();
-      pages.push(p);
-      return fetchPage(p).then(function(r){
-        all=all.concat(r.items);
-        var newest=null;
-        r.items.forEach(function(c){ if(!newest || c.created_at>newest) newest=c.created_at; });
-        var overlaps = !oldestLoaded || !newest || newest>=oldestLoaded;
-        if(overlaps || r.items.length===0) return;
-        return chain(p-1,n-1);
-      });
-    }
-    chain(loadedOldestPage-1,3).then(function(){
-      var m=merge(all);
-      if(pages.length) loadedOldestPage=Math.min.apply(null,pages);
-      renderLimit+=all.length;
-      if(!all.length && !m.fresh) toast('더 불러올 글이 없어요');
+    var start=loadedOldestPage-1;
+    var end=Math.max(1,start-1);
+    var pages=[];
+    for(var p=end;p<=start;p++) pages.push(p);
+    Promise.all(pages.map(function(p){ return fetchPage(p); })).then(function(res){
+      var items=[];
+      res.forEach(function(r){ items=items.concat(r.items); });
+      merge(items);
+      loadedOldestPage=end;
+      renderLimit+=items.length;
+      if(!items.length) toast('더 불러올 글이 없어요');
       render(true);
     }).catch(handleErr).then(function(){
       busy=false;
