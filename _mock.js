@@ -3,10 +3,11 @@
   var TOTAL=1647;
   var BASE=Date.parse('2026-11-18T10:40:34Z');
   var STEP=600000; /* 10분 간격 */
-  var DELETED={};
+  var DELETED={}, OVERRIDE={}, UPDATED={};
   function mk(i){
     return {id:100000+i, user:{login:'soomonjjang-lab'}, created_at:new Date(BASE+i*STEP).toISOString(),
-            updated_at:new Date(BASE+i*STEP).toISOString(), body:'[PC] 테스트 메시지 #'+i};
+            updated_at:UPDATED[i]||new Date(BASE+i*STEP).toISOString(),
+            body:OVERRIDE[i]||('[PC] 테스트 메시지 #'+i)};
   }
   function allComments(){ var a=[]; for(var i=0;i<TOTAL;i++){ if(!DELETED[100000+i]) a.push(mk(i)); } return a; }
   function linkHdr(page,last){
@@ -29,9 +30,9 @@
   window.__posted=[];
   window.mockAdd=function(txt){
     var i=TOTAL; TOTAL++;
+    OVERRIDE[i]=txt;
+    UPDATED[i]=new Date().toISOString();
     var c=mk(i);
-    c.body=txt;
-    c.updated_at=new Date().toISOString();
     window.__posted.push(c);
     return c;
   };

@@ -64,21 +64,33 @@
               D.getElementById('refreshBtn').click();
               return wait(1800).then(function(){
                 log(/새로 온 알림/.test(allText()),'새로 들어온 글 표시');
-                var btn=D.querySelector('#list button');
-                log(!!btn,'이전 대화 더 보기 버튼: '+(btn?btn.textContent:'없음'));
                 log(W.__errs.length===0,'JS 오류 없음'+(W.__errs.length?(' → '+W.__errs.join(' / ')):''));
+                var b0=D.querySelector('#list button');
+                log(!!b0,'이전 대화 버튼: '+(b0?b0.textContent:'없음'));
 
-                /* 스크롤 위치 유지 확인: 위로 올린 뒤 새 글이 와도 위치가 튀지 않아야 함 */
-                var L=list();
-                L.scrollTop=Math.max(0,L.scrollHeight-L.clientHeight-400);
-                var top0=L.scrollTop;
-                W.mockAdd('[PC] 스크롤 유지 확인용');
-                D.getElementById('refreshBtn').click();
-                return wait(1800).then(function(){
-                  var top1=L.scrollTop;
-                  log(Math.abs(top1-top0)<120,'위로 올린 상태에서 새 글 와도 스크롤 유지 ('+top0+' → '+top1+')');
-                  window.__test=T;
-                  return T;
+                function reveal(){
+                  var b=D.querySelector('#list button');
+                  if(b && /이전 대화 더 보기/.test(b.textContent)){ b.click(); return wait(250).then(reveal); }
+                }
+                return reveal().then(function(){
+                  var b=D.querySelector('#list button');
+                  log(!!b && /서버에서/.test(b.textContent),'로컬 다 보여준 뒤 버튼 = 서버에서 불러오기 ('+(b?b.textContent:'없음')+')');
+                  if(b) b.click();
+                  return wait(2000);
+                }).then(function(){
+                  log(/테스트 메시지 #1400/.test(allText()),'서버에서 이전 대화 100개 추가 로드');
+                  var L=list();
+                  L.scrollTop=Math.max(0,L.scrollHeight-L.clientHeight-400);
+                  var top0=L.scrollTop;
+                  W.mockAdd('[PC] 스크롤 유지 확인용');
+                  D.getElementById('refreshBtn').click();
+                  return wait(1800).then(function(){
+                    var top1=L.scrollTop;
+                    log(Math.abs(top1-top0)<120,'위로 올린 상태에서 새 글 와도 스크롤 유지 ('+top0+' → '+top1+')');
+                    log(/스크롤 유지 확인용/.test(allText()),'스크롤 확인용 새 글도 표시');
+                    window.__test=T;
+                    return T;
+                  });
                 });
               });
             });

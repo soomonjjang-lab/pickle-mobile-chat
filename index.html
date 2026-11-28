@@ -589,7 +589,7 @@
       if(pages.length) loadedOldestPage=Math.min.apply(null,pages);
       renderLimit+=all.length;
       if(!all.length && !m.fresh) toast('더 불러올 글이 없어요');
-      render();
+      render(true);
     }).catch(handleErr).then(function(){
       busy=false;
     });
@@ -757,7 +757,7 @@
     return wrap;
   }
 
-  function render(){
+  function render(adjustForPrepend){
     var arr=sortMsgs();
     var nearBottom=isNearBottom();
     var prevTop=list.scrollTop, prevH=list.scrollHeight;
@@ -803,8 +803,14 @@
 
     if(nearBottom || atBottom){
       scrollBottom();
-    } else {
+    } else if(adjustForPrepend){
+      /* 위쪽에 이전 대화가 끼어든 경우에만: 보던 자리를 그대로 유지 */
       list.scrollTop = prevTop + (list.scrollHeight - prevH);
+      jump.textContent = newCount>0 ? ('↓ 새 메시지 '+newCount+'개') : '↓ 맨 아래로';
+      jump.classList.add('show');
+    } else {
+      /* 아래에 새 글이 붙은 경우: 위쪽 내용은 그대로이므로 스크롤 위치를 옮기지 않는다 */
+      list.scrollTop = prevTop;
       jump.textContent = newCount>0 ? ('↓ 새 메시지 '+newCount+'개') : '↓ 맨 아래로';
       jump.classList.add('show');
     }
