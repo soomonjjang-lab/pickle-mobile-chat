@@ -1,8 +1,8 @@
 /* 회귀 테스트용 목 API — 실제 Issue #1 규모(댓글 1647개 · 17페이지) 흉내 */
 (function(){
   var TOTAL=1647;
-  var BASE=Date.parse('2026-11-18T10:40:34Z');
-  var STEP=600000; /* 10분 간격 */
+  var STEP=300000; /* 5분 간격 */
+  var BASE=Date.now()-1652*STEP; /* 전부 과거 시각: 실제 댓글과 같은 시간 구조 */
   var DELETED={}, OVERRIDE={}, UPDATED={};
   function mk(i){
     return {id:100000+i, user:{login:'soomonjjang-lab'}, created_at:new Date(BASE+i*STEP).toISOString(),
