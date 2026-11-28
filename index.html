@@ -451,8 +451,8 @@
         if(r.last && r.last>lastPageNum) lastPageNum=r.last;
         r.items.forEach(function(c){ if(!ids[c.id]){ ids[c.id]=1; items.push(c); } });
       });
-      merge(items);
-      return {items:items, start:start};
+      var merged=merge(items);
+      return {items:items, start:start, merged:merged};
     });
   }
 
@@ -483,7 +483,7 @@
         });
         for(var i=0;i<drop.length;i++){ msgs.delete(drop[i]); removed++; }
       }
-      return {changed:removed>0, fresh:0};
+      return {changed:(win.merged && win.merged.changed) || removed>0, fresh:(win.merged?win.merged.fresh:0)};
     });
   }
 
@@ -790,10 +790,7 @@
     });
 
     cache=nextCache;
-    var dupCount=0;
-    for(var di=0; di<nodes.length; di++){ if(nodes.indexOf(nodes[di])!==di) dupCount++; }
     setChildren(nodes);
-    window.__renderStat={want:visible.length+pending.size, nodes:nodes.length, dups:dupCount, got:list.children.length, arr:arr.length, limit:renderLimit};
     updateCount();
 
     if(nearBottom || atBottom){
@@ -928,8 +925,7 @@
       first:arr.length?(arr[0].id+'@'+arr[0].created_at):null,
       last:arr.length?(arr[arr.length-1].id+'@'+arr[arr.length-1].created_at):null,
       lastSync:lastSync, totalComments:totalComments, lastPageNum:lastPageNum,
-      loadedOldestPage:loadedOldestPage, renderLimit:renderLimit, visibleFrom:arr.length>renderLimit?arr.length-renderLimit:0,
-      render:window.__renderStat||null
+      loadedOldestPage:loadedOldestPage, renderLimit:renderLimit, visibleFrom:arr.length>renderLimit?arr.length-renderLimit:0
     };
   };
 
