@@ -790,7 +790,10 @@
     });
 
     cache=nextCache;
+    var dupCount=0;
+    for(var di=0; di<nodes.length; di++){ if(nodes.indexOf(nodes[di])!==di) dupCount++; }
     setChildren(nodes);
+    window.__renderStat={want:visible.length+pending.size, nodes:nodes.length, dups:dupCount, got:list.children.length, arr:arr.length, limit:renderLimit};
     updateCount();
 
     if(nearBottom || atBottom){
@@ -925,7 +928,8 @@
       first:arr.length?(arr[0].id+'@'+arr[0].created_at):null,
       last:arr.length?(arr[arr.length-1].id+'@'+arr[arr.length-1].created_at):null,
       lastSync:lastSync, totalComments:totalComments, lastPageNum:lastPageNum,
-      loadedOldestPage:loadedOldestPage, renderLimit:renderLimit, visibleFrom:arr.length>renderLimit?arr.length-renderLimit:0
+      loadedOldestPage:loadedOldestPage, renderLimit:renderLimit, visibleFrom:arr.length>renderLimit?arr.length-renderLimit:0,
+      render:window.__renderStat||null
     };
   };
 
