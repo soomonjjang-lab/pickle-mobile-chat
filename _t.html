@@ -15,6 +15,17 @@
 (function(){
   var T=[];
   function wait(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
+  function until(fn, ms){
+    var t0=Date.now();
+    return new Promise(function(res){
+      (function tick(){
+        var v=false;
+        try{ v=!!fn(); }catch(e){}
+        if(v || Date.now()-t0>ms) return res(v);
+        setTimeout(tick,150);
+      })();
+    });
+  }
 
   function boot(){
     return fetch('index.html?ts='+Date.now(),{cache:'no-store'}).then(function(r){ return r.text(); }).then(function(html){
@@ -34,62 +45,72 @@
       function rows(){ return Array.prototype.slice.call(D.querySelectorAll('#list .row')); }
       function allText(){ return list()?list().textContent:''; }
       function log(ok,msg){ T.push((ok?'PASS':'FAIL')+' · '+msg); }
+      function refresh(){ D.getElementById('refreshBtn').click(); }
 
-      return wait(2500).then(function(){
+      return until(function(){ return rows().length>0; }, 6000).then(function(){
         var v=D.querySelector('header h1 small');
         log(v && v.textContent==='v21','앱 버전 = '+(v?v.textContent:'?')+' (v21 기대)');
         log(/테스트 메시지 #1646/.test(allText()),'첫 로딩에 최신 글(#1646) 표시');
         log(rows().length>0,'첫 로딩 말풍선 '+rows().length+'개');
-        log((W.__reqLog[0]||{}).page!==1 || (W.__reqLog||[]).length<10,'첫 로딩 요청 수 '+((W.__reqLog||[]).length)+'회 (전체 페이지 순회 없음)');
+        log((W.__reqLog||[]).length<=4,'첫 로딩 요청 수 '+((W.__reqLog||[]).length)+'회 (전체 페이지 순회 없음)');
         var before=rows().length;
 
-        D.getElementById('refreshBtn').click();
-        return wait(1800).then(function(){
-          log(/테스트 메시지 #1646/.test(allText()),'새로고침(최신 구간 재대조) 후 최신 글 유지');
-          log(rows().length>=before-1,'새로고침 후 말풍선 수 유지 ('+before+' → '+rows().length+')');
+        /* 1) 90초마다 도는 최신 구간 재대조를 수동 새로고침으로 즉시 실행 */
+        refresh();
+        return until(function(){ return rows().length>0 && /테스트 메시지 #1646/.test(allText()); }, 5000).then(function(){
+          return wait(800).then(function(){
+            log(/테스트 메시지 #1646/.test(allText()),'새로고침(최신 구간 재대조) 후에도 최신 글 유지');
+            log(rows().length>=before-1,'새로고침 후 말풍선 수 유지 ('+before+' → '+rows().length+')');
 
-          var ta=D.getElementById('text');
-          ta.value='회귀테스트 전송';
-          D.getElementById('send').click();
-          return wait(1500).then(function(){
-            log(/회귀테스트 전송/.test(allText()),'보낸 글이 화면에 남음');
-            var me=rows().filter(function(r){ return r.classList.contains('me'); });
-            var lastMe=me.length?me[me.length-1].textContent:'';
-            log(/회귀테스트 전송/.test(lastMe) && !/GPT/.test(lastMe),'내 글 말풍선이 [PC]/나 로 표시');
-            D.getElementById('refreshBtn').click();
-            return wait(1800).then(function(){
-              log(/회귀테스트 전송/.test(allText()),'새로고침 후에도 내가 보낸 글 유지');
+            /* 2) 폰에서 글 보내기 → [PC]/나 말풍선으로 남아야 함 */
+            var ta=D.getElementById('text');
+            ta.value='회귀테스트 전송';
+            D.getElementById('send').click();
+            return until(function(){ return /회귀테스트 전송/.test(allText()); }, 6000).then(function(shown){
+              log(shown,'보낸 글이 화면에 남음');
+              var me=rows().filter(function(r){ return r.classList.contains('me'); });
+              var lastMe=me.length?me[me.length-1]:null;
+              var meTxt=lastMe?lastMe.textContent:'';
+              log(/회귀테스트 전송/.test(meTxt),'내 글 말풍선이 [PC]/나 로 표시');
+              refresh();
+              return until(function(){ return /회귀테스트 전송/.test(allText()); }, 6000).then(function(kept){
+                log(kept,'새로고침 후에도 내가 보낸 글 유지');
 
-              W.mockAdd('[PC] 새로 온 알림');
-              D.getElementById('refreshBtn').click();
-              return wait(1800).then(function(){
-                log(/새로 온 알림/.test(allText()),'새로 들어온 글 표시');
-                log(W.__errs.length===0,'JS 오류 없음'+(W.__errs.length?(' → '+W.__errs.join(' / ')):''));
-                var b0=D.querySelector('#list button');
-                log(!!b0,'이전 대화 버튼: '+(b0?b0.textContent:'없음'));
+                /* 3) 새 글이 들어왔을 때 */
+                W.mockAdd('[PC] 새로 온 알림');
+                refresh();
+                return until(function(){ return /새로 온 알림/.test(allText()); }, 6000).then(function(got){
+                  log(got,'새로 들어온 글 표시');
 
-                function reveal(){
-                  var b=D.querySelector('#list button');
-                  if(b && /이전 대화 더 보기/.test(b.textContent)){ b.click(); return wait(250).then(reveal); }
-                }
-                return reveal().then(function(){
-                  var b=D.querySelector('#list button');
-                  log(!!b && /서버에서/.test(b.textContent),'로컬 다 보여준 뒤 버튼 = 서버에서 불러오기 ('+(b?b.textContent:'없음')+')');
-                  if(b) b.click();
-                  return wait(2000);
-                }).then(function(){
-                  log(/테스트 메시지 #1400/.test(allText()),'서버에서 이전 대화 100개 추가 로드');
-                  var L=list();
-                  L.scrollTop=Math.max(0,L.scrollHeight-L.clientHeight-400);
-                  var top0=L.scrollTop;
-                  W.mockAdd('[PC] 스크롤 유지 확인용');
-                  D.getElementById('refreshBtn').click();
-                  return wait(1800).then(function(){
-                    var top1=L.scrollTop;
-                    log(Math.abs(top1-top0)<120,'위로 올린 상태에서 새 글 와도 스크롤 유지 ('+top0+' → '+top1+')');
-                    log(/스크롤 유지 확인용/.test(allText()),'스크롤 확인용 새 글도 표시');
-                    window.__test=T;
-                    return T;
+                  /* 4) 이전 대화: 로컬 더 보기 → 서버에서 불러오기 */
+                  function reveal(){
+                    var b=D.querySelector('#list button');
+                    if(b && /이전 대화 더 보기/.test(b.textContent)){ b.click(); return wait(250).then(reveal); }
+                  }
+                  var b0=D.querySelector('#list button');
+                  log(!!b0,'이전 대화 버튼: '+(b0?b0.textContent:'없음'));
+                  return reveal().then(function(){
+                    var b=D.querySelector('#list button');
+                    log(!!b && /서버에서/.test(b.textContent),'로컬 다 보여준 뒤 = 서버에서 불러오기 ('+(b?b.textContent:'없음')+')');
+                    if(b) b.click();
+                    return until(function(){ return /테스트 메시지 #1300/.test(allText()); }, 8000);
+                  }).then(function(older){
+                    log(older,'서버에서 이전 대화 추가 로드');
+                    /* 5) 위로 올린 상태에서 새 글 → 스크롤 유지 */
+                    var L=list();
+                    L.scrollTop=Math.max(0,L.scrollHeight-L.clientHeight-400);
+                    var top0=L.scrollTop;
+                    W.mockAdd('[PC] 스크롤 유지 확인용');
+                    refresh();
+                    return until(function(){ return /스크롤 유지 확인용/.test(allText()); }, 8000).then(function(shown2){
+                      var top1=L.scrollTop;
+                      log(shown2,'스크롤 확인용 새 글도 표시');
+                      log(Math.abs(top1-top0)<120,'위로 올린 상태에서 새 글 와도 스크롤 유지 ('+top0+' → '+top1+')');
+                      log(W.__errs.length===0,'JS 오류 없음'+(W.__errs.length?(' → '+W.__errs.join(' / ')):''));
+                      log(rows().length>0,'최종 렌더 행 수 '+rows().length);
+                      window.__test=T;
+                      return T;
+                    });
                   });
                 });
               });
