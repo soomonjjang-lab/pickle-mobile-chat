@@ -917,6 +917,18 @@
     return row;
   }
 
+  /* 진단용(주소창 콘솔에서 window.__chatDebug() 로 확인) — 토큰은 담지 않는다 */
+  window.__chatDebug=function(){
+    var arr=sortMsgs();
+    return {
+      count:msgs.size,
+      first:arr.length?(arr[0].id+'@'+arr[0].created_at):null,
+      last:arr.length?(arr[arr.length-1].id+'@'+arr[arr.length-1].created_at):null,
+      lastSync:lastSync, totalComments:totalComments, lastPageNum:lastPageNum,
+      loadedOldestPage:loadedOldestPage, renderLimit:renderLimit, visibleFrom:arr.length>renderLimit?arr.length-renderLimit:0
+    };
+  };
+
   function isNearBottom(){
     return (list.scrollHeight - list.scrollTop - list.clientHeight) < 80;
   }
